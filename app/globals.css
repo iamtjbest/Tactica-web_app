@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+
+body {
+  background: #0D1317;
+  color: #FFFFFF;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.hex-bg {
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(204,255,0,.025) 80px),
+    repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(0,229,255,.02) 80px);
+}
+
+@layer components {
+  .btn-volt {
+    @apply bg-volt text-bg font-body font-bold tracking-wide
+           px-6 py-3 rounded-xl transition-all duration-200
+           hover:bg-volt2 hover:shadow-volt hover:-translate-y-0.5
+           disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none;
+  }
+  .btn-cyan-outline {
+    @apply bg-cyan/5 text-cyan border border-cyan/30 font-bold tracking-wide
+           px-5 py-2.5 rounded-xl transition-all duration-200
+           hover:bg-cyan/10 hover:border-cyan;
+  }
+  .btn-outline {
+    @apply bg-transparent text-white border border-bd2 font-semibold
+           px-6 py-3 rounded-xl transition-all duration-200
+           hover:border-volt hover:text-volt hover:-translate-y-0.5;
+  }
+  .card {
+    @apply bg-sur border border-bd rounded-2xl p-5;
+  }
+  .input-select {
+    @apply w-full bg-sur border border-bd rounded-xl px-4 py-2.5
+           text-white focus:outline-none focus:border-volt focus:ring-1
+           focus:ring-volt transition-colors;
+  }
+  .pos-badge {
+    @apply inline-block bg-volt/10 text-volt text-xs font-mono
+           font-bold tracking-wider px-2 py-0.5 rounded mr-2 border border-volt/20;
+  }
+  .stat-chip {
+    @apply text-mt text-xs;
+  }
+  .section-label {
+    @apply font-mono text-[11px] font-bold tracking-[0.22em] uppercase text-volt;
+  }
+  .section-title {
+    @apply font-display font-black text-2xl text-white;
+  }
+}
