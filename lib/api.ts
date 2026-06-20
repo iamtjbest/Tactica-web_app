@@ -2,7 +2,7 @@
 // Connects to the FastAPI backend deployed on Render.
 
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL || "https://your-app.onrender.com";
+  process.env.NEXT_PUBLIC_API_URL || "https://tactica-backend-hdbd.onrender.com";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
