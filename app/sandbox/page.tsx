@@ -101,7 +101,7 @@ export default function SandboxPage() {
       {/* Load squad */}
       <button onClick={fetchSquad} disabled={fetching}
         className="btn-outline w-full py-3 flex items-center justify-center gap-2">
-        {fetching ? <><span className="animate-spin">⏳</span> Loading squad…</> : `📥 Load ${myTeam} Squad from BSD`}
+        {fetching ? <><span className="animate-spin">⏳</span> Loading squad…</> : `Load ${myTeam} Squad`}
       </button>
 
       {squad.length > 0 && (
