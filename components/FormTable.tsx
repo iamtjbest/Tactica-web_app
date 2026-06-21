@@ -7,6 +7,13 @@ const RES_STYLE: Record<string, string> = {
   L: "bg-red  text-white",
 };
 
+function formatDate(iso?: string): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+}
+
 export default function FormTable({ matches, teamName, attack, defence, cached }: {
   matches: Match[]; teamName: string; attack: number; defence: number; cached?: boolean;
 }) {
@@ -32,6 +39,9 @@ export default function FormTable({ matches, teamName, attack, defence, cached }
             <span className={clsx("text-[10px] font-bold px-2 py-0.5 rounded font-mono", RES_STYLE[m.result])}>{m.result}</span>
             <span className="text-white text-xs flex-1 truncate">vs {m.opponent}</span>
             <span className="text-mt text-xs">{m.scored}–{m.conceded}</span>
+            {m.event_date && (
+              <span className="text-mt2 text-[10px] font-mono">{formatDate(m.event_date)}</span>
+            )}
             <code className="text-volt text-[10px] bg-sur px-1.5 py-0.5 rounded">{m.formation}</code>
           </div>
         ))}
