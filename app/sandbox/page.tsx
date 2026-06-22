@@ -30,6 +30,8 @@ export default function SandboxPage() {
   const [result,    setResult]    = useState<PredictResponse | null>(null);
   const [error,     setError]     = useState("");
 
+  const busy = fetching || loading; // lock team selection during any in-flight request
+
   async function fetchSquad() {
     setFetching(true); setError(""); setSquad([]); setSelected([]);
     try {
@@ -74,18 +76,17 @@ export default function SandboxPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <TeamSelect label="Your Team" value={myTeam}  onChange={v => { setMyTeam(v); setSquad([]); setSelected([]); }} id="sb-my" />
-        <TeamSelect label="Opponent"  value={oppTeam} onChange={setOppTeam} id="sb-opp" />
+        <TeamSelect label="Your Team" value={myTeam}  onChange={v => { setMyTeam(v); setSquad([]); setSelected([]); }} id="sb-my"  disabled={busy} />
+        <TeamSelect label="Opponent"  value={oppTeam} onChange={setOppTeam} id="sb-opp" disabled={busy} />
       </div>
 
-      {/* Formation picker */}
       <div>
         <label className="block text-mt text-xs font-semibold mb-2 tracking-wide uppercase">Your Preferred Formation</label>
         <div className="flex flex-wrap gap-2">
           {FORMATIONS.map(f => (
-            <button key={f} onClick={() => setFormation(f)}
+            <button key={f} onClick={() => setFormation(f)} disabled={busy}
               className={clsx(
-                "px-3 py-1.5 rounded-lg text-sm font-semibold font-mono border transition-all",
+                "px-3 py-1.5 rounded-lg text-sm font-semibold font-mono border transition-all disabled:opacity-40 disabled:cursor-not-allowed",
                 formation === f
                   ? "bg-volt/10 text-volt border-volt/40"
                   : "text-mt border-bd hover:text-white hover:border-bd2"
@@ -98,10 +99,9 @@ export default function SandboxPage() {
 
       <ErrorBox msg={error} />
 
-      {/* Load squad */}
-      <button onClick={fetchSquad} disabled={fetching}
+      <button onClick={fetchSquad} disabled={busy}
         className="btn-outline w-full py-3 flex items-center justify-center gap-2">
-        {fetching ? <><span className="animate-spin">⏳</span> Loading squad…</> : `Load ${myTeam} Squad`}
+        {fetching ? <><span className="animate-spin">⏳</span> Loading squad…</> : `📥 Load ${myTeam} Squad from BSD`}
       </button>
 
       {squad.length > 0 && (
@@ -109,7 +109,7 @@ export default function SandboxPage() {
           <div className="flex items-center justify-between mb-4">
             <p className="section-label">Select Your XI ({selected.length}/11)</p>
             {selected.length > 0 && (
-              <button onClick={() => setSelected([])} className="text-mt text-xs hover:text-white transition-colors">
+              <button onClick={() => setSelected([])} disabled={busy} className="text-mt text-xs hover:text-white transition-colors disabled:opacity-40">
                 Clear all
               </button>
             )}
@@ -126,9 +126,9 @@ export default function SandboxPage() {
                     const isSelected = selected.includes(p.Name);
                     const badge = p.SpecPos && !["G","D","M","F"].includes(p.SpecPos) ? p.SpecPos : p.Pos;
                     return (
-                      <button key={p.Name} onClick={() => toggle(p.Name)}
+                      <button key={p.Name} onClick={() => toggle(p.Name)} disabled={busy}
                         className={clsx(
-                          "flex items-center gap-2 px-3 py-2.5 rounded-xl border text-left transition-all",
+                          "flex items-center gap-2 px-3 py-2.5 rounded-xl border text-left transition-all disabled:opacity-40 disabled:cursor-not-allowed",
                           isSelected
                             ? "bg-volt/10 border-volt/40 text-volt"
                             : "bg-bg border-bd text-mt hover:text-white hover:border-bd2"
@@ -147,7 +147,7 @@ export default function SandboxPage() {
             );
           })}
 
-          <button onClick={analyse} disabled={loading || selected.length < 11}
+          <button onClick={analyse} disabled={busy || selected.length < 11}
             className="btn-volt w-full mt-2 py-3 flex items-center justify-center gap-2">
             {loading ? <><span className="animate-spin">⏳</span> Analysing…</> : "⚙️ Analyse My Gameplan"}
           </button>
@@ -162,7 +162,6 @@ export default function SandboxPage() {
         </div>
       )}
 
-      {/* Drafted XI display */}
       {selected.length > 0 && (
         <div className="card">
           <p className="section-label mb-4">👕 Your Drafted XI — {formation}</p>
