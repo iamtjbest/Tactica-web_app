@@ -24,7 +24,6 @@ export default function OpponentPage() {
     } finally { setLoading(false); }
   }
 
-  // AI scout tips derived from live ratings
   const tips: string[] = [];
   if (myForm && oppForm) {
     const mA = myForm.attack, mD = myForm.defence;
@@ -57,8 +56,8 @@ export default function OpponentPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <TeamSelect label="Your Team" value={myTeam}  onChange={v => { setMyTeam(v);  setMyForm(null);  }} id="opp-my"  />
-        <TeamSelect label="Opponent"  value={oppTeam} onChange={v => { setOppTeam(v); setOppForm(null); }} id="opp-opp" />
+        <TeamSelect label="Your Team" value={myTeam}  onChange={v => { setMyTeam(v);  setMyForm(null);  }} id="opp-my"  disabled={loading} />
+        <TeamSelect label="Opponent"  value={oppTeam} onChange={v => { setOppTeam(v); setOppForm(null); }} id="opp-opp" disabled={loading} />
       </div>
 
       <ErrorBox msg={error} />
@@ -69,7 +68,6 @@ export default function OpponentPage() {
 
       {myForm && oppForm && (
         <>
-          {/* Head-to-head comparison */}
           <div className="card">
             <p className="section-label mb-5">⚔️ Head-to-Head</p>
             <div className="grid grid-cols-3 gap-4 text-center">
@@ -106,7 +104,6 @@ export default function OpponentPage() {
             </div>
           </div>
 
-          {/* Recent form */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="card">
               <FormTable matches={myForm.matches} teamName={myTeam}
@@ -118,7 +115,6 @@ export default function OpponentPage() {
             </div>
           </div>
 
-          {/* AI Scout Report */}
           <div className="card">
             <p className="section-label mb-4">📋 AI Scout Report</p>
             <div className="space-y-3">
