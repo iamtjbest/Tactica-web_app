@@ -22,11 +22,9 @@ export default function TacticsPage() {
     if (myTeam === oppTeam) { setError("A team cannot face itself!"); return; }
     setLoading(true); setError(""); setPredict(null); setLineup(null);
     try {
-      // Fetch form for both teams in parallel (same as Streamlit Module 1)
       const [mf, of_] = await Promise.all([api.form(myTeam), api.form(oppTeam)]);
       setMyForm(mf); setOppForm(of_);
 
-      // Predict with live dynamic ratings + formation hints from last-5
       const pred = await api.predict({
         my_team: myTeam,
         opp_team: oppTeam,
@@ -39,7 +37,6 @@ export default function TacticsPage() {
       });
       setPredict(pred);
 
-      // Get the AI starting XI for the best formation
       try {
         setLineup(await api.lineup(myTeam, pred.best_formation));
       } catch {
@@ -54,7 +51,6 @@ export default function TacticsPage() {
 
   return (
     <div className="max-w-screen-xl mx-auto px-5 py-10 space-y-6">
-      {/* Header */}
       <div>
         <p className="section-label mb-2">⚡ Module 1</p>
         <h1 className="font-display font-black text-4xl text-white mb-2">Auto-Tactics</h1>
@@ -65,10 +61,9 @@ export default function TacticsPage() {
         </p>
       </div>
 
-      {/* Team selectors */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <TeamSelect label="Your Team" value={myTeam}  onChange={setMyTeam}  id="my-team" />
-        <TeamSelect label="Opponent"  value={oppTeam} onChange={setOppTeam} id="opp-team" />
+        <TeamSelect label="Your Team" value={myTeam}  onChange={setMyTeam}  id="my-team"  disabled={loading} />
+        <TeamSelect label="Opponent"  value={oppTeam} onChange={setOppTeam} id="opp-team" disabled={loading} />
       </div>
 
       <ErrorBox msg={error} />
@@ -80,7 +75,6 @@ export default function TacticsPage() {
         }
       </button>
 
-      {/* Form tables side by side */}
       {myForm && oppForm && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="card">
@@ -94,17 +88,14 @@ export default function TacticsPage() {
         </div>
       )}
 
-      {/* Prediction results */}
       {predict && (
         <div className="space-y-5">
-          {/* Top-level stat cards */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <StatCard label="✅ Recommended Formation" value={predict.best_formation} />
             <StatCard label="🤖 AI Win Probability" value={`${predict.probability}%`} />
             <StatCard label="📐 Opp. Usual Formation" value={oppForm?.best_formation ?? "—"} />
           </div>
 
-          {/* Formation ranking (all 17 formations scored) */}
           <div className="card">
             <p className="section-label mb-5">🏆 Formation Win-Probability Ranking</p>
             <FormationBar items={predict.all_formations} />
@@ -112,7 +103,6 @@ export default function TacticsPage() {
         </div>
       )}
 
-      {/* Starting XI */}
       {lineup && (
         <div className="card">
           <p className="section-label mb-1">👕 Recommended Starting XI</p>
