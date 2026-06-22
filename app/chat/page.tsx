@@ -19,11 +19,12 @@ export default function ChatPage() {
   const [lastSync, setLastSync] = useState(0);
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  const busy = sending || syncing; // lock team selection while a request is in flight
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Reset chat when teams change
   function changeMyTeam(v: string) { setMyTeam(v); setMessages([]); setLive(null); setSquad([]); }
   function changeOppTeam(v: string) { setOppTeam(v); setMessages([]); setLive(null); }
 
@@ -52,7 +53,6 @@ export default function ChatPage() {
     setInput("");
     setSending(true);
     try {
-      // Fetch squad on first message if not loaded yet
       let sq = squad;
       if (sq.length === 0) {
         try {
@@ -98,13 +98,11 @@ export default function ChatPage() {
         </p>
       </div>
 
-      {/* Team selectors */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <TeamSelect label="Your Team" value={myTeam}  onChange={changeMyTeam}  id="chat-my"  />
-        <TeamSelect label="Opponent"  value={oppTeam} onChange={changeOppTeam} id="chat-opp" />
+        <TeamSelect label="Your Team" value={myTeam}  onChange={changeMyTeam}  id="chat-my"  disabled={busy} />
+        <TeamSelect label="Opponent"  value={oppTeam} onChange={changeOppTeam} id="chat-opp" disabled={busy} />
       </div>
 
-      {/* Live sync panel */}
       <div className="card space-y-3">
         <p className="section-label">📡 Live Match Intel</p>
         {live && <LiveBadge data={live} />}
@@ -135,11 +133,9 @@ export default function ChatPage() {
         </div>
       </div>
 
-      {/* Chat area */}
       <div className="card flex flex-col" style={{ minHeight: "500px" }}>
         <p className="section-label mb-4">🧠 Assistant Manager</p>
 
-        {/* Messages */}
         <div className="flex-1 overflow-y-auto space-y-3 mb-4 pr-1" style={{ maxHeight: "440px" }}>
           {messages.length === 0 && (
             <div className="flex items-center justify-center h-48">
@@ -184,7 +180,6 @@ export default function ChatPage() {
           <div ref={bottomRef} />
         </div>
 
-        {/* Input */}
         <div className="border-t border-bd pt-4 flex gap-3">
           <input
             value={input}
