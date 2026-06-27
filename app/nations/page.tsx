@@ -9,6 +9,10 @@ import ErrorBox from "@/components/ErrorBox";
 import StatCard from "@/components/StatCard";
 import clsx from "clsx";
 
+
+// Normalise 0-1 or 0-100 probability to display string
+const fmtProb = (v: number) => (v <= 1 ? (v * 100).toFixed(1) : v.toFixed(1));
+
 const CONF_ORDER = ["UEFA", "CONMEBOL", "CAF", "AFC", "CONCACAF", "OFC"];
 
 function byConf(nations: WcNation[]) {
@@ -134,7 +138,7 @@ export default function NationsPage() {
     setMessages(updated); setInput(""); setSending(true);
     try {
       const liveCtx = `WORLD CUP 2026 ANALYSIS: ${myNation.name} vs ${oppNation.name}.
-Best formation: ${result.best_formation} (${result.probability}% win probability).
+Best formation: ${result.best_formation} (${fmtProb(result.probability)}% win probability).
 ${myNation.name} — Attack: ${result.my_attack}, Defence: ${result.my_defence}, Squad: ${result.my_squad_count} players.
 ${oppNation.name} — Attack: ${result.opp_attack}, Defence: ${result.opp_defence}, Squad: ${result.opp_squad_count} players.`;
       const res = await api.chat({
@@ -205,7 +209,7 @@ ${oppNation.name} — Attack: ${result.opp_attack}, Defence: ${result.opp_defenc
         <div className="space-y-5">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <StatCard label="✅ Best Formation"   value={result.best_formation} />
-            <StatCard label="🤖 Win Probability"  value={`${result.probability}%`} />
+            <StatCard label="🤖 Win Probability"  value={`${fmtProb(result.probability)}%`} />
             <StatCard label="⚔️ Our Attack"       value={result.my_attack} />
             <StatCard label="🛡️ Our Defence"      value={result.my_defence} />
           </div>
