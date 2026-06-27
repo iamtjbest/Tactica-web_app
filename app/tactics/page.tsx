@@ -8,6 +8,10 @@ import PlayerCard from "@/components/PlayerCard";
 import StatCard from "@/components/StatCard";
 import ErrorBox from "@/components/ErrorBox";
 
+
+// Normalise 0-1 or 0-100 probability to display string
+const fmtProb = (v: number) => (v <= 1 ? (v * 100).toFixed(1) : v.toFixed(1));
+
 export default function TacticsPage() {
   const [myTeam,  setMyTeam]  = useState("Arsenal");
   const [oppTeam, setOppTeam] = useState("Chelsea");
@@ -92,7 +96,7 @@ export default function TacticsPage() {
         <div className="space-y-5">
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <StatCard label="✅ Recommended Formation" value={predict.best_formation} />
-            <StatCard label="🤖 AI Win Probability" value={`${predict.probability}%`} />
+            <StatCard label="🤖 AI Win Probability" value={`${fmtProb(predict.probability)}%`} />
             <StatCard label="📐 Opp. Usual Formation" value={oppForm?.best_formation ?? "—"} />
           </div>
 
