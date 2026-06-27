@@ -6,6 +6,10 @@ import FormationBar from "@/components/FormationBar";
 import ErrorBox from "@/components/ErrorBox";
 import clsx from "clsx";
 
+
+// Normalise 0-1 or 0-100 probability to display string
+const fmtProb = (v: number) => (v <= 1 ? (v * 100).toFixed(1) : v.toFixed(1));
+
 const FORMATIONS = [
   "4-3-3","4-2-3-1","4-4-2","4-4-2 Diamond","4-1-4-1",
   "3-4-3","3-5-2","3-4-2-1","5-3-2","5-4-1","5-2-3",
@@ -26,7 +30,21 @@ export default function SimulatorPage() {
     if (myTeam === oppTeam) { setError("A team cannot face itself!"); return; }
     setLoading(true); setError("");
     try {
-      const pred = await api.predict({ my_team: myTeam, opp_team: oppTeam });
+      // Fetch real form data first so predict uses actual ratings, not fallback 80/80
+      const [mf, of_] = await Promise.all([
+        api.form(myTeam).catch(() => null),
+        api.form(oppTeam).catch(() => null),
+      ]);
+      const pred = await api.predict({
+        my_team:  myTeam,
+        opp_team: oppTeam,
+        my_att:   mf?.attack,
+        my_def:   mf?.defence,
+        opp_att:  of_?.attack,
+        opp_def:  of_?.defence,
+        familiarity_formation: formation,
+        opp_habit_formation:   of_?.best_formation ?? undefined,
+      });
 
       const advice: string[] = [];
       const timeLeft = 90 - minute;
@@ -164,7 +182,7 @@ export default function SimulatorPage() {
 
           <div className="card text-center">
             <p className="text-mt text-xs mb-1">Your current {formation} win probability</p>
-            <p className="font-display font-black text-4xl text-volt">{result.probability}%</p>
+            <p className="font-display font-black text-4xl text-volt">{fmtProb(result.probability)}%</p>
           </div>
         </div>
       )}
