@@ -6,6 +6,10 @@ import ErrorBox from "@/components/ErrorBox";
 import StatCard from "@/components/StatCard";
 import clsx from "clsx";
 
+
+// Normalise 0-1 or 0-100 probability to display string
+const fmtProb = (v: number) => (v <= 1 ? (v * 100).toFixed(1) : v.toFixed(1));
+
 const FORMATIONS = [
   "3-4-3","3-5-2","3-4-1-2","3-2-4-1","3-4-2-1","3-3-1-3",
   "4-2-3-1","4-3-3","4-4-2","4-4-2 Diamond","4-1-4-1","4-3-2-1","4-2-2-2",
@@ -54,7 +58,21 @@ export default function SandboxPage() {
     if (selected.length < 11) { setError("Draft exactly 11 players before analysing."); return; }
     setLoading(true); setError("");
     try {
-      const pred = await api.predict({ my_team: myTeam, opp_team: oppTeam });
+      // Fetch real form ratings for both teams so predict uses actual data, not fallback 80/80
+      const [mf, of_] = await Promise.all([
+        api.form(myTeam).catch(() => null),
+        api.form(oppTeam).catch(() => null),
+      ]);
+      const pred = await api.predict({
+        my_team:  myTeam,
+        opp_team: oppTeam,
+        my_att:   mf?.attack,
+        my_def:   mf?.defence,
+        opp_att:  of_?.attack,
+        opp_def:  of_?.defence,
+        familiarity_formation: formation,
+        opp_habit_formation:   of_?.best_formation ?? undefined,
+      });
       setResult(pred);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "API error");
@@ -155,7 +173,7 @@ export default function SandboxPage() {
           {result && (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-5">
               <StatCard label="Your Formation"     value={formation} />
-              <StatCard label="AI Win Probability" value={`${result.probability}%`} />
+              <StatCard label="AI Win Probability" value={`${fmtProb(result.probability)}%`} />
               <StatCard label="vs Opponent"        value={oppTeam}   />
             </div>
           )}
