@@ -122,6 +122,24 @@ export default function TacticsPage() {
           )}
         </div>
       )}
+
+      {predict && (
+        <a
+          href={`/chat?my_team=${encodeURIComponent(myTeam)}&opp_team=${encodeURIComponent(oppTeam)}`}
+          className="card flex items-center gap-3 border-cyan/20 hover:border-cyan/40 transition-colors group cursor-pointer"
+        >
+          <div className="w-10 h-10 rounded-xl bg-cyan/10 border border-cyan/20 flex items-center justify-center text-lg flex-shrink-0">💬</div>
+          <div>
+            <p className="text-white font-bold text-sm group-hover:text-cyan transition-colors">
+              Chat with AI about {myTeam} vs {oppTeam}
+            </p>
+            <p className="text-mt text-xs mt-0.5">
+              The assistant will automatically check for a live match and know the current score.
+            </p>
+          </div>
+          <span className="ml-auto text-mt group-hover:text-cyan transition-colors">→</span>
+        </a>
+      )}
     </div>
   );
 }
