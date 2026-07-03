@@ -1,14 +1,18 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { api, type ChatMessage, type LiveResponse, type SquadPlayer } from "@/lib/api";
 import TeamSelect from "@/components/TeamSelect";
 import LiveBadge from "@/components/LiveBadge";
 import ErrorBox from "@/components/ErrorBox";
 import clsx from "clsx";
 
-export default function ChatPage() {
-  const [myTeam,  setMyTeam]  = useState("Arsenal");
-  const [oppTeam, setOppTeam] = useState("Chelsea");
+function ChatPageInner() {
+  const searchParams = useSearchParams();
+  const initialMyTeam  = searchParams.get("my_team")  || "Arsenal";
+  const initialOppTeam = searchParams.get("opp_team") || "Chelsea";
+  const [myTeam,  setMyTeam]  = useState(initialMyTeam);
+  const [oppTeam, setOppTeam] = useState(initialOppTeam);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input,   setInput]   = useState("");
   const [sending, setSending] = useState(false);
@@ -27,6 +31,25 @@ export default function ChatPage() {
 
   function changeMyTeam(v: string) { setMyTeam(v); setMessages([]); setLive(null); setSquad([]); }
   function changeOppTeam(v: string) { setOppTeam(v); setMessages([]); setLive(null); }
+
+  // Auto-sync live data whenever teams change or on mount.
+  // Respects 30s cooldown to avoid hammering BSD.
+  useEffect(() => {
+    const now = Date.now();
+    if (now - lastSync < 30_000) return;
+    autoSyncLive();
+  }, [myTeam, oppTeam]);
+
+  async function autoSyncLive() {
+    setSyncing(true); setError("");
+    try {
+      const data = await api.live(myTeam, oppTeam);
+      setLive(data);
+      setLastSync(Date.now());
+      if (!data.match_found) setError("");  // no live = silent, not an error
+    } catch { /* silent — manual sync button shows error */ }
+    finally { setSyncing(false); }
+  }
 
   async function syncLive() {
     const now = Date.now();
@@ -202,5 +225,13 @@ export default function ChatPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense>
+      <ChatPageInner />
+    </Suspense>
   );
 }
