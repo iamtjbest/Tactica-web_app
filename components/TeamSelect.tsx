@@ -12,7 +12,7 @@ interface Props {
   placeholder?: string;
 }
 
-export default function TeamSelect({ label, value, onChange, teams, id, disabled }: Props) {
+export default function TeamSelect({ label, value, onChange, teams, id, disabled, placeholder }: Props) {
   const list = teams || EUROPEAN_TEAMS;
   const [open,    setOpen]    = useState(false);
   const [query,   setQuery]   = useState("");
@@ -58,7 +58,7 @@ export default function TeamSelect({ label, value, onChange, teams, id, disabled
       if (e.key === "Enter" || e.key === " ") { setOpen(true); e.preventDefault(); }
       return;
     }
-    if (e.key === "ArrowDown")      { setFocused(f => Math.min(f + 1, filtered.length - 1)); e.preventDefault(); }
+    if (e.key === "ArrowDown")     { setFocused(f => Math.min(f + 1, filtered.length - 1)); e.preventDefault(); }
     else if (e.key === "ArrowUp")   { setFocused(f => Math.max(f - 1, 0)); e.preventDefault(); }
     else if (e.key === "Enter" && focused >= 0) { selectItem(filtered[focused]); e.preventDefault(); }
     else if (e.key === "Escape")    { setOpen(false); setQuery(""); setFocused(-1); }
@@ -106,7 +106,7 @@ export default function TeamSelect({ label, value, onChange, teams, id, disabled
                 value={query}
                 onChange={e => { setQuery(e.target.value); setFocused(0); }}
                 onKeyDown={handleKeyDown}
-                placeholder="Search 130+ clubs…"
+                placeholder={placeholder || "Search 130+ clubs…"}
                 className="flex-1 bg-transparent text-white text-sm placeholder:text-mt2 outline-none"
               />
               {query && (
