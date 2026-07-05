@@ -9,10 +9,9 @@ interface Props {
   teams?: string[];
   id?: string;
   disabled?: boolean;
-  placeholder?: string;
 }
 
-export default function TeamSelect({ label, value, onChange, teams, id, disabled, placeholder }: Props) {
+export default function TeamSelect({ label, value, onChange, teams, id, disabled }: Props) {
   const list = teams || EUROPEAN_TEAMS;
   const [open,    setOpen]    = useState(false);
   const [query,   setQuery]   = useState("");
@@ -106,7 +105,7 @@ export default function TeamSelect({ label, value, onChange, teams, id, disabled
                 value={query}
                 onChange={e => { setQuery(e.target.value); setFocused(0); }}
                 onKeyDown={handleKeyDown}
-                placeholder={placeholder || "Search 130+ clubs…"}
+                placeholder="Search 130+ clubs…"
                 className="flex-1 bg-transparent text-white text-sm placeholder:text-mt2 outline-none"
               />
               {query && (
