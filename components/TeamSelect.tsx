@@ -9,6 +9,7 @@ interface Props {
   teams?: string[];
   id?: string;
   disabled?: boolean;
+  placeholder?: string;
 }
 
 export default function TeamSelect({ label, value, onChange, teams, id, disabled }: Props) {
