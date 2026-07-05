@@ -98,8 +98,8 @@ export default function FplPage() {
       {/* Controls */}
       <div className="card space-y-4">
         <div>
-          <p className="section-label mb-2">Your FPL Club</p>
           <TeamSelect
+            label="Your FPL Club"
             teams={PL_TEAMS}
             value={team}
             onChange={setTeam}
@@ -140,7 +140,7 @@ export default function FplPage() {
         </button>
       </div>
 
-      <ErrorBox message={error} />
+      <ErrorBox msg={error} />
 
       {/* Results */}
       {data && (
