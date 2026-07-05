@@ -64,7 +64,15 @@ export default function FplPage() {
       );
       if (!res.ok) {
         const e = await res.json().catch(() => ({ detail: res.statusText }));
-        throw new Error(e.detail || `Error ${res.status}`);
+        let errMsg = `Error ${res.status}`;
+        if (typeof e.detail === "string") {
+          errMsg = e.detail;
+        } else if (Array.isArray(e.detail)) {
+          errMsg = e.detail.map((err: any) => err.msg || JSON.stringify(err)).join(", ");
+        } else if (e.detail) {
+          errMsg = JSON.stringify(e.detail);
+        }
+        throw new Error(errMsg);
       }
       setData(await res.json());
     } catch (e: unknown) {
