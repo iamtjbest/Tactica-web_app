@@ -37,10 +37,10 @@ const MODULES = [
     pill: "Module 5",
   },
   {
-    href: "/nations",
-    icon: "🌍",
-    title: "World Cup 2026",
-    desc: "All 48 nations. Player scores derived from club form, match ratings, caps, and age — weighted by league quality — powering true international analysis.",
+    href: "/fpl",
+    icon: "🎯",
+    title: "FPL Scout",
+    desc: "Fixture difficulty ratings, captain picks, and transfer recommendations powered by real BSD match data. Built for FPL preseason.",
     pill: "Module 6",
   },
 ];
@@ -59,7 +59,7 @@ export default function Home() {
         </h1>
         <p className="text-mt text-lg max-w-xl mx-auto mb-10 leading-relaxed">
           ML-powered formation prediction · BSD live match data · Gemini AI tactical chat<br/>
-          130+ clubs · 48 World Cup 2026 nations · 100% free
+          130+ clubs · FPL Scout · 100% free
         </p>
         <Link href="/tactics" className="btn-volt inline-flex items-center gap-2 text-base px-8 py-4">
           Start Analysing
