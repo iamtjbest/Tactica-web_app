@@ -10,7 +10,7 @@ const NAV = [
   { href: "/sandbox",   label: "Coach's Sandbox",    icon: "🧠" },
   { href: "/simulator", label: "Live Simulator",     icon: "⏱️" },
   { href: "/chat",      label: "AI Chat",            icon: "💬" },
-  { href: "/nations",   label: "World Cup 2026",     icon: "🌍" },
+  { href: "/fpl",      label: "FPL Scout",           icon: "🎯" },
 ];
 
 export default function Navbar() {
