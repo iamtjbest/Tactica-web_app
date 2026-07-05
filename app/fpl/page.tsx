@@ -41,11 +41,9 @@ const FDR_DOT: Record<string, string> = {
 const PL_TEAMS = EUROPEAN_TEAMS.filter(t =>
   [
     "Arsenal", "Aston Villa", "Bournemouth", "Brentford", "Brighton",
-    "Chelsea", "Crystal Palace", "Everton", "Fulham", "Ipswich",
-    "Leicester City", "Liverpool", "Manchester City", "Manchester United",
-    "Newcastle United", "Nottingham Forest", "Southampton",
-    "Tottenham Hotspur", "West Ham United", "Wolverhampton",
-    "Sunderland", "Leeds United", "Sheffield United",
+    "Chelsea", "Coventry City", "Crystal Palace", "Everton", "Fulham",
+    "Hull City", "ipswitch Town", "Leeds united", "Liverpool", "Manchester City",
+    "Manchester United", "Newcastle United", "Nottingham Forest", "Sunderland", "Tottenham Hotspur"
   ].includes(t)
 );
 
