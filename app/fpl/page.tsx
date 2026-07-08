@@ -21,7 +21,7 @@ interface CaptainPick {
   form_score: number; weighted_score: number;
   apps_last5: number; avg_goals: number; avg_assists: number;
   avg_shots_on_target: number; avg_rating: number;
-  next_fixture: { opponent: string; venue: string; date: string; fdr: number; fdr_label: string; fdr_colour: string };
+  next_fixture: { opponent:string; venue:string; date:string; fdr:number; fdr_label:string; fdr_colour:string };
   reason: string;
 }
 interface CaptainResponse {
@@ -32,31 +32,31 @@ interface CaptainResponse {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const FDR_BG: Record<string, string> = { green: "bg-grn/15 border-grn/40", amber: "bg-amber/15 border-amber/40", red: "bg-red/15 border-red/40" };
-const FDR_TX: Record<string, string> = { green: "text-grn", amber: "text-amber", red: "text-red" };
-const FDR_DOT: Record<string, string> = { green: "bg-grn", amber: "bg-amber", red: "bg-red" };
+const FDR_BG:  Record<string,string> = { green:"bg-grn/15 border-grn/40",  amber:"bg-amber/15 border-amber/40",  red:"bg-red/15 border-red/40"  };
+const FDR_TX:  Record<string,string> = { green:"text-grn",                  amber:"text-amber",                   red:"text-red"                  };
+const FDR_DOT: Record<string,string> = { green:"bg-grn",                    amber:"bg-amber",                     red:"bg-red"                    };
 
 const PL_TEAMS = EUROPEAN_TEAMS.filter(t => [
-  "Arsenal", "Aston Villa", "Bournemouth", "Brentford", "Brighton",
-  "Chelsea", "Crystal Palace", "Everton", "Fulham", "Ipswich",
-  "Leicester City", "Liverpool", "Manchester City", "Manchester United",
-  "Newcastle United", "Nottingham Forest", "Southampton",
-  "Tottenham Hotspur", "West Ham United", "Wolverhampton",
-  "Sunderland", "Leeds United", "Sheffield United",
+  "Arsenal","Aston Villa","Bournemouth","Brentford","Brighton",
+  "Chelsea","Crystal Palace","Everton","Fulham","Ipswich",
+  "Leicester City","Liverpool","Manchester City","Manchester United",
+  "Newcastle United","Nottingham Forest","Southampton",
+  "Tottenham Hotspur","West Ham United","Wolverhampton",
+  "Sunderland","Leeds United","Sheffield United",
 ].includes(t));
 
 function fmtVal(eur: number | null): string {
   if (!eur) return "—";
-  return eur >= 1_000_000 ? `£${(eur / 1_000_000).toFixed(1)}m` : `£${(eur / 1000).toFixed(0)}k`;
+  return eur >= 1_000_000 ? `£${(eur/1_000_000).toFixed(1)}m` : `£${(eur/1000).toFixed(0)}k`;
 }
 
 // ── Step 1 — Fixture Ticker ───────────────────────────────────────────────────
 
 function FixtureTicker() {
-  const [team, setTeam] = useState("Arsenal");
+  const [team,    setTeam]    = useState("Arsenal");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [data, setData] = useState<TickerResponse | null>(null);
+  const [error,   setError]   = useState("");
+  const [data,    setData]    = useState<TickerResponse | null>(null);
 
   async function fetch_() {
     setLoading(true); setError(""); setData(null);
@@ -93,7 +93,7 @@ function FixtureTicker() {
           </div>
           {/* Legend */}
           <div className="flex gap-4 text-xs text-mt">
-            {[["green", "Easy (1–2)"], ["amber", "Medium (3)"], ["red", "Hard (4–5)"]].map(([c, l]) => (
+            {[["green","Easy (1–2)"],["amber","Medium (3)"],["red","Hard (4–5)"]].map(([c,l]) => (
               <div key={c} className="flex items-center gap-1.5">
                 <div className={`w-2.5 h-2.5 rounded-full ${FDR_DOT[c]}`} />{l}
               </div>
@@ -108,7 +108,7 @@ function FixtureTicker() {
                   {fix.gameweek != null && <p className="text-[10px] font-bold uppercase opacity-60">GW{fix.gameweek}</p>}
                   <p className="text-xs font-bold">{fix.date}</p>
                 </div>
-                <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-black border flex-shrink-0 ${fix.venue === "H" ? "bg-volt/10 border-volt/30 text-volt" : "bg-white/5 border-white/15 text-mt"}`}>
+                <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-black border flex-shrink-0 ${fix.venue==="H" ? "bg-volt/10 border-volt/30 text-volt" : "bg-white/5 border-white/15 text-mt"}`}>
                   {fix.venue}
                 </div>
                 <p className="flex-1 font-bold text-sm">vs {fix.opponent}</p>
@@ -127,15 +127,15 @@ function FixtureTicker() {
             <p className="section-label mb-2">📊 Quick Read</p>
             <p className="text-sm text-white leading-relaxed">
               {(() => {
-                const easy = data.fixtures.filter(f => f.fdr_colour === "green").length;
-                const hard = data.fixtures.filter(f => f.fdr_colour === "red").length;
+                const easy = data.fixtures.filter(f=>f.fdr_colour==="green").length;
+                const hard = data.fixtures.filter(f=>f.fdr_colour==="red").length;
                 const total = data.fixtures.length;
-                if (easy >= Math.ceil(total * 0.6))
+                if (easy >= Math.ceil(total*0.6))
                   return `${data.team} have an excellent run — ${easy} of ${total} fixtures rated easy. Hold their attackers.`;
-                if (hard >= Math.ceil(total * 0.6))
+                if (hard >= Math.ceil(total*0.6))
                   return `Tough run ahead for ${data.team} — ${hard} of ${total} fixtures rated hard. Sell before it hits.`;
-                const fh = data.fixtures.find(f => f.fdr_colour === "red");
-                return `${data.team}: ${easy} easy, ${total - easy - hard} medium, ${hard} hard.${fh ? ` Next tough: ${fh.opponent} (${fh.date}).` : ""}`;
+                const fh = data.fixtures.find(f=>f.fdr_colour==="red");
+                return `${data.team}: ${easy} easy, ${total-easy-hard} medium, ${hard} hard.${fh ? ` Next tough: ${fh.opponent} (${fh.date}).` : ""}`;
               })()}
             </p>
           </div>
@@ -148,10 +148,10 @@ function FixtureTicker() {
 // ── Step 2 — Captain Pick ─────────────────────────────────────────────────────
 
 function CaptainPick() {
-  const [team, setTeam] = useState("Arsenal");
+  const [team,    setTeam]    = useState("Arsenal");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [data, setData] = useState<CaptainResponse | null>(null);
+  const [error,   setError]   = useState("");
+  const [data,    setData]    = useState<CaptainResponse | null>(null);
 
   async function fetch_() {
     setLoading(true); setError(""); setData(null);
@@ -207,8 +207,9 @@ function CaptainPick() {
                 {/* Header row */}
                 <div className="flex items-center gap-3">
                   {/* Rank */}
-                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-lg flex-shrink-0 ${i === 0 ? "bg-volt text-black" : "bg-white/5 text-mt border border-bd"
-                    }`}>
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-black text-lg flex-shrink-0 ${
+                    i === 0 ? "bg-volt text-black" : "bg-white/5 text-mt border border-bd"
+                  }`}>
                     {i === 0 ? "©" : i + 1}
                   </div>
 
@@ -232,10 +233,10 @@ function CaptainPick() {
                 {/* Stats row */}
                 <div className="grid grid-cols-4 gap-2">
                   {[
-                    { label: "Avg Goals", value: p.avg_goals.toFixed(2) },
-                    { label: "Avg Assists", value: p.avg_assists.toFixed(2) },
-                    { label: "Avg SoT", value: p.avg_shots_on_target.toFixed(1) },
-                    { label: "Avg Rating", value: p.avg_rating.toFixed(1) },
+                    { label:"Avg Goals",   value: p.avg_goals.toFixed(2)   },
+                    { label:"Avg Assists", value: p.avg_assists.toFixed(2) },
+                    { label:"Avg SoT",     value: p.avg_shots_on_target.toFixed(1) },
+                    { label:"Avg Rating",  value: p.avg_rating.toFixed(1)  },
                   ].map(({ label, value }) => (
                     <div key={label} className="bg-white/3 rounded-lg px-2 py-2 text-center border border-bd">
                       <p className="text-[10px] text-mt uppercase tracking-wider leading-tight">{label}</p>
@@ -248,14 +249,14 @@ function CaptainPick() {
                 <p className="text-mt text-xs leading-relaxed">{p.reason}</p>
 
                 {/* Apps */}
-                <p className="text-mt text-[10px]">Based on {p.apps_last5} appearance{p.apps_last5 !== 1 ? "s" : ""} (last 5 games, 45+ min)</p>
+                <p className="text-mt text-[10px]">Based on {p.apps_last5} appearance{p.apps_last5!==1?"s":""} (last 5 games, 45+ min)</p>
               </div>
             ))}
           </div>
 
           {/* Coming soon */}
           <div className="grid grid-cols-2 gap-3 pt-2">
-            {[{ icon: "🔄", title: "Transfer Recommender" }, { icon: "💡", title: "Differential Finder" }].map(({ icon, title }) => (
+            {[{ icon:"🔄", title:"Transfer Recommender" }, { icon:"💡", title:"Differential Finder" }].map(({icon,title}) => (
               <div key={title} className="card opacity-50 text-center py-4">
                 <p className="text-2xl mb-1">{icon}</p>
                 <p className="text-white text-xs font-bold">{title}</p>
@@ -272,12 +273,12 @@ function CaptainPick() {
 // ── Root page — tabbed ────────────────────────────────────────────────────────
 
 const STEPS = [
-  { id: "ticker", label: "📅 Fixture Ticker", pill: "Step 1" },
-  { id: "captain", label: "🎯 Captain Pick", pill: "Step 2" },
+  { id:"ticker",  label:"📅 Fixture Ticker" },
+  { id:"captain", label:"🎯 Captain Pick" },
 ];
 
 export default function FplPage() {
-  const [step, setStep] = useState<"ticker" | "captain">("ticker");
+  const [step, setStep] = useState<"ticker"|"captain">("ticker");
 
   return (
     <div className="max-w-screen-md mx-auto px-5 py-10 space-y-6">
@@ -298,19 +299,19 @@ export default function FplPage() {
           <button
             key={s.id}
             onClick={() => setStep(s.id as any)}
-            className={`flex-1 py-3 px-4 rounded-xl border text-sm font-bold transition-all ${step === s.id
-              ? "bg-volt/10 border-volt/40 text-volt"
-              : "border-bd text-mt hover:border-volt/20 hover:text-white"
-              }`}
+            className={`flex-1 py-3 px-4 rounded-xl border text-sm font-bold transition-all ${
+              step === s.id
+                ? "bg-volt/10 border-volt/40 text-volt"
+                : "border-bd text-mt hover:border-volt/20 hover:text-white"
+            }`}
           >
-            <span className="block text-[10px] opacity-60 mb-0.5">{s.pill}</span>
             {s.label}
           </button>
         ))}
       </div>
 
       {/* Active step */}
-      {step === "ticker" && <FixtureTicker />}
+      {step === "ticker"  && <FixtureTicker />}
       {step === "captain" && <CaptainPick />}
     </div>
   );
