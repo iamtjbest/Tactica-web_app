@@ -24,8 +24,10 @@ interface NextFixture {
 }
 interface Pick {
   name: string; team?: string; position: string;
+  bsd_id?: number;
   market_value: number | null; market_value_m?: number;
   form_score: number; weighted_score: number; value_score?: number;
+  diff_score?: number;
   apps_last5: number; avg_goals: number; avg_assists: number;
   avg_shots_on_target: number; avg_rating: number;
   next_fixture: NextFixture; reason: string;
