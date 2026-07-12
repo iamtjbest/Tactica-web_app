@@ -500,12 +500,178 @@ function TransferRecommender() {
   );
 }
 
+
+// ── Step 4: Differential Finder ───────────────────────────────────────────────
+
+interface DiffResponse {
+  position: string; max_value_eur: number; total_scanned: number;
+  picks: (Pick & { diff_score: number; ownership_proxy: string })[]; 
+  share_text: string; cached: boolean;
+}
+
+const MAX_VALUES = [
+  { val:10, label:"€10m" },
+  { val:15, label:"€15m" },
+  { val:25, label:"€25m" },
+  { val:40, label:"€40m" },
+];
+
+function DifferentialFinder() {
+  const [position, setPosition] = useState("FW");
+  const [maxVal,   setMaxVal]   = useState(15);
+  const [loading,  setLoading]  = useState(false);
+  const [error,    setError]    = useState("");
+  const [data,     setData]     = useState<DiffResponse | null>(null);
+
+  async function fetch_() {
+    setLoading(true); setError(""); setData(null);
+    try {
+      const url = `${API_BASE}/api/fpl/differentials?position=${position}&max_value=${maxVal}&limit=8`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        const e = await res.json().catch(() => ({ detail: res.statusText }));
+        throw new Error(typeof e?.detail === "string" ? e.detail : `Error ${res.status}`);
+      }
+      setData(await res.json());
+    } catch (e: unknown) { setError(e instanceof Error ? e.message : String(e)); }
+    finally { setLoading(false); }
+  }
+
+  return (
+    <div className="space-y-5">
+      <div className="bg-volt/5 border border-volt/20 rounded-xl px-4 py-3 text-sm text-mt leading-relaxed">
+        <span className="text-volt font-bold">What is a differential?</span>{" "}
+        A player owned by &lt;10% of managers who is in form with an easy fixture.
+        If they score, you gain ground on rivals who don&apos;t have them.
+        The most shared picks on FPL Twitter.
+      </div>
+
+      <div className="card space-y-5">
+        {/* Position */}
+        <div>
+          <p className="section-label mb-2">Position</p>
+          <div className="flex gap-2">
+            {POSITIONS.map(p => (
+              <button key={p.id} onClick={() => setPosition(p.id)}
+                className={`flex-1 py-2.5 rounded-xl border text-sm font-bold transition-all ${
+                  position === p.id
+                    ? "bg-volt/10 border-volt/40 text-volt"
+                    : "border-bd text-mt hover:border-volt/20 hover:text-white"
+                }`}>
+                {p.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Max market value */}
+        <div>
+          <p className="section-label mb-1">Max Market Value</p>
+          <p className="text-mt text-xs mb-2">Lower = more likely to be low ownership in FPL</p>
+          <div className="flex gap-2 flex-wrap">
+            {MAX_VALUES.map(b => (
+              <button key={b.val} onClick={() => setMaxVal(b.val)}
+                className={`px-4 py-2 rounded-xl border text-sm font-bold transition-all ${
+                  maxVal === b.val
+                    ? "bg-volt/10 border-volt/40 text-volt"
+                    : "border-bd text-mt hover:border-volt/20 hover:text-white"
+                }`}>
+                {b.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <button onClick={fetch_} disabled={loading}
+          className="btn-volt w-full py-3 text-sm disabled:opacity-50 flex items-center justify-center gap-2">
+          {loading
+            ? <><span className="animate-spin">💡</span> Hunting differentials…</>
+            : <>💡 Find Differentials</>}
+        </button>
+      </div>
+
+      <ErrorBox msg={error} />
+
+      {data && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <p className="font-display font-bold text-lg text-white">
+                Top Differential{" "}
+                {{ FW:"Forwards", MF:"Midfielders", DF:"Defenders" }[data.position] ?? data.position}
+              </p>
+              <p className="text-mt text-xs">
+                {data.total_scanned} candidates scanned · under €{maxVal}m ·
+                easy fixtures only (FDR ≤ 3)
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              {data.cached && <span className="text-mt text-[10px] border border-bd px-2 py-0.5 rounded-full">📦 cached</span>}
+              <ShareBtn text={data.share_text} />
+            </div>
+          </div>
+
+          {/* What makes a differential banner */}
+          <div className="grid grid-cols-3 gap-2 text-center">
+            {[
+              { icon:"💰", label:"Low price", sub:"Proxy for low ownership" },
+              { icon:"🔥", label:"In form",   sub:"Goals + assists recently" },
+              { icon:"🟢", label:"Easy fix",  sub:"FDR 1, 2, or 3 only" },
+            ].map(({ icon, label, sub }) => (
+              <div key={label} className="bg-sur2 border border-bd rounded-xl py-3 px-2">
+                <p className="text-lg mb-0.5">{icon}</p>
+                <p className="text-white text-xs font-bold">{label}</p>
+                <p className="text-mt text-[10px] mt-0.5">{sub}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="space-y-3">
+            {data.picks.map((pick, i) => (
+              <div key={pick.bsd_id ?? i} className="relative">
+                {i === 0 && (
+                  <div className="absolute -top-2 left-4 z-10">
+                    <span className="bg-volt text-black text-[10px] font-black px-2 py-0.5 rounded-full">
+                      🔥 TOP DIFFERENTIAL
+                    </span>
+                  </div>
+                )}
+                <PlayerCard
+                  pick={pick}
+                  rank={i + 1}
+                  showTeam
+                  showValue
+                />
+              </div>
+            ))}
+          </div>
+
+          <details className="card cursor-pointer group">
+            <summary className="flex items-center justify-between text-mt text-sm select-none">
+              <span>⚙️ How differential scoring works</span>
+              <span className="group-open:rotate-180 transition-transform">▾</span>
+            </summary>
+            <div className="mt-3 space-y-2 text-xs text-mt leading-relaxed border-t border-bd pt-3">
+              <p><span className="text-white font-bold">Form score</span> = goals×6 + assists×3 + SoT×0.5 + rating×0.3</p>
+              <p><span className="text-white font-bold">Ease bonus</span> = FDR1 ×1.4 · FDR2 ×1.2 · FDR3 ×1.0. Only easy/medium fixtures shown.</p>
+              <p><span className="text-white font-bold">Value bonus</span> = 100 ÷ market value in €m (capped ×3.0). Cheap players score higher.</p>
+              <p><span className="text-white font-bold">Differential score</span> = form × ease × value. The number you want high.</p>
+              <p>Market value is used as a proxy for FPL ownership — players under €15m are typically owned by &lt;10% of FPL managers.</p>
+            </div>
+          </details>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Root page ─────────────────────────────────────────────────────────────────
 
 const TABS = [
   { id:"ticker",   label:"📅 Fixtures" },
   { id:"captain",  label:"🎯 Captain" },
   { id:"transfer", label:"🔄 Transfers" },
+  { id:"diff",     label:"💡 Differentials" },
 ];
 
 type Tab = "ticker" | "captain" | "transfer";
@@ -547,6 +713,7 @@ export default function FplPage() {
       {tab === "ticker"   && <FixtureTicker />}
       {tab === "captain"  && <CaptainPick />}
       {tab === "transfer" && <TransferRecommender />}
+      {tab === "diff"     && <DifferentialFinder />}
     </div>
   );
 }
