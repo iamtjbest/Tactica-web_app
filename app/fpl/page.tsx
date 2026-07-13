@@ -50,13 +50,15 @@ const FDR_BG:  Record<string,string> = {
 const FDR_TX:  Record<string,string> = { green:"text-grn", amber:"text-amber", red:"text-red" };
 const FDR_DOT: Record<string,string> = { green:"bg-grn",   amber:"bg-amber",   red:"bg-red"  };
 
+// 2026/27 Premier League — confirmed 20 clubs
+// Relegated from 2025/26: Ipswich, Leicester City, Southampton
+// Promoted for 2026/27:   Sunderland (champions), Leeds United, Burnley
 const PL_TEAMS = EUROPEAN_TEAMS.filter(t => [
   "Arsenal","Aston Villa","Bournemouth","Brentford","Brighton",
-  "Chelsea","Crystal Palace","Everton","Fulham","Ipswich",
-  "Leicester City","Liverpool","Manchester City","Manchester United",
-  "Newcastle United","Nottingham Forest","Southampton",
+  "Burnley","Chelsea","Crystal Palace","Everton","Fulham",
+  "Leeds United","Liverpool","Manchester City","Manchester United",
+  "Newcastle United","Nottingham Forest","Sunderland",
   "Tottenham Hotspur","West Ham United","Wolverhampton",
-  "Sunderland","Leeds United","Sheffield United",
 ].includes(t));
 
 function fmtVal(eur: number | null): string {
@@ -674,9 +676,9 @@ const TABS = [
   { id:"captain",  label:"🎯 Captain" },
   { id:"transfer", label:"🔄 Transfers" },
   { id:"diff",     label:"💡 Differentials" },
-];
+] as const;
 
-type Tab = "ticker" | "captain" | "transfer";
+type Tab = typeof TABS[number]["id"];
 
 export default function FplPage() {
   const [tab, setTab] = useState<Tab>("ticker");
