@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Navbar from "@/components/Navbar";
-import EmailCapture from "@/components/EmailCapture";
+// import EmailCapture from "@/components/EmailCapture"; // Temporarily disabled
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -35,8 +35,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Page content */}
         <main>{children}</main>
 
-        {/* Email capture — appears after 3 tool uses, not on first visit */}
-        <EmailCapture />
+        {/* Email capture — Disabled until email service is fully integrated */}
+        {/* <EmailCapture /> */}
 
         {/* Vercel Analytics — pageviews, countries, referrers */}
         <Analytics />
