@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import Navbar from "@/components/Navbar";
+import EmailCapture from "@/components/EmailCapture";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -23,24 +25,23 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
-        {children}
+        {/* Navbar — all 6 modules always visible */}
+        <Navbar />
 
-        {/* Vercel Analytics — tracks pageviews, unique visitors,
-            countries, referrers. Zero config, GDPR-friendly,
-            no cookies. View in Vercel dashboard → Analytics tab. */}
+        {/* Page content */}
+        <main>{children}</main>
+
+        {/* Email capture — appears after 3 tool uses, not on first visit */}
+        <EmailCapture />
+
+        {/* Vercel Analytics — pageviews, countries, referrers */}
         <Analytics />
 
-        {/* Vercel Speed Insights — tracks Core Web Vitals per page.
-            Shows you which pages are slow so you can fix them.
-            View in Vercel dashboard → Speed Insights tab. */}
+        {/* Vercel Speed Insights — Core Web Vitals per page */}
         <SpeedInsights />
       </body>
     </html>
