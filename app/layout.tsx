@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Navbar from "@/components/Navbar";
+import EmailCapture from '@/components/EmailCapture';
 // import EmailCapture from "@/components/EmailCapture"; // Temporarily disabled
 import "./globals.css";
 
