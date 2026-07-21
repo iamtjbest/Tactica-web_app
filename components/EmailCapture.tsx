@@ -1,11 +1,12 @@
 "use client";
-import { useState } from 'react';
+import { useState, FormEvent } from 'react';
 
 export default function EmailCapture() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e) => {
+  // Add the TypeScript type here 👇
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     // We'll replace these two strings in Step 3
