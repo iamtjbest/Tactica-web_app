@@ -47,8 +47,8 @@ export default function EmailCapture() {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
-    const googleFormActionUrl = "YOUR_GOOGLE_FORM_URL_HERE";
-    const googleFormEntryId = "entry.123456789"; 
+    const googleFormActionUrl = "https://docs.google.com/forms/u/0/d/1io-CjOI_mV9oq54Aj_fzaVMtsvw_dEQqUQUzn3wLFos/formResponse";
+    const googleFormEntryId = "entry.640417320"; 
 
     const formData = new FormData();
     formData.append(googleFormEntryId, email);
