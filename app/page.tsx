@@ -1,4 +1,8 @@
 import Link from "next/link";
+import EmailCapture from '@/components/EmailCapture';
+
+// Inside your component return...
+<EmailCapture />
 
 const MODULES = [
   {
