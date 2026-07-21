@@ -1,9 +1,6 @@
 import Link from "next/link";
 import EmailCapture from '@/components/EmailCapture';
 
-// Inside your component return...
-<EmailCapture />
-
 const MODULES = [
   {
     href: "/tactics",
@@ -69,6 +66,12 @@ export default function Home() {
           Start Analysing
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </Link>
+        
+        {/* Email Capture goes right here, under the button! */}
+        <div className="mt-8">
+          <EmailCapture />
+        </div>
+        
       </div>
 
       {/* Module grid */}
