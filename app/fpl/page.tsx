@@ -66,14 +66,13 @@ const FDR_BG: Record<string, string> = {
 const FDR_TX:  Record<string, string> = { green:"text-grn", amber:"text-amber", red:"text-red" };
 const FDR_DOT: Record<string, string> = { green:"bg-grn",   amber:"bg-amber",   red:"bg-red"  };
 
-// ── Confirmed PL teams from FPL bootstrap ─────────────────────────────────────
+// --- Confirmed PL teams from FPL bootstrap -----------------------------------
 
 const PL_TEAMS = [
-  "Arsenal","Aston Villa","Bournemouth","Brentford","Brighton",
-  "Burnley","Chelsea","Crystal Palace","Everton","Fulham",
-  "Leeds","Liverpool","Manchester City","Manchester United",
-  "Newcastle United","Nottingham Forest","Sunderland",
-  "Tottenham Hotspur","West Ham United","Wolverhampton",
+  "AFC Bournemouth", "Arsenal", "Aston Villa", "Brentford", "Brighton & Hove Albion",
+  "Chelsea", "Coventry City", "Crystal Palace", "Everton", "Fulham",
+  "Hull City", "Ipswich Town", "Leeds United", "Liverpool", "Manchester City",
+  "Manchester United", "Newcastle United", "Nottingham Forest", "Sunderland", "Tottenham Hotspur",
 ].sort();
 
 // Positions — must match backend exactly (FWD/MID/DEF/GKP)
