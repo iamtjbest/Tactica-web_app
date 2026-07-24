@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TeamSelect from "@/components/TeamSelect";
 import ErrorBox from "@/components/ErrorBox";
 
@@ -53,6 +53,21 @@ interface TransferResponse {
 interface DiffResponse {
   position: string; max_ownership: number; max_price: number;
   total_found: number; picks: FplPlayer[];
+  share_text: string; cached: boolean;
+}
+interface PlayerListItem {
+  id: number; name: string; team: string; position: string;
+  price: number; status: string;
+}
+interface TransferSuggestion {
+  out: FplPlayer; in: FplPlayer; reason: string; flagged: boolean;
+}
+interface SquadResponse {
+  formation: string;
+  starting_xi: FplPlayer[]; bench: FplPlayer[];
+  captain: FplPlayer; vice_captain: FplPlayer | null;
+  squad_value: number; bank: number;
+  transfer_suggestions: TransferSuggestion[];
   share_text: string; cached: boolean;
 }
 
@@ -365,6 +380,7 @@ function FixtureTicker() {
 // ── Step 2: Captain Pick ───────────────────────────────────────────────────────
 
 function CaptainPick() {
+  const [mode,    setMode]    = useState<"club" | "squad">("club");
   const [team,    setTeam]    = useState("Arsenal");
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState("");
@@ -379,6 +395,18 @@ function CaptainPick() {
 
   return (
     <div className="space-y-5">
+      <div className="flex gap-2 p-1 bg-sur2 border border-bd rounded-xl">
+        {([["club","🏟️ By Club"],["squad","👤 My Squad"]] as const).map(([id,label]) => (
+          <button key={id} onClick={() => setMode(id)}
+            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
+              mode === id ? "bg-volt/15 text-volt" : "text-mt hover:text-white"
+            }`}>
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {mode === "squad" ? <MySquad /> : <>
       <p className="text-mt text-sm">
         Captain candidates ranked by pts/game × xG × fixture difficulty.
         Real FPL prices and ownership from the official API.
@@ -419,6 +447,217 @@ function CaptainPick() {
               <p>Real FPL API data — actual prices, ownership %, and expected points.</p>
             </div>
           </details>
+        </div>
+      )}
+      </>}
+    </div>
+  );
+}
+
+// ── My Squad mode ──────────────────────────────────────────────────────────────
+
+function PlayerSlot({ label, player, onPick, onClear, allPlayers, taken }: {
+  label: string;
+  player: PlayerListItem | null;
+  onPick: (p: PlayerListItem) => void;
+  onClear: () => void;
+  allPlayers: PlayerListItem[];
+  taken: Set<number>;
+}) {
+  const [query, setQuery]   = useState("");
+  const [open,  setOpen]    = useState(false);
+
+  const matches = query.trim().length < 2 ? [] : allPlayers
+    .filter(p => !taken.has(p.id) && p.name.toLowerCase().includes(query.toLowerCase()))
+    .slice(0, 6);
+
+  if (player) {
+    return (
+      <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-volt/30 bg-volt/5">
+        <div className="flex-1 min-w-0">
+          <p className="text-white text-sm font-bold truncate">{player.name}</p>
+          <p className="text-mt text-[10px]">{player.team} · £{player.price.toFixed(1)}m
+            {player.status !== "a" && <span className="text-amber"> · flagged</span>}</p>
+        </div>
+        <button onClick={onClear} className="text-mt hover:text-red text-xs font-bold px-2">✕</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative">
+      <input
+        value={query}
+        onChange={e => { setQuery(e.target.value); setOpen(true); }}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setTimeout(() => setOpen(false), 150)}
+        placeholder={`Search ${label}…`}
+        className="w-full bg-bg border border-bd rounded-xl px-3 py-2.5 text-sm text-white
+                   placeholder:text-mt/50 focus:border-volt/50 focus:outline-none"
+      />
+      {open && matches.length > 0 && (
+        <div className="absolute z-20 mt-1 w-full bg-sur border border-bd rounded-xl overflow-hidden shadow-xl">
+          {matches.map(m => (
+            <button key={m.id}
+              onMouseDown={() => { onPick(m); setQuery(""); setOpen(false); }}
+              className="w-full text-left px-3 py-2 text-sm hover:bg-volt/10 flex items-center justify-between gap-2">
+              <span className="text-white truncate">{m.name}</span>
+              <span className="text-mt text-[10px] flex-shrink-0">{m.team} · £{m.price.toFixed(1)}m</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MySquad() {
+  const [allPlayers, setAllPlayers] = useState<PlayerListItem[]>([]);
+  const [loadingList, setLoadingList] = useState(true);
+  const [squad, setSquad] = useState<Record<string, (PlayerListItem | null)[]>>({
+    GKP: [null, null], DEF: [null, null, null, null, null],
+    MID: [null, null, null, null, null], FWD: [null, null, null],
+  });
+  const [bank, setBank] = useState(0.0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [data, setData] = useState<SquadResponse | null>(null);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/api/fpl/players`)
+      .then(r => r.json())
+      .then(d => setAllPlayers(d.players || []))
+      .catch(() => setError("Couldn't load player list."))
+      .finally(() => setLoadingList(false));
+  }, []);
+
+  const taken = new Set(
+    Object.values(squad).flat().filter((p): p is PlayerListItem => !!p).map(p => p.id)
+  );
+  const filledCount = Object.values(squad).flat().filter(Boolean).length;
+
+  const setSlot = (pos: string, idx: number, val: PlayerListItem | null) => {
+    setSquad(prev => {
+      const next = { ...prev, [pos]: [...prev[pos]] };
+      next[pos][idx] = val;
+      return next;
+    });
+  };
+
+  const fetch_ = async () => {
+    const ids = Object.values(squad).flat().filter((p): p is PlayerListItem => !!p).map(p => p.id);
+    if (ids.length !== 15) { setError("Fill all 15 squad slots first."); return; }
+    setLoading(true); setError(""); setData(null);
+    try {
+      setData(await apiFetch(
+        `${API_BASE}/api/fpl/squad?player_ids=${ids.join(",")}&bank=${bank}`
+      ));
+    } catch (e: unknown) { setError(e instanceof Error ? e.message : String(e)); }
+    finally { setLoading(false); }
+  };
+
+  const posLabels: Record<string, string> = { GKP: "Goalkeepers", DEF: "Defenders", MID: "Midfielders", FWD: "Forwards" };
+
+  return (
+    <div className="space-y-5">
+      <p className="text-mt text-sm">
+        Enter your real 15-man squad. Tactica builds your best starting XI, picks a captain,
+        and flags transfers worth making — based on form, fixtures, and your bank.
+      </p>
+
+      <div className="card space-y-4">
+        {loadingList ? (
+          <p className="text-mt text-sm">Loading player list…</p>
+        ) : (
+          Object.entries(squad).map(([pos, slots]) => (
+            <div key={pos}>
+              <p className="section-label mb-2">{posLabels[pos]} ({slots.filter(Boolean).length}/{slots.length})</p>
+              <div className="grid grid-cols-1 gap-2">
+                {slots.map((p, i) => (
+                  <PlayerSlot key={i} label={pos} player={p} allPlayers={allPlayers} taken={taken}
+                    onPick={(picked) => setSlot(pos, i, picked)}
+                    onClear={() => setSlot(pos, i, null)} />
+                ))}
+              </div>
+            </div>
+          ))
+        )}
+
+        <div>
+          <p className="section-label mb-1">Bank (£m remaining)</p>
+          <input type="number" min={0} max={50} step={0.1} value={bank}
+            onChange={e => setBank(parseFloat(e.target.value) || 0)}
+            className="w-full bg-bg border border-bd rounded-xl px-4 py-2.5
+                       text-white font-bold text-sm focus:border-volt/50 focus:outline-none" />
+        </div>
+
+        <button onClick={fetch_} disabled={loading || filledCount !== 15}
+          className="btn-volt w-full py-3 text-sm disabled:opacity-50 flex items-center justify-center gap-2">
+          {loading
+            ? <><span className="animate-spin">🎯</span> Analysing squad…</>
+            : <>🎯 Analyse My Squad ({filledCount}/15)</>}
+        </button>
+      </div>
+
+      <ErrorBox msg={error} />
+
+      {data && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <p className="font-display font-bold text-lg text-white">Formation {data.formation}</p>
+              <p className="text-mt text-xs">
+                Squad value £{data.squad_value}m + £{data.bank}m bank
+              </p>
+            </div>
+            <ShareBtn text={data.share_text} />
+          </div>
+
+          <div className="card border-volt/30 bg-volt/5 space-y-2">
+            <p className="section-label">👑 Captain</p>
+            <PlayerCard pick={data.captain} rank={1} showTeam />
+            {data.vice_captain && (
+              <>
+                <p className="section-label mt-3">🥈 Vice-Captain</p>
+                <PlayerCard pick={data.vice_captain} rank={2} showTeam />
+              </>
+            )}
+          </div>
+
+          <div>
+            <p className="section-label mb-2">Starting XI</p>
+            <div className="space-y-2">
+              {data.starting_xi
+                .filter(p => p.id !== data.captain.id && p.id !== data.vice_captain?.id)
+                .map((p, i) => <PlayerCard key={p.id ?? i} pick={p} rank={i + 3} showTeam />)}
+            </div>
+          </div>
+
+          <div>
+            <p className="section-label mb-2">Bench</p>
+            <div className="space-y-2 opacity-70">
+              {data.bench.map((p, i) => <PlayerCard key={p.id ?? i} pick={p} rank={i + 1} showTeam />)}
+            </div>
+          </div>
+
+          {data.transfer_suggestions.length > 0 && (
+            <div>
+              <p className="section-label mb-2">🔄 Suggested Transfers</p>
+              <div className="space-y-3">
+                {data.transfer_suggestions.map((t, i) => (
+                  <div key={i} className={`card space-y-2 ${t.flagged ? "border-red/30 bg-red/5" : "border-cyan/30 bg-cyan/5"}`}>
+                    <div className="flex items-center gap-2 text-sm font-bold">
+                      <span className="text-white">{t.out.name}</span>
+                      <span className="text-mt">➡</span>
+                      <span className="text-volt">{t.in.name}</span>
+                      {t.flagged && <span className="text-[10px] text-red border border-red/30 rounded px-1.5 py-0.5">⚠️ Flagged</span>}
+                    </div>
+                    <p className="text-mt text-xs leading-relaxed">{t.reason}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
