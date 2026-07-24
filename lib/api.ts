@@ -288,6 +288,7 @@ export const EUROPEAN_TEAMS = [
   "Red Bull Salzburg","Sturm Graz",
   "Slavia Prague","Sparta Prague",
   "Olympiakos","Panathinaikos","PAOK",
+  "Rosenborg", "CE Europa",
 ].sort();
 
 // World Cup 2026 nations — unchanged from original
