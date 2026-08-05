@@ -26,7 +26,7 @@ const BSD_NAME_MAP: Record<string, string> = {
   "Freiburg":            "Freiburg",
   // Serie A
   "Inter Milan":         "Inter",
-  "Roma":                "Roma",
+  "Roma":                "AS Roma",
   // Eredivisie
   "Utrecht":             "FC Utrecht",
   "Twente":              "FC Twente",
@@ -288,7 +288,6 @@ export const EUROPEAN_TEAMS = [
   "Red Bull Salzburg","Sturm Graz",
   "Slavia Prague","Sparta Prague",
   "Olympiakos","Panathinaikos","PAOK",
-  "Rosenborg", "CE Europa",
 ].sort();
 
 // World Cup 2026 nations — unchanged from original
