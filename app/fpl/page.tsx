@@ -6,6 +6,11 @@ import ErrorBox from "@/components/ErrorBox";
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL || "https://tactica-backend-hdbd.onrender.com";
 
+/** Strip diacritics so "Guéhi" matches when the user types "guehi". */
+function normalizeStr(s: string): string {
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
 // ── Types (aligned exactly to new FPL API backend) ─────────────────────────────
 
 interface Fixture {
@@ -76,10 +81,10 @@ interface SquadResponse {
 const FDR_BG: Record<string, string> = {
   green: "bg-grn/15 border-grn/40",
   amber: "bg-amber/15 border-amber/40",
-  red:   "bg-red/15 border-red/40",
+  red: "bg-red/15 border-red/40",
 };
-const FDR_TX:  Record<string, string> = { green:"text-grn", amber:"text-amber", red:"text-red" };
-const FDR_DOT: Record<string, string> = { green:"bg-grn",   amber:"bg-amber",   red:"bg-red"  };
+const FDR_TX: Record<string, string> = { green: "text-grn", amber: "text-amber", red: "text-red" };
+const FDR_DOT: Record<string, string> = { green: "bg-grn", amber: "bg-amber", red: "bg-red" };
 
 // --- Confirmed PL teams from FPL bootstrap -----------------------------------
 
@@ -92,23 +97,23 @@ const PL_TEAMS = [
 
 // Positions — must match backend exactly (FWD/MID/DEF/GKP)
 const POSITIONS = [
-  { id:"FWD", label:"⚽ Forwards"    },
-  { id:"MID", label:"🎭 Midfielders"  },
-  { id:"DEF", label:"🛡️ Defenders"   },
-  { id:"GKP", label:"🧤 Goalkeepers" },
+  { id: "FWD", label: "⚽ Forwards" },
+  { id: "MID", label: "🎭 Midfielders" },
+  { id: "DEF", label: "🛡️ Defenders" },
+  { id: "GKP", label: "🧤 Goalkeepers" },
 ];
 
 const POS_LABEL: Record<string, string> = {
-  FWD:"Forwards", MID:"Midfielders", DEF:"Defenders", GKP:"Goalkeepers"
+  FWD: "Forwards", MID: "Midfielders", DEF: "Defenders", GKP: "Goalkeepers"
 };
 
 // ── Shared UI ──────────────────────────────────────────────────────────────────
 
-function FdrBadge({ fdr, label, colour }: { fdr:number; label:string; colour:string }) {
+function FdrBadge({ fdr, label, colour }: { fdr: number; label: string; colour: string }) {
   return (
     <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs font-bold
-                     ${FDR_BG[colour]||""} ${FDR_TX[colour]||""}`}>
-      <div className={`w-2 h-2 rounded-full ${FDR_DOT[colour]||""}`} />
+                     ${FDR_BG[colour] || ""} ${FDR_TX[colour] || ""}`}>
+      <div className={`w-2 h-2 rounded-full ${FDR_DOT[colour] || ""}`} />
       FDR {fdr} · {label}
     </div>
   );
@@ -118,7 +123,7 @@ function ShareBtn({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
   return (
     <button onClick={async () => {
-      await navigator.clipboard.writeText(text).catch(() => {});
+      await navigator.clipboard.writeText(text).catch(() => { });
       setCopied(true); setTimeout(() => setCopied(false), 2000);
     }} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-volt/30
                   bg-volt/8 text-volt text-xs font-bold hover:bg-volt/15 transition-colors">
@@ -131,16 +136,15 @@ function ShareBtn({ text }: { text: string }) {
 function PlayerCard({ pick, rank, showTeam = false }: {
   pick: FplPlayer; rank: number; showTeam?: boolean;
 }) {
-  const nf    = pick.next_fixture || {};
+  const nf = pick.next_fixture || {};
   const isTop = rank === 1;
   return (
     <div className={`card space-y-3 ${isTop ? "border-volt/30 bg-volt/5" : ""}`}>
       {/* Header row */}
       <div className="flex items-start gap-3">
         <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0
-                         font-black text-sm border ${
-          isTop ? "bg-volt/15 border-volt/40 text-volt" : "bg-sur2 border-bd text-mt"
-        }`}>
+                         font-black text-sm border ${isTop ? "bg-volt/15 border-volt/40 text-volt" : "bg-sur2 border-bd text-mt"
+          }`}>
           {isTop ? "★" : rank}
         </div>
 
@@ -186,14 +190,13 @@ function PlayerCard({ pick, rank, showTeam = false }: {
       {/* FPL stats — real API fields */}
       <div className={`grid grid-cols-4 gap-2 ${isTop ? "" : "opacity-80"}`}>
         {[
-          { label:"Pts/G",   val:(pick.ppg    ?? 0).toFixed(1),  hi: (pick.ppg    ?? 0) >= 5.0 },
-          { label:"xG/90",   val:(pick.xg90   ?? 0).toFixed(2),  hi: (pick.xg90   ?? 0) >= 0.3 },
-          { label:"xA/90",   val:(pick.xa90   ?? 0).toFixed(2),  hi: (pick.xa90   ?? 0) >= 0.2 },
-          { label:"ep_next", val:(pick.ep_next ?? 0).toFixed(1),  hi: (pick.ep_next ?? 0) >= 5  },
+          { label: "Pts/G", val: (pick.ppg ?? 0).toFixed(1), hi: (pick.ppg ?? 0) >= 5.0 },
+          { label: "xG/90", val: (pick.xg90 ?? 0).toFixed(2), hi: (pick.xg90 ?? 0) >= 0.3 },
+          { label: "xA/90", val: (pick.xa90 ?? 0).toFixed(2), hi: (pick.xa90 ?? 0) >= 0.2 },
+          { label: "ep_next", val: (pick.ep_next ?? 0).toFixed(1), hi: (pick.ep_next ?? 0) >= 5 },
         ].map(({ label, val, hi }) => (
-          <div key={label} className={`text-center py-2 rounded-lg border ${
-            hi ? "border-volt/30 bg-volt/8" : "border-bd bg-sur2"
-          }`}>
+          <div key={label} className={`text-center py-2 rounded-lg border ${hi ? "border-volt/30 bg-volt/8" : "border-bd bg-sur2"
+            }`}>
             <p className={`text-sm font-black ${hi ? "text-volt" : "text-white"}`}>{val}</p>
             <p className="text-[10px] text-mt uppercase tracking-wider mt-0.5">{label}</p>
           </div>
@@ -202,9 +205,9 @@ function PlayerCard({ pick, rank, showTeam = false }: {
 
       {/* Next fixture */}
       {nf.opponent && nf.opponent !== "Unknown" && nf.fdr_colour && (
-        <div className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${FDR_BG[nf.fdr_colour]||""}`}>
-          <div className={`w-2 h-2 rounded-full flex-shrink-0 ${FDR_DOT[nf.fdr_colour]||""}`} />
-          <p className={`text-xs flex-1 ${FDR_TX[nf.fdr_colour]||""}`}>
+        <div className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${FDR_BG[nf.fdr_colour] || ""}`}>
+          <div className={`w-2 h-2 rounded-full flex-shrink-0 ${FDR_DOT[nf.fdr_colour] || ""}`} />
+          <p className={`text-xs flex-1 ${FDR_TX[nf.fdr_colour] || ""}`}>
             <span className="font-bold">Next:</span>{" "}
             {nf.venue === "H" ? "Home" : "Away"} vs {nf.opponent}
             {nf.date && <span className="opacity-70"> · {nf.date}</span>}
@@ -233,10 +236,10 @@ function PriceRange({ min, max, onMin, onMax }: {
   onMin: (v: number) => void; onMax: (v: number) => void;
 }) {
   const presets = [
-    { label:"Budget",    min:3.5,  max:6.0  },
-    { label:"Mid",       min:6.0,  max:9.0  },
-    { label:"Premium",   min:9.0,  max:12.0 },
-    { label:"Elite",     min:12.0, max:20.0 },
+    { label: "Budget", min: 3.5, max: 6.0 },
+    { label: "Mid", min: 6.0, max: 9.0 },
+    { label: "Premium", min: 9.0, max: 12.0 },
+    { label: "Elite", min: 12.0, max: 20.0 },
   ];
   return (
     <div>
@@ -244,11 +247,10 @@ function PriceRange({ min, max, onMin, onMax }: {
       <div className="flex gap-2 flex-wrap mb-3">
         {presets.map(p => (
           <button key={p.label} onClick={() => { onMin(p.min); onMax(p.max); }}
-            className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${
-              min === p.min && max === p.max
+            className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${min === p.min && max === p.max
                 ? "bg-volt/10 border-volt/40 text-volt"
                 : "border-bd text-mt hover:border-volt/20 hover:text-white"
-            }`}>
+              }`}>
             {p.label} (£{p.min}–£{p.max}m)
           </button>
         ))}
@@ -293,10 +295,10 @@ async function apiFetch<T>(url: string): Promise<T> {
 // ── Step 1: Fixture Ticker ─────────────────────────────────────────────────────
 
 function FixtureTicker() {
-  const [team,    setTeam]    = useState("Arsenal");
+  const [team, setTeam] = useState("Arsenal");
   const [loading, setLoading] = useState(false);
-  const [error,   setError]   = useState("");
-  const [data,    setData]    = useState<TickerResponse | null>(null);
+  const [error, setError] = useState("");
+  const [data, setData] = useState<TickerResponse | null>(null);
 
   const fetch_ = async () => {
     setLoading(true); setError(""); setData(null);
@@ -305,8 +307,8 @@ function FixtureTicker() {
     finally { setLoading(false); }
   };
 
-  const easy  = data?.fixtures.filter(f => f.fdr_colour === "green").length ?? 0;
-  const hard  = data?.fixtures.filter(f => f.fdr_colour === "red").length   ?? 0;
+  const easy = data?.fixtures.filter(f => f.fdr_colour === "green").length ?? 0;
+  const hard = data?.fixtures.filter(f => f.fdr_colour === "red").length ?? 0;
   const total = data?.fixtures.length ?? 0;
 
   return (
@@ -333,7 +335,7 @@ function FixtureTicker() {
             </div>
           </div>
           <div className="flex gap-4 text-xs text-mt">
-            {[["green","Easy (1–2)"],["amber","Medium (3)"],["red","Hard (4–5)"]].map(([c,l]) => (
+            {[["green", "Easy (1–2)"], ["amber", "Medium (3)"], ["red", "Hard (4–5)"]].map(([c, l]) => (
               <div key={c} className="flex items-center gap-1.5">
                 <div className={`w-2.5 h-2.5 rounded-full ${FDR_DOT[c]}`} />{l}
               </div>
@@ -347,9 +349,8 @@ function FixtureTicker() {
                   {fix.gameweek != null && <p className="text-[10px] font-bold uppercase opacity-60">GW{fix.gameweek}</p>}
                   <p className="text-xs font-bold">{fix.date}</p>
                 </div>
-                <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-black flex-shrink-0 border ${
-                  fix.venue === "H" ? "bg-volt/10 border-volt/30 text-volt" : "bg-white/5 border-white/15 text-mt"
-                }`}>{fix.venue}</div>
+                <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-black flex-shrink-0 border ${fix.venue === "H" ? "bg-volt/10 border-volt/30 text-volt" : "bg-white/5 border-white/15 text-mt"
+                  }`}>{fix.venue}</div>
                 <p className="flex-1 font-bold text-sm">vs {fix.opponent}</p>
                 <div className="text-right flex-shrink-0">
                   <p className="text-[10px] opacity-60 uppercase">Def</p>
@@ -367,8 +368,8 @@ function FixtureTicker() {
               {easy >= total * 0.6
                 ? `${data.team} have an excellent run — ${easy}/${total} fixtures easy. Strong to hold their attackers.`
                 : hard >= total * 0.6
-                ? `Tough run for ${data.team} — ${hard}/${total} hard. Be selective.`
-                : `${data.team}: ${easy} easy, ${total-easy-hard} medium, ${hard} hard.`}
+                  ? `Tough run for ${data.team} — ${hard}/${total} hard. Be selective.`
+                  : `${data.team}: ${easy} easy, ${total - easy - hard} medium, ${hard} hard.`}
             </p>
           </div>
         </div>
@@ -380,11 +381,11 @@ function FixtureTicker() {
 // ── Step 2: Captain Pick ───────────────────────────────────────────────────────
 
 function CaptainPick() {
-  const [mode,    setMode]    = useState<"club" | "squad">("club");
-  const [team,    setTeam]    = useState("Arsenal");
+  const [mode, setMode] = useState<"club" | "squad">("club");
+  const [team, setTeam] = useState("Arsenal");
   const [loading, setLoading] = useState(false);
-  const [error,   setError]   = useState("");
-  const [data,    setData]    = useState<CaptainResponse | null>(null);
+  const [error, setError] = useState("");
+  const [data, setData] = useState<CaptainResponse | null>(null);
 
   const fetch_ = async () => {
     setLoading(true); setError(""); setData(null);
@@ -396,59 +397,58 @@ function CaptainPick() {
   return (
     <div className="space-y-5">
       <div className="flex gap-2 p-1 bg-sur2 border border-bd rounded-xl">
-        {([["club","🏟️ By Club"],["squad","👤 My Squad"]] as const).map(([id,label]) => (
+        {([["club", "🏟️ By Club"], ["squad", "👤 My Squad"]] as const).map(([id, label]) => (
           <button key={id} onClick={() => setMode(id)}
-            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
-              mode === id ? "bg-volt/15 text-volt" : "text-mt hover:text-white"
-            }`}>
+            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${mode === id ? "bg-volt/15 text-volt" : "text-mt hover:text-white"
+              }`}>
             {label}
           </button>
         ))}
       </div>
 
       {mode === "squad" ? <MySquad /> : <>
-      <p className="text-mt text-sm">
-        Captain candidates ranked by pts/game × xG × fixture difficulty.
-        Real FPL prices and ownership from the official API.
-      </p>
-      <div className="card space-y-4">
-        <TeamSelect label="Club" teams={PL_TEAMS} value={team} onChange={setTeam} />
-        <button onClick={fetch_} disabled={loading}
-          className="btn-volt w-full py-3 text-sm disabled:opacity-50 flex items-center justify-center gap-2">
-          {loading ? <><span className="animate-spin">🎯</span> Analysing…</> : <>🎯 Get Captain Pick</>}
-        </button>
-      </div>
-      <ErrorBox msg={error} />
-      {data && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between flex-wrap gap-3">
-            <div>
-              <p className="font-display font-bold text-lg text-white">{data.team}</p>
-              <p className="text-mt text-xs">Ranked by FPL pts/game × fixture difficulty</p>
-            </div>
-            <div className="flex items-center gap-2">
-              {data.cached && <span className="text-mt text-[10px] border border-bd px-2 py-0.5 rounded-full">📦 cached</span>}
-              <ShareBtn text={data.share_text} />
-            </div>
-          </div>
-          <div className="space-y-3">
-            {data.picks.map((pick, i) => (
-              <PlayerCard key={pick.id ?? i} pick={pick} rank={i + 1} />
-            ))}
-          </div>
-          <details className="card cursor-pointer group">
-            <summary className="flex items-center justify-between text-mt text-sm select-none">
-              <span>⚙️ How scoring works</span>
-              <span className="group-open:rotate-180 transition-transform">▾</span>
-            </summary>
-            <div className="mt-3 space-y-2 text-xs text-mt leading-relaxed border-t border-bd pt-3">
-              <p><span className="text-white font-bold">FPL score</span> = ppg×2 + xG/90×3 + xA/90×2 + form×0.5 + ep_next×0.3</p>
-              <p><span className="text-white font-bold">Weighted</span> = FPL score × fixture multiplier (FDR1=×1.30 → FDR5=×0.70)</p>
-              <p>Real FPL API data — actual prices, ownership %, and expected points.</p>
-            </div>
-          </details>
+        <p className="text-mt text-sm">
+          Captain candidates ranked by pts/game × xG × fixture difficulty.
+          Real FPL prices and ownership from the official API.
+        </p>
+        <div className="card space-y-4">
+          <TeamSelect label="Club" teams={PL_TEAMS} value={team} onChange={setTeam} />
+          <button onClick={fetch_} disabled={loading}
+            className="btn-volt w-full py-3 text-sm disabled:opacity-50 flex items-center justify-center gap-2">
+            {loading ? <><span className="animate-spin">🎯</span> Analysing…</> : <>🎯 Get Captain Pick</>}
+          </button>
         </div>
-      )}
+        <ErrorBox msg={error} />
+        {data && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div>
+                <p className="font-display font-bold text-lg text-white">{data.team}</p>
+                <p className="text-mt text-xs">Ranked by FPL pts/game × fixture difficulty</p>
+              </div>
+              <div className="flex items-center gap-2">
+                {data.cached && <span className="text-mt text-[10px] border border-bd px-2 py-0.5 rounded-full">📦 cached</span>}
+                <ShareBtn text={data.share_text} />
+              </div>
+            </div>
+            <div className="space-y-3">
+              {data.picks.map((pick, i) => (
+                <PlayerCard key={pick.id ?? i} pick={pick} rank={i + 1} />
+              ))}
+            </div>
+            <details className="card cursor-pointer group">
+              <summary className="flex items-center justify-between text-mt text-sm select-none">
+                <span>⚙️ How scoring works</span>
+                <span className="group-open:rotate-180 transition-transform">▾</span>
+              </summary>
+              <div className="mt-3 space-y-2 text-xs text-mt leading-relaxed border-t border-bd pt-3">
+                <p><span className="text-white font-bold">FPL score</span> = ppg×2 + xG/90×3 + xA/90×2 + form×0.5 + ep_next×0.3</p>
+                <p><span className="text-white font-bold">Weighted</span> = FPL score × fixture multiplier (FDR1=×1.30 → FDR5=×0.70)</p>
+                <p>Real FPL API data — actual prices, ownership %, and expected points.</p>
+              </div>
+            </details>
+          </div>
+        )}
       </>}
     </div>
   );
@@ -464,11 +464,11 @@ function PlayerSlot({ label, player, onPick, onClear, allPlayers, taken }: {
   allPlayers: PlayerListItem[];
   taken: Set<number>;
 }) {
-  const [query, setQuery]   = useState("");
-  const [open,  setOpen]    = useState(false);
+  const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
 
   const matches = query.trim().length < 2 ? [] : allPlayers
-    .filter(p => !taken.has(p.id) && p.name.toLowerCase().includes(query.toLowerCase()))
+    .filter(p => !taken.has(p.id) && normalizeStr(p.name).includes(normalizeStr(query)))
     .slice(0, 6);
 
   if (player) {
@@ -670,9 +670,9 @@ function TransferRecommender() {
   const [position, setPosition] = useState("FWD");   // FWD/MID/DEF/GKP
   const [minPrice, setMinPrice] = useState(0.0);
   const [maxPrice, setMaxPrice] = useState(9.0);
-  const [loading,  setLoading]  = useState(false);
-  const [error,    setError]    = useState("");
-  const [data,     setData]     = useState<TransferResponse | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [data, setData] = useState<TransferResponse | null>(null);
 
   const fetch_ = async () => {
     if (minPrice >= maxPrice) { setError("Min price must be less than max."); return; }
@@ -697,11 +697,10 @@ function TransferRecommender() {
           <div className="flex gap-2 flex-wrap">
             {POSITIONS.map(p => (
               <button key={p.id} onClick={() => setPosition(p.id)}
-                className={`flex-1 py-2.5 rounded-xl border text-sm font-bold transition-all ${
-                  position === p.id
+                className={`flex-1 py-2.5 rounded-xl border text-sm font-bold transition-all ${position === p.id
                     ? "bg-volt/10 border-volt/40 text-volt"
                     : "border-bd text-mt hover:border-volt/20 hover:text-white"
-                }`}>
+                  }`}>
                 {p.label}
               </button>
             ))}
@@ -741,7 +740,7 @@ function TransferRecommender() {
           </div>
           <div className="space-y-3">
             {data.picks.map((pick, i) => (
-              <PlayerCard key={pick.id ?? i} pick={pick} rank={i+1} showTeam />
+              <PlayerCard key={pick.id ?? i} pick={pick} rank={i + 1} showTeam />
             ))}
           </div>
         </div>
@@ -753,12 +752,12 @@ function TransferRecommender() {
 // ── Step 4: Differential Finder ───────────────────────────────────────────────
 
 function DifferentialFinder() {
-  const [position,     setPosition]     = useState("FWD");  // FWD/MID/DEF/GKP
+  const [position, setPosition] = useState("FWD");  // FWD/MID/DEF/GKP
   const [maxOwnership, setMaxOwnership] = useState(15.0);
-  const [maxPrice,     setMaxPrice]     = useState(8.0);
-  const [loading,      setLoading]      = useState(false);
-  const [error,        setError]        = useState("");
-  const [data,         setData]         = useState<DiffResponse | null>(null);
+  const [maxPrice, setMaxPrice] = useState(8.0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [data, setData] = useState<DiffResponse | null>(null);
 
   const fetch_ = async () => {
     setLoading(true); setError(""); setData(null);
@@ -783,11 +782,10 @@ function DifferentialFinder() {
           <div className="flex gap-2 flex-wrap">
             {POSITIONS.map(p => (
               <button key={p.id} onClick={() => setPosition(p.id)}
-                className={`flex-1 py-2.5 rounded-xl border text-sm font-bold transition-all ${
-                  position === p.id
+                className={`flex-1 py-2.5 rounded-xl border text-sm font-bold transition-all ${position === p.id
                     ? "bg-volt/10 border-volt/40 text-volt"
                     : "border-bd text-mt hover:border-volt/20 hover:text-white"
-                }`}>
+                  }`}>
                 {p.label}
               </button>
             ))}
@@ -798,13 +796,12 @@ function DifferentialFinder() {
           <p className="section-label mb-1">Max Ownership %</p>
           <p className="text-mt text-xs mb-2">Real FPL selected_by_percent</p>
           <div className="flex gap-2 flex-wrap mb-2">
-            {[5,10,15,20,25].map(v => (
+            {[5, 10, 15, 20, 25].map(v => (
               <button key={v} onClick={() => setMaxOwnership(v)}
-                className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${
-                  maxOwnership === v
+                className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${maxOwnership === v
                     ? "bg-volt/10 border-volt/40 text-volt"
                     : "border-bd text-mt hover:border-volt/20 hover:text-white"
-                }`}>
+                  }`}>
                 &lt;{v}%
               </button>
             ))}
@@ -821,13 +818,12 @@ function DifferentialFinder() {
         <div>
           <p className="section-label mb-1">Max Price (£m)</p>
           <div className="flex gap-2 flex-wrap mb-2">
-            {[5.5,6.5,7.5,8.5,10.0].map(v => (
+            {[5.5, 6.5, 7.5, 8.5, 10.0].map(v => (
               <button key={v} onClick={() => setMaxPrice(v)}
-                className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${
-                  maxPrice === v
+                className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${maxPrice === v
                     ? "bg-volt/10 border-volt/40 text-volt"
                     : "border-bd text-mt hover:border-volt/20 hover:text-white"
-                }`}>
+                  }`}>
                 £{v}m
               </button>
             ))}
@@ -868,9 +864,9 @@ function DifferentialFinder() {
           </div>
           <div className="grid grid-cols-3 gap-2 text-center">
             {[
-              { icon:"📉", label:"Low ownership", sub:"Real FPL % data" },
-              { icon:"🔥", label:"In form",       sub:"High pts/game + xG" },
-              { icon:"🟢", label:"Easy fixture",  sub:"FDR ≤ 3 only" },
+              { icon: "📉", label: "Low ownership", sub: "Real FPL % data" },
+              { icon: "🔥", label: "In form", sub: "High pts/game + xG" },
+              { icon: "🟢", label: "Easy fixture", sub: "FDR ≤ 3 only" },
             ].map(({ icon, label, sub }) => (
               <div key={label} className="bg-sur2 border border-bd rounded-xl py-3 px-2">
                 <p className="text-lg mb-0.5">{icon}</p>
@@ -889,7 +885,7 @@ function DifferentialFinder() {
                     </span>
                   </div>
                 )}
-                <PlayerCard pick={pick} rank={i+1} showTeam />
+                <PlayerCard pick={pick} rank={i + 1} showTeam />
               </div>
             ))}
           </div>
@@ -902,10 +898,10 @@ function DifferentialFinder() {
 // ── Root page ──────────────────────────────────────────────────────────────────
 
 const TABS = [
-  { id:"ticker",   label:"📅 Fixtures"     },
-  { id:"captain",  label:"🎯 Captain"       },
-  { id:"transfer", label:"🔄 Transfers"     },
-  { id:"diff",     label:"💡 Differentials" },
+  { id: "ticker", label: "📅 Fixtures" },
+  { id: "captain", label: "🎯 Captain" },
+  { id: "transfer", label: "🔄 Transfers" },
+  { id: "diff", label: "💡 Differentials" },
 ] as const;
 
 type Tab = typeof TABS[number]["id"];
@@ -924,19 +920,18 @@ export default function FplPage() {
       <div className="flex gap-2">
         {TABS.map(t => (
           <button key={t.id} onClick={() => setTab(t.id)}
-            className={`flex-1 py-3 px-2 rounded-xl border text-xs font-bold transition-all ${
-              tab === t.id
+            className={`flex-1 py-3 px-2 rounded-xl border text-xs font-bold transition-all ${tab === t.id
                 ? "bg-volt/10 border-volt/40 text-volt"
                 : "border-bd text-mt hover:border-volt/20 hover:text-white"
-            }`}>
+              }`}>
             {t.label}
           </button>
         ))}
       </div>
-      {tab === "ticker"   && <FixtureTicker />}
-      {tab === "captain"  && <CaptainPick />}
+      {tab === "ticker" && <FixtureTicker />}
+      {tab === "captain" && <CaptainPick />}
       {tab === "transfer" && <TransferRecommender />}
-      {tab === "diff"     && <DifferentialFinder />}
+      {tab === "diff" && <DifferentialFinder />}
     </div>
   );
 }
