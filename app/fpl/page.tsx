@@ -61,7 +61,7 @@ interface DiffResponse {
   share_text: string; cached: boolean;
 }
 interface PlayerListItem {
-  id: number; name: string; team: string; position: string;
+  id: number; name: string; search_name?: string; team: string; position: string;
   price: number; status: string;
 }
 interface TransferSuggestion {
@@ -468,7 +468,7 @@ function PlayerSlot({ label, player, onPick, onClear, allPlayers, taken }: {
   const [open, setOpen] = useState(false);
 
   const matches = query.trim().length < 2 ? [] : allPlayers
-    .filter(p => !taken.has(p.id) && normalizeStr(p.name).includes(normalizeStr(query)))
+    .filter(p => !taken.has(p.id) && normalizeStr(p.name + " " + (p.search_name || "")).includes(normalizeStr(query)))
     .slice(0, 12);
 
   if (player) {
