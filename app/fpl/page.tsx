@@ -469,7 +469,7 @@ function PlayerSlot({ label, player, onPick, onClear, allPlayers, taken }: {
 
   const matches = query.trim().length < 2 ? [] : allPlayers
     .filter(p => !taken.has(p.id) && normalizeStr(p.name).includes(normalizeStr(query)))
-    .slice(0, 6);
+    .slice(0, 12);
 
   if (player) {
     return (
