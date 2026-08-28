@@ -10,41 +10,152 @@ const API_BASE =
 // Display names that differ from what BSD stores are aliased here.
 
 const BSD_NAME_MAP: Record<string, string> = {
-  // Premier League
-  "Manchester United": "Manchester United",
-  "Newcastle United": "Newcastle United",
-  "Nottingham Forest": "Nottingham Forest",
-  "Tottenham Hotspur": "Tottenham",
-  "Liverpool": "Liverpool FC",
-  "West Ham United": "West Ham",
-  "Wolverhampton": "Wolverhampton Wanderers",
-  "Leicester City": "Leicester City",
-  "Brighton": "Brighton & Hove Albion",
-  "Bournemouth": "AFC Bournemouth",
-  // La Liga
-  "Athletic Bilbao": "Athletic Club",
-  "Atletico Madrid": "Atlético Madrid",
-  "Málaga": "Málaga CF",
-  // Bundesliga — BSD stores German name
-  "Bayern Munich": "Bayern Munich",    // backend retry handles FC Bayern München
-  "Stuttgart": "Stuttgart",
-  "Freiburg": "Freiburg",
-  "Bayer Leverkusen": "Bayer 04 Leverkusen",
-  // Serie A
-  "Inter Milan": "Inter",
-  "Roma": "AS Roma",
-  // Eredivisie
-  "Utrecht": "FC Utrecht",
-  "Twente": "FC Twente",
-  "Ajax": "AFC Ajax",
-  // Ligue 1
-  "Brest": "Stade Brestois 29",
-  "Lyon": "Olympique Lyonnais",
-  "Rennes": "Stade Rennais FC",
-  "Reims": "Stade de Reims",
-  // Others
-  "Sparta Prague": "Sparta Praha",
+  // ── Premier League ──────────────────────────────────────────────────────────
+  "Manchester United":   "Manchester United",
+  "Newcastle United":    "Newcastle United",
+  "Nottingham Forest":   "Nottingham Forest",
+  "Tottenham Hotspur":   "Tottenham",
+  "Liverpool":           "Liverpool FC",
+  "Brighton":            "Brighton & Hove Albion",
+  "Brighton & Hove Albion": "Brighton & Hove Albion",
+  "Bournemouth":         "AFC Bournemouth",
+  "Coventry City":       "Coventry City",
+  "Hull City":           "Hull City",
+  "Ipswich Town":        "Ipswich Town",
+  "Leeds United":        "Leeds United",
+  "Sunderland":          "Sunderland AFC",
+
+  // ── La Liga ─────────────────────────────────────────────────────────────────
+  "Athletic Bilbao":     "Athletic Club",
+  "Atletico Madrid":     "Atlético Madrid",
+  "Real Madrid":         "Real Madrid",       // explicit — was missing from old map
+  "Barcelona":           "Barcelona",
+  "Real Betis":          "Real Betis",
+  "Real Sociedad":       "Real Sociedad",
+  "Villarreal":          "Villarreal CF",
+  "Celta Vigo":          "Celta de Vigo",
+  "Alaves":              "Deportivo Alavés",
+  "Espanyol":            "RCD Espanyol",
+  "Getafe":              "Getafe CF",
+  "Rayo Vallecano":      "Rayo Vallecano",
+  "Osasuna":             "CA Osasuna",
+  "Sevilla":             "Sevilla FC",
+  "Valencia":            "Valencia CF",
+  "Málaga":              "Málaga CF",
+
+  // ── Bundesliga ───────────────────────────────────────────────────────────────
+  "Bayern Munich":       "FC Bayern München",  // BSD stores German name
+  "Borussia Dortmund":   "Borussia Dortmund",
+  "RB Leipzig":          "RB Leipzig",
+  "Bayer Leverkusen":    "Bayer 04 Leverkusen",
+  "Eintracht Frankfurt": "Eintracht Frankfurt",
+  "Stuttgart":           "VfB Stuttgart",
+  "Freiburg":            "SC Freiburg",
+  "Hoffenheim":          "TSG Hoffenheim",
+  "Mainz":               "1. FSV Mainz 05",
+  "Borussia Monchengladbach": "Borussia Mönchengladbach",
+  "Union Berlin":        "1. FC Union Berlin",
+  "Augsburg":            "FC Augsburg",
+  "Werder Bremen":       "SV Werder Bremen",
+  "1. FC Köln":          "1. FC Köln",
+  "Hamburger SV":        "Hamburger SV",
+  "Schalke 04":          "FC Schalke 04",
+  "SV Elversberg":       "SV Elversberg",
+  "SC Paderborn":        "SC Paderborn 07",
+
+  // ── Serie A ─────────────────────────────────────────────────────────────────
+  "Inter Milan":         "Inter",             // BSD stores as "Inter" not "Inter Milan"
+  "AC Milan":            "AC Milan",
+  "Juventus":            "Juventus",
+  "Napoli":              "Napoli",
+  "Roma":                "AS Roma",
+  "Lazio":               "Lazio",
+  "Atalanta":            "Atalanta",
+  "Fiorentina":          "Fiorentina",
+  "Bologna":             "Bologna",
+  "Torino":              "Torino",
+  "Udinese":             "Udinese",
+  "Genoa":               "Genoa",
+  "Cagliari":            "Cagliari",
+  "Monza":               "Monza",
+  "Como":                "Como",
+  "Venezia":             "Venezia",
+  "Lecce":               "US Lecce",
+  "Empoli":              "Empoli",
+  "Verona":              "Hellas Verona",
+  "Parma":               "Parma",
+
+  // ── Ligue 1 ─────────────────────────────────────────────────────────────────
+  "Paris Saint-Germain": "Paris Saint-Germain",
+  "Monaco":              "AS Monaco",
+  "Marseille":           "Olympique de Marseille",
+  "Lyon":                "Olympique Lyonnais",
+  "Lille":               "LOSC Lille",
+  "Lens":                "RC Lens",
+  "Nice":                "OGC Nice",
+  "Rennes":              "Stade Rennais FC",
+  "Brest":               "Stade Brestois 29",
+  "Reims":               "Stade de Reims",
+  "Montpellier":         "Montpellier HSC",
+  "Toulouse":            "Toulouse FC",
+  "Strasbourg":          "RC Strasbourg Alsace",
+  "Le Havre":            "Le Havre AC",
+  "Saint-Etienne":       "AS Saint-Étienne",
+  "Angers":              "Angers SCO",
+  "Troyes":              "ESTAC Troyes",
+  "Le Mans":             "Le Mans FC",
+  "Paris FC":            "Paris FC",
+
+  // ── Eredivisie ───────────────────────────────────────────────────────────────
+  "Ajax":                "AFC Ajax",
+  "PSV Eindhoven":       "PSV",              // BSD stores as "PSV" only
+  "Feyenoord":           "Feyenoord",
+  "AZ Alkmaar":          "AZ",
+  "Utrecht":             "FC Utrecht",
+  "Twente":              "FC Twente",
+
+  // ── Primeira Liga ────────────────────────────────────────────────────────────
+  "Benfica":             "SL Benfica",
+  "Porto":               "FC Porto",
+  "Sporting CP":         "Sporting CP",
+  "Braga":               "SC Braga",
+  "Guimaraes":           "Vitória SC",
+
+  // ── Scottish ─────────────────────────────────────────────────────────────────
+  "Celtic":              "Celtic",
+  "Rangers":             "Rangers",
+
+  // ── Belgian Pro League ───────────────────────────────────────────────────────
+  "Club Brugge":         "Club Brugge KV",
+  "Anderlecht":          "RSC Anderlecht",
+  "Genk":                "KRC Genk",
+
+  // ── Süper Lig ────────────────────────────────────────────────────────────────
+  "Galatasaray":         "Galatasaray SK",
+  "Fenerbahce":          "Fenerbahçe SK",    // accent critical for BSD lookup
+  "Besiktas":            "Beşiktaş JK",
+  "Trabzonspor":         "Trabzonspor",
+
+  // ── Austrian Bundesliga ──────────────────────────────────────────────────────
+  "Red Bull Salzburg":   "FC Red Bull Salzburg",
+  "Sturm Graz":          "SK Sturm Graz",
+
+  // ── Czech Liga ───────────────────────────────────────────────────────────────
+  "Slavia Prague":       "SK Slavia Prague",   // was wrongly "Sparta Praha" — different club
+  "Sparta Prague":       "AC Sparta Praha",
+
+  // ── Greek Super League ───────────────────────────────────────────────────────
+  "Olympiakos":          "Olympiacos",
+  "Panathinaikos":       "Panathinaikos",
+  "PAOK":                "PAOK",
+
+  // ── UCL-specific clubs (Pot 3/4) not in main leagues above ──────────────────
+  "Shakhtar Donetsk":    "Shakhtar Donetsk",
+  "Aston Villa":         "Aston Villa",
+  "Manchester City":     "Manchester City",
+  "Arsenal":             "Arsenal",
 };
+
 
 export function bsdName(displayName: string): string {
   return BSD_NAME_MAP[displayName] ?? displayName;
