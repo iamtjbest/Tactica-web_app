@@ -2,6 +2,11 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { EUROPEAN_TEAMS } from "@/lib/api";
 
+/** Strip diacritics so "Guéhi" matches when the user types "guehi". */
+function normalizeStr(s: string): string {
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
 interface Props {
   label: string;
   value: string;
@@ -22,7 +27,7 @@ export default function TeamSelect({ label, value, onChange, teams, id, disabled
 
   const filtered = query.trim().length === 0
     ? list
-    : list.filter(t => t.toLowerCase().includes(query.toLowerCase()));
+    : list.filter(t => normalizeStr(t).includes(normalizeStr(query)));
 
   // Close on outside click
   useEffect(() => {
