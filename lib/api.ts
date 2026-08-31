@@ -67,7 +67,7 @@ const BSD_NAME_MAP: Record<string, string> = {
   "Inter Milan":         "Inter",             // BSD stores as "Inter" not "Inter Milan"
   "AC Milan":            "AC Milan",
   "Juventus":            "Juventus",
-  "Napoli":              "Napoli",
+  "Napoli":              "SSC Napoli",
   "Roma":                "AS Roma",
   "Lazio":               "Lazio",
   "Atalanta":            "Atalanta",
