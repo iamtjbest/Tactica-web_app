@@ -30,7 +30,7 @@ const BSD_NAME_MAP: Record<string, string> = {
   "Atletico Madrid":     "Atlético Madrid",
   "Real Madrid":         "Real Madrid",       // explicit — was missing from old map
   "Barcelona":           "Barcelona",
-  "Real Betis":          "Real Betis",
+  "Real Betis":          "Real Betis Balompié",
   "Real Sociedad":       "Real Sociedad",
   "Villarreal":          "Villarreal CF",
   "Celta Vigo":          "Celta de Vigo",
