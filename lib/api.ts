@@ -15,7 +15,7 @@ const BSD_NAME_MAP: Record<string, string> = {
   "Newcastle United":    "Newcastle United",
   "Nottingham Forest":   "Nottingham Forest",
   "Tottenham Hotspur":   "Tottenham",
-  "Liverpool":           "Liverpool F.C.",
+  "Liverpool":           "Liverpool FC",
   "Brighton":            "Brighton & Hove Albion",
   "Brighton & Hove Albion": "Brighton & Hove Albion",
   "Bournemouth":         "AFC Bournemouth",
