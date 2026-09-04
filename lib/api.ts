@@ -11,7 +11,7 @@ const API_BASE =
 
 const BSD_NAME_MAP: Record<string, string> = {
   // ── Premier League ──────────────────────────────────────────────────────────
-  "Manchester United":   "Manchester United",
+  "Manchester United":   "Manchester United FC",
   "Newcastle United":    "Newcastle United",
   "Nottingham Forest":   "Nottingham Forest",
   "Tottenham Hotspur":   "Tottenham",
