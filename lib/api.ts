@@ -13,7 +13,7 @@ const BSD_NAME_MAP: Record<string, string> = {
   // ── Premier League ──────────────────────────────────────────────────────────
   "Manchester United":   "Manchester United",
   "Manchester City":     "Manchester City",
-  "Liverpool":           "Liverpool",
+  "Liverpool":           "Liverpool FC",
   "Aston Villa":         "Aston Villa",
   "Bournemouth":         "Bournemouth",
   "Newcastle United":    "Newcastle United",
@@ -32,7 +32,7 @@ const BSD_NAME_MAP: Record<string, string> = {
   "Atletico Madrid":     "Atlético Madrid",
   "Real Madrid":         "Real Madrid",
   "Barcelona":           "FC Barcelona",
-  "Real Betis":          "Real Betis",
+  "Real Betis":          "Real Betis Balompié",
   "Real Sociedad":       "Real Sociedad",
   "Villarreal":          "Villarreal CF",
   "Celta Vigo":          "Celta de Vigo",
