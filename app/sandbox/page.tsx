@@ -32,6 +32,7 @@ export default function SandboxPage() {
   const [loading,   setLoading]   = useState(false);
   const [fetching,  setFetching]  = useState(false);
   const [result,    setResult]    = useState<PredictResponse | null>(null);
+  const [error,     setError]     = useState("");
   const [bsdMatchedName, setBsdMatchedName] = useState("");
 
   const busy = fetching || loading; // lock team selection during any in-flight request
