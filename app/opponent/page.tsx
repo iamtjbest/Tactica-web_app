@@ -28,20 +28,52 @@ export default function OpponentPage() {
   if (myForm && oppForm) {
     const mA = myForm.attack, mD = myForm.defence;
     const oA = oppForm.attack, oD = oppForm.defence;
-    if (mA > oD + 10)  tips.push("🎯 Offensive Dominance — our attack significantly outrates their defence. High press, direct play, exploit channels behind their fullbacks from the first whistle.");
-    if (mA < oD)       tips.push("🧱 Solid Defence Ahead — their backline is well organised. Focus on wide overloads, set-piece delivery, and long-range efforts to open them up.");
-    if (oA > mD + 10)  tips.push("⚠️ Defensive Alert — their attack is dangerous against our defence. A double pivot is essential. Do not play a high line — sit deep and hit on the counter.");
-    if (mD > oA + 5)   tips.push("🛡️ Defensive Superiority — we handle their attack comfortably. Fullbacks can push high aggressively without fear of exposure.");
-    const myW  = myForm.matches.filter(m => m.result === "W").length;
-    const oppW = oppForm.matches.filter(m => m.result === "W").length;
-    const oppConceded = oppForm.matches.reduce((s, m) => s + m.conceded, 0) / (oppForm.matches.length || 1);
-    if (myW >= 4)       tips.push(`📈 Strong Momentum — ${myW}/5 wins in recent form. Confidence is high. Keep the same structure that has been working.`);
-    if (oppW >= 4)      tips.push(`📉 Opponent In Form — ${oppTeam} have won ${oppW} of their last 5. Respect their momentum but do not change your game plan.`);
-    if (oppConceded > 1.8) tips.push(`🔓 Leaky Opponents — ${oppTeam} have been conceding ${oppConceded.toFixed(1)} goals per game recently. Attack early, test them often.`);
-    if (Math.abs(mA - oA) <= 5 && Math.abs(mD - oD) <= 5)
-      tips.push("⚖️ Even Matchup — ratings are closely matched. Midfield transitions and set pieces will decide this. Discipline and tactical detail is everything.");
-    if (!tips.length)
-      tips.push("✅ Standard matchup. No extreme mismatches detected. Play to your structure, execute your game plan, and capitalise on transitions.");
+
+    const myRecent  = myForm.matches.slice(0, 5);
+    const oppRecent = oppForm.matches.slice(0, 5);
+    const myW       = myRecent.filter(m => m.result === "W").length;
+    const oppW      = oppRecent.filter(m => m.result === "W").length;
+    const oppL      = oppRecent.filter(m => m.result === "L").length;
+    const totalOpp  = oppRecent.length || 1;
+    const totalMy   = myRecent.length || 1;
+    const oppConceded = oppRecent.reduce((s, m) => s + m.conceded, 0) / totalOpp;
+    const oppScored   = oppRecent.reduce((s, m) => s + m.scored, 0) / totalOpp;
+    const myScored    = myRecent.reduce((s, m) => s + m.scored, 0) / totalMy;
+
+    // Tactical scouting breakdown based on real BSD metrics
+    if (mA > oD + 8) {
+      tips.push(`🎯 Offensive Advantage — ${myTeam} (Attack: ${mA}) holds a strong edge over ${oppTeam}'s defensive structure (Defence: ${oD}). Exploit space behind their fullbacks early with direct wide passes.`);
+    } else if (mA < oD - 5) {
+      tips.push(`🧱 Compact Backline Ahead — ${oppTeam}'s defence (${oD}) is disciplined. Work through controlled buildup, set pieces, and second balls around the 18-yard box.`);
+    }
+
+    if (oA > mD + 8) {
+      tips.push(`⚠️ Defensive Threat — ${oppTeam}'s attacking rating (${oA}) poses danger against our defence (${mD}). Maintain a compact mid-block and double-cover their primary wingers.`);
+    } else if (mD > oA + 5) {
+      tips.push(`🛡️ Defensive Superiority — ${myTeam}'s backline (${mD}) comfortably covers ${oppTeam}'s goal threat (${oA}). Fullbacks are free to support high line overlaps.`);
+    }
+
+    // Form breakdown (strictly out of last 5 matches)
+    if (myW >= 4) {
+      tips.push(`📈 High Momentum — ${myTeam} have won ${myW} of their last ${totalMy} matches in BSD fixtures. Squad confidence is high; maintain current tactical rhythm.`);
+    }
+    if (oppW >= 3) {
+      tips.push(`📉 Opponent Form — ${oppTeam} have won ${oppW} of their last ${totalOpp} matches (scoring ${oppScored.toFixed(1)} goals/game). Exercise discipline in early transitions.`);
+    } else if (oppL >= 3) {
+      tips.push(`⚡ Vulnerable Form — ${oppTeam} have lost ${oppL} of their last ${totalOpp} matches. Press them high from kickoff to force defensive errors.`);
+    }
+
+    if (oppConceded >= 1.6) {
+      tips.push(`🔓 Defensive Leakage — ${oppTeam} have been conceding ${oppConceded.toFixed(1)} goals per match in recent fixtures. Test their goalkeeper with early shots.`);
+    }
+
+    if (oppForm.best_formation && myForm.best_formation) {
+      tips.push(`📐 Tactical Setup — ${oppTeam} frequently operate in a ${oppForm.best_formation} shape. Matching or countering with ${myTeam}'s preferred ${myForm.best_formation} provides optimal midfield coverage.`);
+    }
+
+    if (!tips.length) {
+      tips.push(`⚖️ Balanced Matchup — ${myTeam} and ${oppTeam} present closely matched ratings (${mA}/${mD} vs ${oA}/${oD}). Midfield execution and set-piece efficiency will decide the result.`);
+    }
   }
 
   return (

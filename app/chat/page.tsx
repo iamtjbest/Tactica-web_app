@@ -29,43 +29,42 @@ function ChatPageInner() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  function changeMyTeam(v: string) { setMyTeam(v); setMessages([]); setLive(null); setSquad([]); }
-  function changeOppTeam(v: string) { setOppTeam(v); setMessages([]); setLive(null); }
-
-  // Auto-sync live data whenever teams change or on mount.
-  // Respects 30s cooldown to avoid hammering BSD.
-  useEffect(() => {
-    const now = Date.now();
-    if (now - lastSync < 30_000) return;
-    autoSyncLive();
-  }, [myTeam, oppTeam]);
-
-  async function autoSyncLive() {
-    setSyncing(true); setError("");
-    try {
-      const data = await api.live(myTeam, oppTeam);
-      setLive(data);
-      setLastSync(Date.now());
-      if (!data.match_found) setError("");  // no live = silent, not an error
-    } catch { /* silent — manual sync button shows error */ }
-    finally { setSyncing(false); }
+  function changeMyTeam(v: string) {
+    setMyTeam(v);
+    setMessages([]);
+    setLive(null);
+    setSquad([]);
+    syncLiveForTeams(v, oppTeam);
   }
 
-  async function syncLive() {
-    const now = Date.now();
-    if (now - lastSync < 30000) {
-      setError("Please wait 30 seconds between live syncs — BSD data refreshes every 30s.");
-      return;
-    }
+  function changeOppTeam(v: string) {
+    setOppTeam(v);
+    setMessages([]);
+    setLive(null);
+    syncLiveForTeams(myTeam, v);
+  }
+
+  // Auto-sync live BSD data immediately when component mounts
+  useEffect(() => {
+    syncLiveForTeams(myTeam, oppTeam);
+  }, []);
+
+  async function syncLiveForTeams(teamA: string, teamB: string) {
     setSyncing(true); setError("");
     try {
-      const data = await api.live(myTeam, oppTeam);
+      const data = await api.live(teamA, teamB);
       setLive(data);
       setLastSync(Date.now());
-      if (!data.match_found) setError(`No live fixture found for ${myTeam} vs ${oppTeam} right now. ${data.live_count ?? 0} matches checked worldwide.`);
+      if (!data.match_found) {
+        setError(`No active live match found for ${teamA} vs ${teamB} right now (${data.live_count ?? 0} matches checked worldwide). You can ask questions based on pre-match BSD stats.`);
+      }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Live sync failed");
     } finally { setSyncing(false); }
+  }
+
+  async function syncLive() {
+    await syncLiveForTeams(myTeam, oppTeam);
   }
 
   async function send() {
@@ -134,17 +133,11 @@ function ChatPageInner() {
         )}
         <ErrorBox msg={error} />
         <div className="flex gap-3">
-          <button onClick={syncLive} disabled={syncing || !syncReady}
-            className={clsx("flex-1 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 border transition-all",
-              syncReady
-                ? "border-cyan/30 text-cyan bg-cyan/5 hover:bg-cyan/10"
-                : "border-bd text-mt cursor-not-allowed"
-            )}>
+          <button onClick={syncLive} disabled={syncing}
+            className="flex-1 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 border border-cyan/30 text-cyan bg-cyan/5 hover:bg-cyan/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
             {syncing
-              ? <><span className="animate-spin">⏳</span> Scanning all competitions…</>
-              : syncReady
-              ? "🔄 Sync Live Data (All Competitions)"
-              : `🔄 Sync (cooldown: ${cooldownSecs}s)`
+              ? <><span className="animate-spin">⏳</span> Syncing live BSD match data for {myTeam} vs {oppTeam}…</>
+              : `🔄 Sync Live Data for ${myTeam} vs ${oppTeam}`
             }
           </button>
           {live && (

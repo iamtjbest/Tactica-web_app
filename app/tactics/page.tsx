@@ -108,18 +108,33 @@ export default function TacticsPage() {
       )}
 
       {lineup && (
-        <div className="card">
-          <p className="section-label mb-1">👕 Recommended Starting XI</p>
-          <p className="text-volt font-display font-bold text-xl mb-4">{lineup.formation}</p>
+        <div className="card space-y-4">
+          <div>
+            <p className="section-label mb-1">👕 Recommended Starting XI</p>
+            <p className="text-volt font-display font-bold text-xl">{lineup.formation}</p>
+          </div>
+
           <div className="space-y-2">
             {lineup.xi.map((p, i) => <PlayerCard key={i} player={p} />)}
           </div>
+
           {lineup.xi.some(p => p.fallback) && (
-            <p className="text-mt text-xs mt-3">
-              ⚠️ Some slots filled with best available — fetch the squad first for a precise XI.
-              Go to Coach&apos;s Sandbox → load squad → come back.
+            <p className="text-amber text-xs bg-amber/10 border border-amber/20 rounded-xl p-3">
+              ⚠️ Some slots filled with best available — load the full squad in Coach&apos;s Sandbox to refine player stats.
             </p>
           )}
+
+          <div className="bg-bg border border-bd rounded-xl p-4 text-xs space-y-2 text-mt">
+            <p className="font-bold text-white uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+              <span>📐</span> How Starting XI Selection &amp; Ranking Works
+            </p>
+            <p className="leading-relaxed">
+              <strong className="text-white">1. Tactical Mapping:</strong> Slots (GK, DF, MF, FW) are dynamically allocated based on the selected formation ({lineup.formation}). In 3+ forward setups (e.g. 4-3-3), wingers fill wide FW positions.
+            </p>
+            <p className="leading-relaxed">
+              <strong className="text-white">2. Selection Formula:</strong> Players are ranked within their natural positional group by <strong className="text-volt">Season Minutes Played (⏱)</strong> and <strong className="text-volt">Goal Contributions (⚽ G+A)</strong> to ensure match-fit, high-impact starters.
+            </p>
+          </div>
         </div>
       )}
 

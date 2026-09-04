@@ -32,15 +32,17 @@ export default function SandboxPage() {
   const [loading,   setLoading]   = useState(false);
   const [fetching,  setFetching]  = useState(false);
   const [result,    setResult]    = useState<PredictResponse | null>(null);
-  const [error,     setError]     = useState("");
+  const [bsdMatchedName, setBsdMatchedName] = useState("");
 
   const busy = fetching || loading; // lock team selection during any in-flight request
 
-  async function fetchSquad() {
-    setFetching(true); setError(""); setSquad([]); setSelected([]);
+  async function fetchSquad(targetTeam?: string) {
+    const teamToLoad = targetTeam || myTeam;
+    setFetching(true); setError(""); setSquad([]); setSelected([]); setBsdMatchedName("");
     try {
-      const res = await api.squad(myTeam);
+      const res = await api.squad(teamToLoad);
       setSquad(res.players);
+      setBsdMatchedName(res.bsd_name || teamToLoad);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Could not fetch squad — team not in BSD yet");
     } finally { setFetching(false); }
@@ -94,7 +96,7 @@ export default function SandboxPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <TeamSelect label="Your Team" value={myTeam}  onChange={v => { setMyTeam(v); setSquad([]); setSelected([]); }} id="sb-my"  disabled={busy} />
+        <TeamSelect label="Your Team" value={myTeam}  onChange={v => { setMyTeam(v); fetchSquad(v); }} id="sb-my"  disabled={busy} />
         <TeamSelect label="Opponent"  value={oppTeam} onChange={setOppTeam} id="sb-opp" disabled={busy} />
       </div>
 
@@ -117,15 +119,22 @@ export default function SandboxPage() {
 
       <ErrorBox msg={error} />
 
-      <button onClick={fetchSquad} disabled={busy}
+      <button onClick={() => fetchSquad()} disabled={busy}
         className="btn-outline w-full py-3 flex items-center justify-center gap-2">
-        {fetching ? <><span className="animate-spin">⏳</span> Loading squad…</> : `📥 Load ${myTeam} Squad from BSD`}
+        {fetching ? <><span className="animate-spin">⏳</span> Fetching squad from BSD…</> : `📥 Load ${myTeam} Squad from BSD`}
       </button>
 
       {squad.length > 0 && (
         <div className="card">
           <div className="flex items-center justify-between mb-4">
-            <p className="section-label">Select Your XI ({selected.length}/11)</p>
+            <div>
+              <p className="section-label">Select Your XI ({selected.length}/11)</p>
+              {bsdMatchedName && (
+                <p className="text-mt text-xs mt-0.5">
+                  ✅ Verified BSD Senior Squad: <span className="text-white font-semibold">{bsdMatchedName}</span> ({squad.length} players)
+                </p>
+              )}
+            </div>
             {selected.length > 0 && (
               <button onClick={() => setSelected([])} disabled={busy} className="text-mt text-xs hover:text-white transition-colors disabled:opacity-40">
                 Clear all
