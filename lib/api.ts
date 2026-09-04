@@ -11,40 +11,43 @@ const API_BASE =
 
 const BSD_NAME_MAP: Record<string, string> = {
   // ── Premier League ──────────────────────────────────────────────────────────
-  "Manchester United":   "Manchester United FC",
+  "Manchester United":   "Manchester United",
+  "Manchester City":     "Manchester City",
+  "Liverpool":           "Liverpool",
+  "Aston Villa":         "Aston Villa",
+  "Bournemouth":         "Bournemouth",
   "Newcastle United":    "Newcastle United",
   "Nottingham Forest":   "Nottingham Forest",
-  "Tottenham Hotspur":   "Tottenham",
-  "Liverpool":           "Liverpool FC",
+  "Tottenham Hotspur":   "Tottenham Hotspur",
   "Brighton":            "Brighton & Hove Albion",
   "Brighton & Hove Albion": "Brighton & Hove Albion",
-  "Bournemouth":         "AFC Bournemouth",
   "Coventry City":       "Coventry City",
   "Hull City":           "Hull City",
   "Ipswich Town":        "Ipswich Town",
   "Leeds United":        "Leeds United",
-  "Sunderland":          "Sunderland AFC",
+  "Sunderland":          "Sunderland",
 
   // ── La Liga ─────────────────────────────────────────────────────────────────
   "Athletic Bilbao":     "Athletic Club",
   "Atletico Madrid":     "Atlético Madrid",
-  "Real Madrid":         "Real Madrid",       // explicit — was missing from old map
-  "Barcelona":           "Barcelona",
-  "Real Betis":          "Real Betis Balompié",
+  "Real Madrid":         "Real Madrid",
+  "Barcelona":           "FC Barcelona",
+  "Real Betis":          "Real Betis",
   "Real Sociedad":       "Real Sociedad",
   "Villarreal":          "Villarreal CF",
   "Celta Vigo":          "Celta de Vigo",
   "Alaves":              "Deportivo Alavés",
-  "Espanyol":            "RCD Espanyol",
-  "Getafe":              "Getafe CF",
+  "Espanyol":            "RCD Espanyol de Barcelona",
+  "Getafe":              "Getafe",
   "Rayo Vallecano":      "Rayo Vallecano",
-  "Osasuna":             "CA Osasuna",
+  "Osasuna":             "Osasuna",
   "Sevilla":             "Sevilla FC",
-  "Valencia":            "Valencia CF",
+  "Valencia":            "Valencia",
   "Málaga":              "Málaga CF",
+  "Racing Santander":    "Real Racing Club",
 
   // ── Bundesliga ───────────────────────────────────────────────────────────────
-  "Bayern Munich":       "FC Bayern München",  // BSD stores German name
+  "Bayern Munich":       "FC Bayern München",
   "Borussia Dortmund":   "Borussia Dortmund",
   "RB Leipzig":          "RB Leipzig",
   "Bayer Leverkusen":    "Bayer 04 Leverkusen",
@@ -53,18 +56,18 @@ const BSD_NAME_MAP: Record<string, string> = {
   "Freiburg":            "SC Freiburg",
   "Hoffenheim":          "TSG Hoffenheim",
   "Mainz":               "1. FSV Mainz 05",
-  "Borussia Monchengladbach": "Borussia Mönchengladbach",
+  "Borussia Monchengladbach": "Gladbach",
   "Union Berlin":        "1. FC Union Berlin",
   "Augsburg":            "FC Augsburg",
   "Werder Bremen":       "SV Werder Bremen",
   "1. FC Köln":          "1. FC Köln",
   "Hamburger SV":        "Hamburger SV",
   "Schalke 04":          "FC Schalke 04",
-  "SV Elversberg":       "SV Elversberg",
+  "SV Elversberg":       "SV 07 Elversberg",
   "SC Paderborn":        "SC Paderborn 07",
 
   // ── Serie A ─────────────────────────────────────────────────────────────────
-  "Inter Milan":         "Inter",             // BSD stores as "Inter" not "Inter Milan"
+  "Inter Milan":         "Inter",
   "AC Milan":            "AC Milan",
   "Juventus":            "Juventus",
   "Napoli":              "SSC Napoli",
@@ -80,7 +83,7 @@ const BSD_NAME_MAP: Record<string, string> = {
   "Monza":               "Monza",
   "Como":                "Como",
   "Venezia":             "Venezia",
-  "Lecce":               "US Lecce",
+  "Lecce":               "Lecce",
   "Empoli":              "Empoli",
   "Verona":              "Hellas Verona",
   "Parma":               "Parma",
@@ -90,35 +93,35 @@ const BSD_NAME_MAP: Record<string, string> = {
   "Monaco":              "AS Monaco",
   "Marseille":           "Olympique de Marseille",
   "Lyon":                "Olympique Lyonnais",
-  "Lille":               "LOSC Lille",
+  "Lille":               "Lille",
   "Lens":                "RC Lens",
-  "Nice":                "OGC Nice",
-  "Rennes":              "Stade Rennais FC",
-  "Brest":               "Stade Brestois 29",
+  "Nice":                "Nice",
+  "Rennes":              "Stade Rennais",
+  "Brest":               "Stade Brestois",
   "Reims":               "Stade de Reims",
-  "Montpellier":         "Montpellier HSC",
-  "Toulouse":            "Toulouse FC",
-  "Strasbourg":          "RC Strasbourg Alsace",
-  "Le Havre":            "Le Havre AC",
-  "Saint-Etienne":       "AS Saint-Étienne",
-  "Angers":              "Angers SCO",
-  "Troyes":              "ESTAC Troyes",
-  "Le Mans":             "Le Mans FC",
+  "Montpellier":         "Montpellier",
+  "Toulouse":            "Toulouse",
+  "Strasbourg":          "RC Strasbourg",
+  "Le Havre":            "Le Havre",
+  "Saint-Etienne":       "Saint-Étienne",
+  "Angers":              "Angers",
+  "Troyes":              "Troyes",
+  "Le Mans":             "Le Mans",
   "Paris FC":            "Paris FC",
 
   // ── Eredivisie ───────────────────────────────────────────────────────────────
   "Ajax":                "AFC Ajax",
-  "PSV Eindhoven":       "PSV",              // BSD stores as "PSV" only
+  "PSV Eindhoven":       "PSV Eindhoven",
   "Feyenoord":           "Feyenoord",
-  "AZ Alkmaar":          "AZ",
+  "AZ Alkmaar":          "AZ Alkmaar",
   "Utrecht":             "FC Utrecht",
   "Twente":              "FC Twente",
 
   // ── Primeira Liga ────────────────────────────────────────────────────────────
-  "Benfica":             "SL Benfica",
+  "Benfica":             "Benfica",
   "Porto":               "FC Porto",
   "Sporting CP":         "Sporting CP",
-  "Braga":               "SC Braga",
+  "Braga":               "Sporting Braga",
   "Guimaraes":           "Vitória SC",
 
   // ── Scottish ─────────────────────────────────────────────────────────────────
@@ -131,28 +134,26 @@ const BSD_NAME_MAP: Record<string, string> = {
   "Genk":                "KRC Genk",
 
   // ── Süper Lig ────────────────────────────────────────────────────────────────
-  "Galatasaray":         "Galatasaray SK",
-  "Fenerbahce":          "Fenerbahçe SK",    // accent critical for BSD lookup
+  "Galatasaray":         "Galatasaray",
+  "Fenerbahce":          "Fenerbahçe",
   "Besiktas":            "Beşiktaş JK",
   "Trabzonspor":         "Trabzonspor",
 
   // ── Austrian Bundesliga ──────────────────────────────────────────────────────
-  "Red Bull Salzburg":   "FC Red Bull Salzburg",
+  "Red Bull Salzburg":   "Red Bull Salzburg",
   "Sturm Graz":          "SK Sturm Graz",
 
   // ── Czech Liga ───────────────────────────────────────────────────────────────
-  "Slavia Prague":       "SK Slavia Prague",   // was wrongly "Sparta Praha" — different club
+  "Slavia Prague":       "SK Slavia Praha",
   "Sparta Prague":       "AC Sparta Praha",
 
   // ── Greek Super League ───────────────────────────────────────────────────────
-  "Olympiakos":          "Olympiacos",
-  "Panathinaikos":       "Panathinaikos",
+  "Olympiakos":          "Olympiacos FC",
+  "Panathinaikos":       "Panathinaikos FC",
   "PAOK":                "PAOK",
 
   // ── UCL-specific clubs (Pot 3/4) not in main leagues above ──────────────────
   "Shakhtar Donetsk":    "Shakhtar Donetsk",
-  "Aston Villa":         "Aston Villa",
-  "Manchester City":     "Manchester City",
   "Arsenal":             "Arsenal",
 };
 
