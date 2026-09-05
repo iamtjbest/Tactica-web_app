@@ -155,6 +155,7 @@ const BSD_NAME_MAP: Record<string, string> = {
   // ── UCL-specific clubs (Pot 3/4) not in main leagues above ──────────────────
   "Shakhtar Donetsk":    "Shakhtar Donetsk",
   "Arsenal":             "Arsenal",
+  "Sabah":               "Sabah FK",
 };
 
 
@@ -406,7 +407,7 @@ export const EUROPEAN_TEAMS = [
   "PSV Eindhoven", "Feyenoord", "AZ Alkmaar", "Utrecht", "Twente", "Benfica", "Porto", "Sporting CP",
   "Braga", "Guimaraes", "Celtic", "Rangers", "Club Brugge", "Anderlecht", "Genk", "Galatasaray",
   "Fenerbahce", "Besiktas", "Trabzonspor", "Red Bull Salzburg", "Sturm Graz", "Slavia Prague",
-  "Sparta Prague", "Olympiakos", "Panathinaikos", "PAOK",
+  "Sparta Prague", "Olympiakos", "Panathinaikos", "PAOK", "Sabah",
 ].sort();
 
 // World Cup 2026 nations — unchanged from original
