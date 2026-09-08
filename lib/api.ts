@@ -153,14 +153,9 @@ const BSD_NAME_MAP: Record<string, string> = {
   "PAOK": "PAOK",
 
   // ── UCL-specific clubs (Pot 3/4) not in main leagues above ──────────────────
-<<<<<<< HEAD
-  "Shakhtar Donetsk": "Shakhtar Donetsk",
-  "Arsenal": "Arsenal",
-=======
   "Shakhtar Donetsk":    "Shakhtar Donetsk",
   "Arsenal":             "Arsenal",
   "Sabah":               "Sabah FK",
->>>>>>> 5d77ee29baf46ef5cf4e1f9d50d2ee1043dcd4d3
 };
 
 
