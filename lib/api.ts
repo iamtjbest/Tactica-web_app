@@ -30,7 +30,7 @@ const BSD_NAME_MAP: Record<string, string> = {
   // ── La Liga ─────────────────────────────────────────────────────────────────
   "Athletic Bilbao":     "Athletic Club",
   "Atletico Madrid":     "Atlético Madrid",
-  "Real Madrid":         "Real Madrid",
+  "Real Madrid":         "Real Madrid FC",
   "Barcelona":           "FC Barcelona",
   "Real Betis":          "Real Betis Balompié",
   "Real Sociedad":       "Real Sociedad",
