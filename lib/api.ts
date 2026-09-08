@@ -28,23 +28,23 @@ const BSD_NAME_MAP: Record<string, string> = {
   "Sunderland": "Sunderland",
 
   // ── La Liga ─────────────────────────────────────────────────────────────────
-  "Athletic Bilbao": "Athletic Club",
-  "Atletico Madrid": "Atlético Madrid",
-  "Real Madrid": "Real Madrid CF",
-  "Barcelona": "FC Barcelona",
-  "Real Betis": "Real Betis",
-  "Real Sociedad": "Real Sociedad",
-  "Villarreal": "Villarreal CF",
-  "Celta Vigo": "Celta de Vigo",
-  "Alaves": "Deportivo Alavés",
-  "Espanyol": "RCD Espanyol de Barcelona",
-  "Getafe": "Getafe",
-  "Rayo Vallecano": "Rayo Vallecano",
-  "Osasuna": "Osasuna",
-  "Sevilla": "Sevilla FC",
-  "Valencia": "Valencia",
-  "Málaga": "Málaga CF",
-  "Racing Santander": "Real Racing Club",
+  "Athletic Bilbao":     "Athletic Club",
+  "Atletico Madrid":     "Atlético Madrid",
+  "Real Madrid":         "Real Madrid CF",
+  "Barcelona":           "FC Barcelona",
+  "Real Betis":          "Real Betis",
+  "Real Sociedad":       "Real Sociedad",
+  "Villarreal":          "Villarreal CF",
+  "Celta Vigo":          "Celta de Vigo",
+  "Alaves":              "Deportivo Alavés",
+  "Espanyol":            "RCD Espanyol de Barcelona",
+  "Getafe":              "Getafe",
+  "Rayo Vallecano":      "Rayo Vallecano",
+  "Osasuna":             "Osasuna",
+  "Sevilla":             "Sevilla FC",
+  "Valencia":            "Valencia",
+  "Málaga":              "Málaga CF",
+  "Racing Santander":    "Real Racing Club",
 
   // ── Bundesliga ───────────────────────────────────────────────────────────────
   "Bayern Munich": "FC Bayern München",
@@ -153,8 +153,14 @@ const BSD_NAME_MAP: Record<string, string> = {
   "PAOK": "PAOK",
 
   // ── UCL-specific clubs (Pot 3/4) not in main leagues above ──────────────────
+<<<<<<< HEAD
   "Shakhtar Donetsk": "Shakhtar Donetsk",
   "Arsenal": "Arsenal",
+=======
+  "Shakhtar Donetsk":    "Shakhtar Donetsk",
+  "Arsenal":             "Arsenal",
+  "Sabah":               "Sabah FK",
+>>>>>>> 5d77ee29baf46ef5cf4e1f9d50d2ee1043dcd4d3
 };
 
 
@@ -406,7 +412,7 @@ export const EUROPEAN_TEAMS = [
   "PSV Eindhoven", "Feyenoord", "AZ Alkmaar", "Utrecht", "Twente", "Benfica", "Porto", "Sporting CP",
   "Braga", "Guimaraes", "Celtic", "Rangers", "Club Brugge", "Anderlecht", "Genk", "Galatasaray",
   "Fenerbahce", "Besiktas", "Trabzonspor", "Red Bull Salzburg", "Sturm Graz", "Slavia Prague",
-  "Sparta Prague", "Olympiakos", "Panathinaikos", "PAOK",
+  "Sparta Prague", "Olympiakos", "Panathinaikos", "PAOK", "Sabah",
 ].sort();
 
 // World Cup 2026 nations — unchanged from original
