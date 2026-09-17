@@ -1,5 +1,6 @@
 import type { Match } from "@/lib/api";
 import clsx from "clsx";
+import { Archive } from "lucide-react";
 
 const RES_STYLE: Record<string, string> = {
   W: "bg-grn text-bg",
@@ -21,7 +22,7 @@ export default function FormTable({ matches, teamName, attack, defence, cached }
     <div>
       <div className="flex items-center gap-4 mb-3">
         <p className="section-label">{teamName}</p>
-        {cached && <span className="text-mt text-[10px] font-mono ml-auto">📦 cached</span>}
+        {cached && <span className="text-mt text-[10px] font-mono ml-auto inline-flex items-center gap-1"><Archive size={10} /> cached</span>}
       </div>
       <div className="flex gap-3 mb-3">
         <div className="bg-bg2 rounded-lg px-3 py-2 text-center">
