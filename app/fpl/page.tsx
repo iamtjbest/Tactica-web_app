@@ -239,7 +239,7 @@ function PlayerCard({ pick, rank, showTeam = false }: {
 
       {/* Footer */}
       <div className="flex items-center justify-between text-xs text-mt border-t border-bd/40 pt-2">
-        <span>{pick.total_pts ?? 0} pts last season · {pick.minutes ?? 0} min</span>
+        <span>{pick.total_pts ?? 0} pts this season · {pick.minutes ?? 0} min</span>
         {pick.value_score != null && (
           <span className="text-cyan font-bold">Value: {pick.value_score.toFixed(2)}</span>
         )}
