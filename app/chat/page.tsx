@@ -6,6 +6,7 @@ import TeamSelect from "@/components/TeamSelect";
 import LiveBadge from "@/components/LiveBadge";
 import ErrorBox from "@/components/ErrorBox";
 import clsx from "clsx";
+import { Radio, RefreshCw, MessageCircle, Brain } from "lucide-react";
 
 function ChatPageInner() {
   const searchParams = useSearchParams();
@@ -101,7 +102,7 @@ function ChatPageInner() {
     } catch (e: unknown) {
       setMessages([...updated, {
         role: "assistant",
-        content: `⚠️ Error: ${e instanceof Error ? e.message : "API error"}`,
+        content: `Error: ${e instanceof Error ? e.message : "API error"}`,
       }]);
     } finally { setSending(false); }
   }
@@ -112,7 +113,7 @@ function ChatPageInner() {
   return (
     <div className="max-w-screen-xl mx-auto px-5 py-10 space-y-5">
       <div>
-        <p className="section-label mb-2">💬 Module 5</p>
+        <p className="section-label mb-2 flex items-center gap-1.5"><MessageCircle size={13} /> Module 5</p>
         <h1 className="font-display font-black text-4xl text-white mb-2">AI Tactical Chat</h1>
         <p className="text-mt text-sm max-w-2xl">
           Select your teams, optionally sync a live match score from any competition worldwide,
@@ -126,7 +127,7 @@ function ChatPageInner() {
       </div>
 
       <div className="card space-y-3">
-        <p className="section-label">📡 Live Match Intel</p>
+        <p className="section-label flex items-center gap-1.5"><Radio size={13} /> Live Match Intel</p>
         {live && <LiveBadge data={live} />}
         {!live && (
           <p className="text-mt text-sm">Not synced — hit the button to scan all live matches worldwide.</p>
@@ -136,8 +137,8 @@ function ChatPageInner() {
           <button onClick={syncLive} disabled={syncing}
             className="flex-1 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 border border-cyan/30 text-cyan bg-cyan/5 hover:bg-cyan/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
             {syncing
-              ? <><span className="animate-spin">⏳</span> Syncing live BSD match data for {myTeam} vs {oppTeam}…</>
-              : `🔄 Sync Live Data for ${myTeam} vs ${oppTeam}`
+              ? <><RefreshCw size={14} className="animate-spin" /> Syncing live BSD match data for {myTeam} vs {oppTeam}…</>
+              : <><RefreshCw size={14} /> {`Sync Live Data for ${myTeam} vs ${oppTeam}`}</>
             }
           </button>
           {live && (
@@ -150,13 +151,13 @@ function ChatPageInner() {
       </div>
 
       <div className="card flex flex-col" style={{ minHeight: "500px" }}>
-        <p className="section-label mb-4">🧠 Assistant Manager</p>
+        <p className="section-label mb-4 flex items-center gap-1.5"><Brain size={13} /> Assistant Manager</p>
 
         <div className="flex-1 overflow-y-auto space-y-3 mb-4 pr-1" style={{ maxHeight: "440px" }}>
           {messages.length === 0 && (
             <div className="flex items-center justify-center h-48">
               <div className="text-center">
-                <p className="text-4xl mb-3">💬</p>
+                <MessageCircle size={36} className="mx-auto mb-3 text-mt" />
                 <p className="text-mt text-sm">
                   Ask anything — &ldquo;How do we beat {oppTeam}?&rdquo;<br/>
                   &ldquo;What changes at minute 70 losing 1-0?&rdquo;<br/>
