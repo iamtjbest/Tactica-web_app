@@ -1,6 +1,6 @@
 import Link from "next/link";
 import EmailCapture from '@/components/EmailCapture';
-import { Zap, BarChart2, Brain, Clock, MessageCircle, Target } from "lucide-react";
+import { Zap, BarChart2, Brain, Clock, MessageCircle, Target, Globe } from "lucide-react";
 
 const MODULES = [
   {
@@ -44,6 +44,13 @@ const MODULES = [
     title: "FPL Scout",
     desc: "Fixture difficulty ratings, captain picks, and transfer recommendations powered by real BSD match data. Built for FPL preseason.",
     pill: "Module 6",
+  },
+  {
+    href: "/nations",
+    icon: Globe,
+    title: "International Break",
+    desc: "Predict national team matchups with the same attack/defence engine — squad ratings, formation recommendations, and win probability for any fixture.",
+    pill: "Module 7",
   },
 ];
 
