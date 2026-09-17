@@ -7,6 +7,7 @@ import FormationBar from "@/components/FormationBar";
 import PlayerCard from "@/components/PlayerCard";
 import StatCard from "@/components/StatCard";
 import ErrorBox from "@/components/ErrorBox";
+import { Zap, Search, CheckCircle2, Bot, Ruler, Trophy, Shirt, AlertTriangle, MessageCircle, ArrowRight, Clock, Target, Loader2 } from "lucide-react";
 
 
 // Normalise 0-1 or 0-100 probability to display string
@@ -56,7 +57,7 @@ export default function TacticsPage() {
   return (
     <div className="max-w-screen-xl mx-auto px-5 py-10 space-y-6">
       <div>
-        <p className="section-label mb-2">⚡ Module 1</p>
+        <p className="section-label mb-2 flex items-center gap-1.5"><Zap size={13} /> Module 1</p>
         <h1 className="font-display font-black text-4xl text-white mb-2">Auto-Tactics</h1>
         <p className="text-mt text-sm leading-relaxed max-w-2xl">
           Select two teams. The engine fetches their last 5 matches via BSD API, extracts real
@@ -74,8 +75,8 @@ export default function TacticsPage() {
 
       <button onClick={run} disabled={loading} className="btn-volt w-full text-base py-4 flex items-center justify-center gap-2">
         {loading
-          ? (<><span className="animate-spin">⏳</span> Fetching matches &amp; generating tactics…</>)
-          : (<>🔍 Fetch Last 5 Matches &amp; Generate Optimal Tactics</>)
+          ? (<><Loader2 size={14} className="animate-spin inline" /> Fetching matches &amp; generating tactics…</>)
+          : (<><Search size={14} className="inline mr-1" />Fetch Last 5 Matches &amp; Generate Optimal Tactics</>)
         }
       </button>
 
@@ -95,13 +96,13 @@ export default function TacticsPage() {
       {predict && (
         <div className="space-y-5">
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            <StatCard label="✅ Recommended Formation" value={predict.best_formation} />
-            <StatCard label="🤖 AI Win Probability" value={`${fmtProb(predict.probability)}%`} />
-            <StatCard label="📐 Opp. Usual Formation" value={oppForm?.best_formation ?? "—"} />
+            <StatCard label={<span className="inline-flex items-center gap-1"><CheckCircle2 size={12} /> Recommended Formation</span>} value={predict.best_formation} />
+            <StatCard label={<span className="inline-flex items-center gap-1"><Bot size={12} /> AI Win Probability</span>} value={`${fmtProb(predict.probability)}%`} />
+            <StatCard label={<span className="inline-flex items-center gap-1"><Ruler size={12} /> Opp. Usual Formation</span>} value={oppForm?.best_formation ?? "—"} />
           </div>
 
           <div className="card">
-            <p className="section-label mb-5">🏆 Formation Win-Probability Ranking</p>
+            <p className="section-label mb-5 flex items-center gap-1.5"><Trophy size={13} /> Formation Win-Probability Ranking</p>
             <FormationBar items={predict.all_formations} />
           </div>
         </div>
@@ -110,7 +111,7 @@ export default function TacticsPage() {
       {lineup && (
         <div className="card space-y-4">
           <div>
-            <p className="section-label mb-1">👕 Recommended Starting XI</p>
+            <p className="section-label mb-1 flex items-center gap-1.5"><Shirt size={13} /> Recommended Starting XI</p>
             <p className="text-volt font-display font-bold text-xl">{lineup.formation}</p>
           </div>
 
@@ -120,19 +121,19 @@ export default function TacticsPage() {
 
           {lineup.xi.some(p => p.fallback) && (
             <p className="text-amber text-xs bg-amber/10 border border-amber/20 rounded-xl p-3">
-              ⚠️ Some slots filled with best available — load the full squad in Coach&apos;s Sandbox to refine player stats.
+              <AlertTriangle size={12} className="inline mr-1" /> Some slots filled with best available — load the full squad in Coach&apos;s Sandbox to refine player stats.
             </p>
           )}
 
           <div className="bg-bg border border-bd rounded-xl p-4 text-xs space-y-2 text-mt">
             <p className="font-bold text-white uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-              <span>📐</span> How Starting XI Selection &amp; Ranking Works
+              <Ruler size={14} /> How Starting XI Selection &amp; Ranking Works
             </p>
             <p className="leading-relaxed">
               <strong className="text-white">1. Tactical Mapping:</strong> Slots (GK, DF, MF, FW) are dynamically allocated based on the selected formation ({lineup.formation}). In 3+ forward setups (e.g. 4-3-3), wingers fill wide FW positions.
             </p>
             <p className="leading-relaxed">
-              <strong className="text-white">2. Selection Formula:</strong> Players are ranked within their natural positional group by <strong className="text-volt">Season Minutes Played (⏱)</strong> and <strong className="text-volt">Goal Contributions (⚽ G+A)</strong> to ensure match-fit, high-impact starters.
+              <strong className="text-white">2. Selection Formula:</strong> Players are ranked within their natural positional group by <strong className="text-volt">Season Minutes Played</strong> and <strong className="text-volt">Goal Contributions (G+A)</strong> to ensure match-fit, high-impact starters.
             </p>
           </div>
         </div>
@@ -143,7 +144,7 @@ export default function TacticsPage() {
           href={`/chat?my_team=${encodeURIComponent(myTeam)}&opp_team=${encodeURIComponent(oppTeam)}`}
           className="card flex items-center gap-3 border-cyan/20 hover:border-cyan/40 transition-colors group cursor-pointer"
         >
-          <div className="w-10 h-10 rounded-xl bg-cyan/10 border border-cyan/20 flex items-center justify-center text-lg flex-shrink-0">💬</div>
+          <div className="w-10 h-10 rounded-xl bg-cyan/10 border border-cyan/20 flex items-center justify-center flex-shrink-0"><MessageCircle size={18} className="text-cyan" /></div>
           <div>
             <p className="text-white font-bold text-sm group-hover:text-cyan transition-colors">
               Chat with AI about {myTeam} vs {oppTeam}
@@ -152,7 +153,7 @@ export default function TacticsPage() {
               The assistant will automatically check for a live match and know the current score.
             </p>
           </div>
-          <span className="ml-auto text-mt group-hover:text-cyan transition-colors">→</span>
+          <ArrowRight size={16} className="ml-auto text-mt group-hover:text-cyan transition-colors" />
         </a>
       )}
     </div>
