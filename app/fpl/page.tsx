@@ -2,6 +2,11 @@
 import { useState, useEffect } from "react";
 import TeamSelect from "@/components/TeamSelect";
 import ErrorBox from "@/components/ErrorBox";
+import {
+  Target, Shield, Hand, RefreshCw, Check, Twitter, Star, AlertTriangle,
+  XCircle, Zap, Calendar, Archive, BarChart2, Building2, User, Settings,
+  X, Crown, Award, ArrowRight, ArrowLeftRight, Lightbulb, TrendingDown, Flame,
+} from "lucide-react";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL || "https://tactica-backend-hdbd.onrender.com";
@@ -97,10 +102,10 @@ const PL_TEAMS = [
 
 // Positions — must match backend exactly (FWD/MID/DEF/GKP)
 const POSITIONS = [
-  { id: "FWD", label: "⚽ Forwards" },
-  { id: "MID", label: "🎭 Midfielders" },
-  { id: "DEF", label: "🛡️ Defenders" },
-  { id: "GKP", label: "🧤 Goalkeepers" },
+  { id: "FWD", label: "Forwards", icon: Target },
+  { id: "MID", label: "Midfielders", icon: RefreshCw },
+  { id: "DEF", label: "Defenders", icon: Shield },
+  { id: "GKP", label: "Goalkeepers", icon: Hand },
 ];
 
 const POS_LABEL: Record<string, string> = {
@@ -127,7 +132,9 @@ function ShareBtn({ text }: { text: string }) {
       setCopied(true); setTimeout(() => setCopied(false), 2000);
     }} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-volt/30
                   bg-volt/8 text-volt text-xs font-bold hover:bg-volt/15 transition-colors">
-      {copied ? "✅ Copied!" : "🐦 Copy tweet"}
+      {copied
+        ? <span className="flex items-center gap-1.5"><Check size={14} /> Copied!</span>
+        : <span className="flex items-center gap-1.5"><Twitter size={14} /> Copy tweet</span>}
     </button>
   );
 }
@@ -145,7 +152,7 @@ function PlayerCard({ pick, rank, showTeam = false }: {
         <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0
                          font-black text-sm border ${isTop ? "bg-volt/15 border-volt/40 text-volt" : "bg-sur2 border-bd text-mt"
           }`}>
-          {isTop ? "★" : rank}
+          {isTop ? <Star size={16} className="fill-current" /> : rank}
         </div>
 
         <div className="flex-1 min-w-0">
@@ -168,8 +175,10 @@ function PlayerCard({ pick, rank, showTeam = false }: {
               {(pick.ownership ?? 0).toFixed(1)}% owned
             </span>
             {pick.status && pick.status !== "a" && (
-              <span className="text-[10px] font-bold text-amber border border-amber/30 rounded px-1.5 py-0.5">
-                {pick.status === "d" ? "⚠️ Doubt" : "❌ Out"}
+              <span className="text-[10px] font-bold text-amber border border-amber/30 rounded px-1.5 py-0.5 inline-flex items-center gap-1">
+                {pick.status === "d"
+                  ? <><AlertTriangle size={10} /> Doubt</>
+                  : <><XCircle size={10} /> Out</>}
               </span>
             )}
           </div>
@@ -266,7 +275,7 @@ function PriceRange({ min, max, onMin, onMax }: {
                          text-white font-bold text-sm focus:border-volt/50 focus:outline-none" />
           </div>
         </div>
-        <span className="text-mt mt-5 text-sm">→</span>
+        <ArrowRight size={14} className="text-mt mt-5" />
         <div className="flex-1">
           <label className="text-[10px] text-mt uppercase tracking-wider mb-1 block">Max £m</label>
           <div className="relative">
@@ -318,7 +327,7 @@ function FixtureTicker() {
         <TeamSelect label="Club" teams={PL_TEAMS} value={team} onChange={setTeam} />
         <button onClick={fetch_} disabled={loading}
           className="btn-volt w-full py-3 text-sm disabled:opacity-50 flex items-center justify-center gap-2">
-          {loading ? <><span className="animate-spin">⚡</span> Loading…</> : <>📅 Get Fixture Ticker</>}
+          {loading ? <><Zap size={14} className="animate-spin" /> Loading…</> : <><Calendar size={14} /> Get Fixture Ticker</>}
         </button>
       </div>
       <ErrorBox msg={error} />
@@ -330,7 +339,7 @@ function FixtureTicker() {
               <p className="text-mt text-xs">{total} fixtures · {easy} easy · {hard} hard</p>
             </div>
             <div className="flex items-center gap-2">
-              {data.cached && <span className="text-mt text-[10px] border border-bd px-2 py-0.5 rounded-full">📦 cached</span>}
+              {data.cached && <span className="text-mt text-[10px] border border-bd px-2 py-0.5 rounded-full inline-flex items-center gap-1"><Archive size={10} /> cached</span>}
               <ShareBtn text={data.share_text} />
             </div>
           </div>
@@ -363,7 +372,7 @@ function FixtureTicker() {
             ))}
           </div>
           <div className="card border-volt/20">
-            <p className="section-label mb-2">📊 Quick Read</p>
+            <p className="section-label mb-2 flex items-center gap-1.5"><BarChart2 size={13} /> Quick Read</p>
             <p className="text-sm text-white leading-relaxed">
               {easy >= total * 0.6
                 ? `${data.team} have an excellent run — ${easy}/${total} fixtures easy. Strong to hold their attackers.`
@@ -397,10 +406,11 @@ function CaptainPick() {
   return (
     <div className="space-y-5">
       <div className="flex gap-2 p-1 bg-sur2 border border-bd rounded-xl">
-        {([["club", "🏟️ By Club"], ["squad", "👤 My Squad"]] as const).map(([id, label]) => (
+        {([["club", "By Club", Building2], ["squad", "My Squad", User]] as const).map(([id, label, Icon]) => (
           <button key={id} onClick={() => setMode(id)}
-            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${mode === id ? "bg-volt/15 text-volt" : "text-mt hover:text-white"
+            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${mode === id ? "bg-volt/15 text-volt" : "text-mt hover:text-white"
               }`}>
+            <Icon size={14} />
             {label}
           </button>
         ))}
@@ -415,7 +425,7 @@ function CaptainPick() {
           <TeamSelect label="Club" teams={PL_TEAMS} value={team} onChange={setTeam} />
           <button onClick={fetch_} disabled={loading}
             className="btn-volt w-full py-3 text-sm disabled:opacity-50 flex items-center justify-center gap-2">
-            {loading ? <><span className="animate-spin">🎯</span> Analysing…</> : <>🎯 Get Captain Pick</>}
+            {loading ? <><Target size={14} className="animate-spin" /> Analysing…</> : <><Target size={14} /> Get Captain Pick</>}
           </button>
         </div>
         <ErrorBox msg={error} />
@@ -427,7 +437,7 @@ function CaptainPick() {
                 <p className="text-mt text-xs">Ranked by FPL pts/game × fixture difficulty</p>
               </div>
               <div className="flex items-center gap-2">
-                {data.cached && <span className="text-mt text-[10px] border border-bd px-2 py-0.5 rounded-full">📦 cached</span>}
+                {data.cached && <span className="text-mt text-[10px] border border-bd px-2 py-0.5 rounded-full inline-flex items-center gap-1"><Archive size={10} /> cached</span>}
                 <ShareBtn text={data.share_text} />
               </div>
             </div>
@@ -438,7 +448,7 @@ function CaptainPick() {
             </div>
             <details className="card cursor-pointer group">
               <summary className="flex items-center justify-between text-mt text-sm select-none">
-                <span>⚙️ How scoring works</span>
+                <span className="flex items-center gap-1.5"><Settings size={13} /> How scoring works</span>
                 <span className="group-open:rotate-180 transition-transform">▾</span>
               </summary>
               <div className="mt-3 space-y-2 text-xs text-mt leading-relaxed border-t border-bd pt-3">
@@ -479,7 +489,7 @@ function PlayerSlot({ label, player, onPick, onClear, allPlayers, taken }: {
           <p className="text-mt text-[10px]">{player.team} · £{player.price.toFixed(1)}m
             {player.status !== "a" && <span className="text-amber"> · flagged</span>}</p>
         </div>
-        <button onClick={onClear} className="text-mt hover:text-red text-xs font-bold px-2">✕</button>
+        <button onClick={onClear} className="text-mt hover:text-red text-xs font-bold px-2"><X size={14} /></button>
       </div>
     );
   }
@@ -594,8 +604,8 @@ function MySquad() {
         <button onClick={fetch_} disabled={loading || filledCount !== 15}
           className="btn-volt w-full py-3 text-sm disabled:opacity-50 flex items-center justify-center gap-2">
           {loading
-            ? <><span className="animate-spin">🎯</span> Analysing squad…</>
-            : <>🎯 Analyse My Squad ({filledCount}/15)</>}
+            ? <><Target size={14} className="animate-spin" /> Analysing squad…</>
+            : <><Target size={14} /> Analyse My Squad ({filledCount}/15)</>}
         </button>
       </div>
 
@@ -614,11 +624,11 @@ function MySquad() {
           </div>
 
           <div className="card border-volt/30 bg-volt/5 space-y-2">
-            <p className="section-label">👑 Captain</p>
+            <p className="section-label flex items-center gap-1.5"><Crown size={13} /> Captain</p>
             <PlayerCard pick={data.captain} rank={1} showTeam />
             {data.vice_captain && (
               <>
-                <p className="section-label mt-3">🥈 Vice-Captain</p>
+                <p className="section-label mt-3 flex items-center gap-1.5"><Award size={13} /> Vice-Captain</p>
                 <PlayerCard pick={data.vice_captain} rank={2} showTeam />
               </>
             )}
@@ -642,15 +652,15 @@ function MySquad() {
 
           {data.transfer_suggestions.length > 0 && (
             <div>
-              <p className="section-label mb-2">🔄 Suggested Transfers</p>
+              <p className="section-label mb-2 flex items-center gap-1.5"><ArrowLeftRight size={13} /> Suggested Transfers</p>
               <div className="space-y-3">
                 {data.transfer_suggestions.map((t, i) => (
                   <div key={i} className={`card space-y-2 ${t.flagged ? "border-red/30 bg-red/5" : "border-cyan/30 bg-cyan/5"}`}>
                     <div className="flex items-center gap-2 text-sm font-bold">
                       <span className="text-white">{t.out.name}</span>
-                      <span className="text-mt">➡</span>
+                      <ArrowRight size={14} className="text-mt" />
                       <span className="text-volt">{t.in.name}</span>
-                      {t.flagged && <span className="text-[10px] text-red border border-red/30 rounded px-1.5 py-0.5">⚠️ Flagged</span>}
+                      {t.flagged && <span className="text-[10px] text-red border border-red/30 rounded px-1.5 py-0.5 inline-flex items-center gap-1"><AlertTriangle size={10} /> Flagged</span>}
                     </div>
                     <p className="text-mt text-xs leading-relaxed">{t.reason}</p>
                   </div>
@@ -701,7 +711,10 @@ function TransferRecommender() {
                     ? "bg-volt/10 border-volt/40 text-volt"
                     : "border-bd text-mt hover:border-volt/20 hover:text-white"
                   }`}>
-                {p.label}
+                <span className="flex items-center justify-center gap-1.5">
+                  <p.icon size={14} />
+                  {p.label}
+                </span>
               </button>
             ))}
           </div>
@@ -710,8 +723,8 @@ function TransferRecommender() {
         <button onClick={fetch_} disabled={loading}
           className="btn-volt w-full py-3 text-sm disabled:opacity-50 flex items-center justify-center gap-2">
           {loading
-            ? <><span className="animate-spin">🔄</span> Scanning all PL clubs…</>
-            : <>🔄 Find Transfer Targets</>}
+            ? <><RefreshCw size={14} className="animate-spin" /> Scanning all PL clubs…</>
+            : <><ArrowLeftRight size={14} /> Find Transfer Targets</>}
         </button>
       </div>
       <ErrorBox msg={error} />
@@ -727,12 +740,12 @@ function TransferRecommender() {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              {data.cached && <span className="text-mt text-[10px] border border-bd px-2 py-0.5 rounded-full">📦 cached</span>}
+              {data.cached && <span className="text-mt text-[10px] border border-bd px-2 py-0.5 rounded-full inline-flex items-center gap-1"><Archive size={10} /> cached</span>}
               <ShareBtn text={data.share_text} />
             </div>
           </div>
           <div className="flex items-center gap-2 text-xs text-mt bg-sur2 rounded-xl px-4 py-3 border border-bd">
-            <span>💡</span>
+            <Lightbulb size={14} />
             <span>
               <span className="text-white font-bold">Value score</span> = (pts/game × fixture) ÷ £price.
               High output, low price wins.
@@ -786,7 +799,10 @@ function DifferentialFinder() {
                     ? "bg-volt/10 border-volt/40 text-volt"
                     : "border-bd text-mt hover:border-volt/20 hover:text-white"
                   }`}>
-                {p.label}
+                <span className="flex items-center justify-center gap-1.5">
+                  <p.icon size={14} />
+                  {p.label}
+                </span>
               </button>
             ))}
           </div>
@@ -840,8 +856,8 @@ function DifferentialFinder() {
         <button onClick={fetch_} disabled={loading}
           className="btn-volt w-full py-3 text-sm disabled:opacity-50 flex items-center justify-center gap-2">
           {loading
-            ? <><span className="animate-spin">💡</span> Hunting differentials…</>
-            : <>💡 Find Differentials</>}
+            ? <><Lightbulb size={14} className="animate-spin" /> Hunting differentials…</>
+            : <><Lightbulb size={14} /> Find Differentials</>}
         </button>
       </div>
       <ErrorBox msg={error} />
@@ -858,18 +874,18 @@ function DifferentialFinder() {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              {data.cached && <span className="text-mt text-[10px] border border-bd px-2 py-0.5 rounded-full">📦 cached</span>}
+              {data.cached && <span className="text-mt text-[10px] border border-bd px-2 py-0.5 rounded-full inline-flex items-center gap-1"><Archive size={10} /> cached</span>}
               <ShareBtn text={data.share_text} />
             </div>
           </div>
           <div className="grid grid-cols-3 gap-2 text-center">
             {[
-              { icon: "📉", label: "Low ownership", sub: "Real FPL % data" },
-              { icon: "🔥", label: "In form", sub: "High pts/game + xG" },
-              { icon: "🟢", label: "Easy fixture", sub: "FDR ≤ 3 only" },
-            ].map(({ icon, label, sub }) => (
+              { icon: TrendingDown, label: "Low ownership", sub: "Real FPL % data" },
+              { icon: Flame, label: "In form", sub: "High pts/game + xG" },
+              { icon: Check, label: "Easy fixture", sub: "FDR ≤ 3 only" },
+            ].map(({ icon: Icon, label, sub }) => (
               <div key={label} className="bg-sur2 border border-bd rounded-xl py-3 px-2">
-                <p className="text-lg mb-0.5">{icon}</p>
+                <Icon size={20} className="mx-auto mb-0.5 text-volt" />
                 <p className="text-white text-xs font-bold">{label}</p>
                 <p className="text-mt text-[10px] mt-0.5">{sub}</p>
               </div>
@@ -881,7 +897,7 @@ function DifferentialFinder() {
                 {i === 0 && (
                   <div className="absolute -top-2 left-4 z-10">
                     <span className="bg-volt text-black text-[10px] font-black px-2 py-0.5 rounded-full">
-                      🔥 TOP DIFFERENTIAL
+                      <Flame size={12} className="inline mr-1" /> TOP DIFFERENTIAL
                     </span>
                   </div>
                 )}
@@ -898,10 +914,10 @@ function DifferentialFinder() {
 // ── Root page ──────────────────────────────────────────────────────────────────
 
 const TABS = [
-  { id: "ticker", label: "📅 Fixtures" },
-  { id: "captain", label: "🎯 Captain" },
-  { id: "transfer", label: "🔄 Transfers" },
-  { id: "diff", label: "💡 Differentials" },
+  { id: "ticker", label: "Fixtures", icon: Calendar },
+  { id: "captain", label: "Captain", icon: Target },
+  { id: "transfer", label: "Transfers", icon: ArrowLeftRight },
+  { id: "diff", label: "Differentials", icon: Lightbulb },
 ] as const;
 
 type Tab = typeof TABS[number]["id"];
@@ -920,10 +936,11 @@ export default function FplPage() {
       <div className="flex gap-2">
         {TABS.map(t => (
           <button key={t.id} onClick={() => setTab(t.id)}
-            className={`flex-1 py-3 px-2 rounded-xl border text-xs font-bold transition-all ${tab === t.id
+            className={`flex-1 py-3 px-2 rounded-xl border text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${tab === t.id
                 ? "bg-volt/10 border-volt/40 text-volt"
                 : "border-bd text-mt hover:border-volt/20 hover:text-white"
               }`}>
+            <t.icon size={14} />
             {t.label}
           </button>
         ))}
