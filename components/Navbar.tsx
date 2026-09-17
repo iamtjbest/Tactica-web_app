@@ -3,14 +3,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { useState } from "react";
+import { Zap, BarChart2, Brain, Clock, MessageCircle, Target } from "lucide-react";
 
 const NAV = [
-  { href: "/tactics",   label: "Auto-Tactics",      icon: "⚡" },
-  { href: "/opponent",  label: "Opponent Analysis",  icon: "📊" },
-  { href: "/sandbox",   label: "Coach's Sandbox",    icon: "🧠" },
-  { href: "/simulator", label: "Live Simulator",     icon: "⏱️" },
-  { href: "/chat",      label: "AI Chat",            icon: "💬" },
-  { href: "/fpl",      label: "FPL Scout",           icon: "🎯" },
+  { href: "/tactics",   label: "Auto-Tactics",      icon: Zap },
+  { href: "/opponent",  label: "Opponent Analysis",  icon: BarChart2 },
+  { href: "/sandbox",   label: "Coach's Sandbox",    icon: Brain },
+  { href: "/simulator", label: "Live Simulator",     icon: Clock },
+  { href: "/chat",      label: "AI Chat",            icon: MessageCircle },
+  { href: "/fpl",      label: "FPL Scout",           icon: Target },
 ];
 
 export default function Navbar() {
@@ -32,7 +33,7 @@ export default function Navbar() {
 
           {/* Desktop nav */}
           <div className="hidden lg:flex items-center gap-1">
-            {NAV.map(({ href, label, icon }) => (
+            {NAV.map(({ href, label, icon: Icon }) => (
               <Link key={href} href={href}
                 className={clsx(
                   "flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[13px] font-semibold transition-all duration-200",
@@ -40,7 +41,7 @@ export default function Navbar() {
                     ? "bg-volt/10 text-volt border border-volt/25"
                     : "text-mt hover:text-white hover:bg-sur2"
                 )}>
-                <span className="text-base">{icon}</span>
+                <Icon size={16} />
                 <span>{label}</span>
               </Link>
             ))}
@@ -59,13 +60,13 @@ export default function Navbar() {
       {/* Mobile menu */}
       {open && (
         <div className="lg:hidden fixed inset-0 z-40 bg-bg/98 backdrop-blur-xl flex flex-col items-center justify-center gap-4" onClick={() => setOpen(false)}>
-          {NAV.map(({ href, label, icon }) => (
+          {NAV.map(({ href, label, icon: Icon }) => (
             <Link key={href} href={href}
               className={clsx(
                 "flex items-center gap-3 px-8 py-4 rounded-2xl text-xl font-display font-bold transition-all",
                 path.startsWith(href) ? "text-volt" : "text-mt hover:text-white"
               )}>
-              <span>{icon}</span><span>{label}</span>
+              <Icon size={22} /><span>{label}</span>
             </Link>
           ))}
         </div>
