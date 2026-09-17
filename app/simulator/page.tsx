@@ -5,6 +5,10 @@ import TeamSelect from "@/components/TeamSelect";
 import FormationBar from "@/components/FormationBar";
 import ErrorBox from "@/components/ErrorBox";
 import clsx from "clsx";
+import {
+  Shield, CheckCircle2, Target, Flame, RefreshCw, Compass, AlertTriangle,
+  Zap, Scale, Lightbulb, Brain, LayoutGrid, Loader2, Clock, type LucideIcon,
+} from "lucide-react";
 
 
 // Normalise 0-1 or 0-100 probability to display string
@@ -24,7 +28,7 @@ export default function SimulatorPage() {
   const [oppGoals, setOppGoals] = useState(0);
   const [loading,  setLoading]  = useState(false);
   const [error,    setError]    = useState("");
-  const [result,   setResult]   = useState<(PredictResponse & { advice: string[] }) | null>(null);
+  const [result,   setResult]   = useState<(PredictResponse & { advice: { icon: LucideIcon; text: string }[] }) | null>(null);
 
   async function simulate() {
     if (myTeam === oppTeam) { setError("A team cannot face itself!"); return; }
@@ -46,36 +50,36 @@ export default function SimulatorPage() {
         opp_habit_formation:   of_?.best_formation ?? undefined,
       });
 
-      const advice: string[] = [];
+      const advice: { icon: LucideIcon; text: string }[] = [];
       const timeLeft = 90 - minute;
 
       if (myGoals > oppGoals) {
         if (timeLeft <= 15)
-          advice.push("🧱 Protect the lead — drop into a 5-4-1 or 5-3-2. Absorb the pressure, stay compact. One goal is all you need.");
+          advice.push({ icon: Shield, text: "Protect the lead — drop into a 5-4-1 or 5-3-2. Absorb the pressure, stay compact. One goal is all you need." });
         else if (timeLeft <= 30)
-          advice.push("✅ Comfortable lead — maintain your shape. No need for changes yet. Stay disciplined, keep the press triggers active.");
+          advice.push({ icon: CheckCircle2, text: "Comfortable lead — maintain your shape. No need for changes yet. Stay disciplined, keep the press triggers active." });
         else
-          advice.push("🎯 You're ahead early — push for the second goal. Don't sit too deep. A second goal kills the game.");
+          advice.push({ icon: Target, text: "You're ahead early — push for the second goal. Don't sit too deep. A second goal kills the game." });
       } else if (myGoals < oppGoals) {
         if (timeLeft <= 10)
-          advice.push("🔥 Desperate measures — all-out attack. Go to 3-4-3 or 3-2-5 shape. Pack the box on set pieces. You need a miracle and they happen.");
+          advice.push({ icon: Flame, text: "Desperate measures — all-out attack. Go to 3-4-3 or 3-2-5 shape. Pack the box on set pieces. You need a miracle and they happen." });
         else if (timeLeft <= 25)
-          advice.push("🔄 Tactical switch urgent — go to a more attacking formation immediately. Remove a midfielder, push wingers high, striker makes runs in behind.");
+          advice.push({ icon: RefreshCw, text: "Tactical switch urgent — go to a more attacking formation immediately. Remove a midfielder, push wingers high, striker makes runs in behind." });
         else if (timeLeft <= 45)
-          advice.push("📐 Regroup and build — you have time. Adjust the shape, stay patient, create overloads wide. Do not panic and give away counter-attack goals.");
+          advice.push({ icon: Compass, text: "Regroup and build — you have time. Adjust the shape, stay patient, create overloads wide. Do not panic and give away counter-attack goals." });
         else
-          advice.push("⚠️ You're losing but have time — focus on structure first, create overloads in wide areas, and build through midfield. Don't chase the game too early.");
+          advice.push({ icon: AlertTriangle, text: "You're losing but have time — focus on structure first, create overloads in wide areas, and build through midfield. Don't chase the game too early." });
       } else {
         if (timeLeft <= 10)
-          advice.push("⚡ Final push — commit both fullbacks forward. High press, no regard for the counter now. Win it or take the draw.");
+          advice.push({ icon: Zap, text: "Final push — commit both fullbacks forward. High press, no regard for the counter now. Win it or take the draw." });
         else if (timeLeft <= 30)
-          advice.push("🎯 Push for the winner — bring on an extra attacking player. You can still win this. Fullbacks join attacks, forwards press their backline.");
+          advice.push({ icon: Target, text: "Push for the winner — bring on an extra attacking player. You can still win this. Fullbacks join attacks, forwards press their backline." });
         else
-          advice.push("⚖️ Level game — control possession through midfield, be patient. The next goal decides this. Don't gift set pieces away.");
+          advice.push({ icon: Scale, text: "Level game — control possession through midfield, be patient. The next goal decides this. Don't gift set pieces away." });
       }
 
       if (formation.startsWith("5"))
-        advice.push(`💡 Your ${formation} is very defensive — with ${timeLeft} minutes left and score ${myGoals}–${oppGoals}, consider pushing one of the wide defenders into midfield to create more overloads going forward.`);
+        advice.push({ icon: Lightbulb, text: `Your ${formation} is very defensive — with ${timeLeft} minutes left and score ${myGoals}–${oppGoals}, consider pushing one of the wide defenders into midfield to create more overloads going forward.` });
 
       setResult({ ...pred, advice });
     } catch (e: unknown) {
@@ -89,7 +93,7 @@ export default function SimulatorPage() {
   return (
     <div className="max-w-screen-xl mx-auto px-5 py-10 space-y-6">
       <div>
-        <p className="section-label mb-2">⏱️ Module 4</p>
+        <p className="section-label mb-2 flex items-center gap-1.5"><Clock size={13} /> Module 4</p>
         <h1 className="font-display font-black text-4xl text-white mb-2">Live Simulator</h1>
         <p className="text-mt text-sm max-w-2xl">
           Set the current match scenario — minute, scoreline, and your formation.
@@ -157,26 +161,27 @@ export default function SimulatorPage() {
 
       <button onClick={simulate} disabled={loading} className="btn-volt w-full py-4 text-base flex items-center justify-center gap-2">
         {loading
-          ? <><span className="animate-spin">⏳</span> Simulating…</>
-          : "🎯 Get Tactical Recommendation"
+          ? <><Loader2 size={14} className="animate-spin inline" /> Simulating…</>
+          : <><Target size={14} className="inline mr-1" />Get Tactical Recommendation</>
         }
       </button>
 
       {result && (
         <div className="space-y-5">
           <div className="card">
-            <p className="section-label mb-4">🧠 AI Tactical Advice</p>
+            <p className="section-label mb-4 flex items-center gap-1.5"><Brain size={13} /> AI Tactical Advice</p>
             <div className="space-y-3">
               {result.advice.map((a, i) => (
-                <div key={i} className="bg-bg border-l-2 border-l-volt rounded-xl px-4 py-3 text-sm text-white leading-relaxed">
-                  {a}
+                <div key={i} className="bg-bg border-l-2 border-l-volt rounded-xl px-4 py-3 text-sm text-white leading-relaxed flex items-start gap-2.5">
+                  <a.icon size={16} className="text-volt flex-shrink-0 mt-0.5" />
+                  <span>{a.text}</span>
                 </div>
               ))}
             </div>
           </div>
 
           <div className="card">
-            <p className="section-label mb-5">📐 Best Formation Options</p>
+            <p className="section-label mb-5 flex items-center gap-1.5"><LayoutGrid size={13} /> Best Formation Options</p>
             <FormationBar items={result.all_formations} />
           </div>
 
