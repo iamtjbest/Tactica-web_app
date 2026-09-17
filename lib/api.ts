@@ -407,7 +407,7 @@ export const EUROPEAN_TEAMS = [
   "PSV Eindhoven", "Feyenoord", "AZ Alkmaar", "Utrecht", "Twente", "Benfica", "Porto", "Sporting CP",
   "Braga", "Guimaraes", "Celtic", "Rangers", "Club Brugge", "Anderlecht", "Genk", "Galatasaray",
   "Fenerbahce", "Besiktas", "Trabzonspor", "Red Bull Salzburg", "Sturm Graz", "Slavia Prague",
-  "Sparta Prague", "Olympiakos", "Panathinaikos", "PAOK", "Sabah",
+  "Sparta Prague", "Olympiakos", "Panathinaikos", "PAOK", "Sabah", "NEC Nijmegen", "Lech Poznań", "Norwich City",
 ].sort();
 
 // World Cup 2026 nations — unchanged from original
