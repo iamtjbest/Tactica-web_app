@@ -6,7 +6,15 @@ import {
   Target, Shield, Hand, RefreshCw, Check, Twitter, Star, AlertTriangle,
   XCircle, Zap, Calendar, Archive, BarChart2, Building2, User, Settings,
   X, Crown, Award, ArrowRight, ArrowLeftRight, Lightbulb, TrendingDown, Flame,
+  Sparkles, Users2, type LucideIcon,
 } from "lucide-react";
+
+const CHIP_ICONS: Record<string, LucideIcon> = {
+  "Wildcard": RefreshCw,
+  "Free Hit": Zap,
+  "Bench Boost": Users2,
+  "Triple Captain": Crown,
+};
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL || "https://tactica-backend-hdbd.onrender.com";
@@ -72,6 +80,9 @@ interface PlayerListItem {
 interface TransferSuggestion {
   out: FplPlayer; in: FplPlayer; reason: string; flagged: boolean;
 }
+interface ChipAdvice {
+  chip: string; score: number; reason: string; action: string; half: number;
+}
 interface SquadResponse {
   formation: string;
   starting_xi: FplPlayer[]; bench: FplPlayer[];
@@ -79,6 +90,7 @@ interface SquadResponse {
   squad_value: number; bank: number;
   transfer_suggestions: TransferSuggestion[];
   share_text: string; cached: boolean;
+  current_gameweek: number; chip_advice: ChipAdvice[];
 }
 
 // ── FDR colour maps ────────────────────────────────────────────────────────────
@@ -665,6 +677,41 @@ function MySquad() {
                     <p className="text-mt text-xs leading-relaxed">{t.reason}</p>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {data.chip_advice && data.chip_advice.length > 0 && (
+            <div>
+              <p className="section-label mb-2 flex items-center gap-1.5">
+                <Sparkles size={13} /> Chip Advice
+                <span className="text-mt font-normal normal-case ml-1">— Gameweek {data.current_gameweek}</span>
+              </p>
+              <div className="space-y-3">
+                {data.chip_advice.map((c, i) => {
+                  const Icon = CHIP_ICONS[c.chip] ?? Sparkles;
+                  const isTop = i === 0;
+                  return (
+                    <div key={c.chip} className={`card space-y-2 ${isTop ? "border-volt/40 bg-volt/5" : ""}`}>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 text-sm font-bold text-white">
+                          <Icon size={16} className={isTop ? "text-volt" : "text-mt"} />
+                          {c.chip}
+                          {isTop && <span className="text-[10px] text-volt border border-volt/30 rounded px-1.5 py-0.5">TOP PICK</span>}
+                          <span className="text-[10px] text-mt border border-bd rounded px-1.5 py-0.5">Half {c.half}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 flex-shrink-0">
+                          <div className="w-16 h-1.5 bg-bg2 rounded-full overflow-hidden">
+                            <div className={`h-full rounded-full ${isTop ? "bg-volt" : "bg-mt2"}`} style={{ width: `${c.score * 10}%` }} />
+                          </div>
+                          <span className="text-xs font-mono text-mt">{c.score}/10</span>
+                        </div>
+                      </div>
+                      <p className="text-mt text-xs leading-relaxed">{c.reason}</p>
+                      <p className="text-white text-xs leading-relaxed font-semibold">{c.action}</p>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
