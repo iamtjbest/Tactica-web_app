@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { useState } from "react";
-import { Zap, BarChart2, Brain, Clock, MessageCircle, Target } from "lucide-react";
+import { Zap, BarChart2, Brain, Clock, MessageCircle, Target, Globe } from "lucide-react";
 
 const NAV = [
   { href: "/tactics",   label: "Auto-Tactics",      icon: Zap },
@@ -12,6 +12,7 @@ const NAV = [
   { href: "/simulator", label: "Live Simulator",     icon: Clock },
   { href: "/chat",      label: "AI Chat",            icon: MessageCircle },
   { href: "/fpl",      label: "FPL Scout",           icon: Target },
+  { href: "/nations",  label: "Nations",             icon: Globe },
 ];
 
 export default function Navbar() {
