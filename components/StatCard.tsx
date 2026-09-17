@@ -1,4 +1,6 @@
-export default function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
+import type { ReactNode } from "react";
+
+export default function StatCard({ label, value, sub }: { label: ReactNode; value: string | number; sub?: string }) {
   return (
     <div className="bg-sur border border-bd border-l-2 border-l-volt rounded-xl px-4 py-3 text-center">
       <p className="text-mt text-xs mb-1">{label}</p>
