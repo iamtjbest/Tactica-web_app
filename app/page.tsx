@@ -1,45 +1,46 @@
 import Link from "next/link";
 import EmailCapture from '@/components/EmailCapture';
+import { Zap, BarChart2, Brain, Clock, MessageCircle, Target } from "lucide-react";
 
 const MODULES = [
   {
     href: "/tactics",
-    icon: "⚡",
+    icon: Zap,
     title: "Auto-Tactics",
     desc: "Fetches last 5 real matches from BSD API, computes live attack/defence ratings, and recommends the optimal formation + Starting XI.",
     pill: "Module 1",
   },
   {
     href: "/opponent",
-    icon: "📊",
+    icon: BarChart2,
     title: "Opponent Analysis",
     desc: "Head-to-head rating comparison, recent form, and an AI scout report with plain-language tactical guidance for the specific matchup.",
     pill: "Module 2",
   },
   {
     href: "/sandbox",
-    icon: "🧠",
+    icon: Brain,
     title: "Coach's Sandbox",
     desc: "Pick your formation, manually draft your Starting XI from the real squad, and get an AI win-probability estimate for your game plan.",
     pill: "Module 3",
   },
   {
     href: "/simulator",
-    icon: "⏱️",
+    icon: Clock,
     title: "Live Simulator",
     desc: "Set the match minute and current scoreline. The AI returns real-time tactical advice — hold shape, push forward, or protect the lead.",
     pill: "Module 4",
   },
   {
     href: "/chat",
-    icon: "💬",
+    icon: MessageCircle,
     title: "AI Tactical Chat",
     desc: "Sync a live score from any competition worldwide, then ask the AI assistant manager anything. It knows your squad and the live context.",
     pill: "Module 5",
   },
   {
     href: "/fpl",
-    icon: "🎯",
+    icon: Target,
     title: "FPL Scout",
     desc: "Fixture difficulty ratings, captain picks, and transfer recommendations powered by real BSD match data. Built for FPL preseason.",
     pill: "Module 6",
@@ -77,11 +78,11 @@ export default function Home() {
       {/* Module grid */}
       <div className="max-w-screen-xl mx-auto px-5 pb-24">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {MODULES.map(({ href, icon, title, desc, pill }) => (
+          {MODULES.map(({ href, icon: Icon, title, desc, pill }) => (
             <Link key={href} href={href}
               className="card hover:border-volt/40 hover:bg-sur2 transition-all duration-200 group block">
               <div className="flex items-start justify-between mb-4">
-                <span className="text-3xl">{icon}</span>
+                <Icon size={28} className="text-volt" />
                 <span className="font-mono text-[10px] text-mt border border-bd px-2 py-0.5 rounded-full tracking-wider">{pill}</span>
               </div>
               <h2 className="font-display font-bold text-lg text-white mb-2 group-hover:text-volt transition-colors">{title}</h2>
