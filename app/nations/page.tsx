@@ -8,6 +8,7 @@ import FormationBar from "@/components/FormationBar";
 import ErrorBox from "@/components/ErrorBox";
 import StatCard from "@/components/StatCard";
 import clsx from "clsx";
+import { Globe, Ruler, Loader2, Target, CheckCircle2, Bot, Swords, Shield, Trophy, BarChart2, Shirt, AlertTriangle, ClipboardList, Award, MessageCircle, Brain } from "lucide-react";
 
 
 // Normalise 0-1 or 0-100 probability to display string
@@ -147,14 +148,14 @@ ${oppNation.name} — Attack: ${result.opp_attack}, Defence: ${result.opp_defenc
       });
       setMessages([...updated, { role: "assistant", content: res.reply }]);
     } catch (e: unknown) {
-      setMessages([...updated, { role: "assistant", content: `⚠️ ${e instanceof Error ? e.message : "Chat error"}` }]);
+      setMessages([...updated, { role: "assistant", content: `${e instanceof Error ? e.message : "Chat error"}` }]);
     } finally { setSending(false); }
   }
 
   return (
     <div className="max-w-screen-xl mx-auto px-5 py-10 space-y-6">
       <div>
-        <p className="section-label mb-2">🌍 Module 6</p>
+        <p className="section-label mb-2 flex items-center gap-1.5"><Globe size={13} /> Module 6</p>
         <h1 className="font-display font-black text-4xl text-white mb-2">World Cup 2026</h1>
         <p className="text-mt text-sm max-w-2xl">
           All 48 FIFA-confirmed nations. Player ratings use caps, international goals, age,
@@ -163,7 +164,7 @@ ${oppNation.name} — Attack: ${result.opp_attack}, Defence: ${result.opp_defenc
       </div>
 
       <div className="card bg-volt/5 border-volt/20">
-        <p className="section-label mb-4">📐 Player Rating Formula</p>
+        <p className="section-label mb-4 flex items-center gap-1.5"><Ruler size={13} /> Player Rating Formula</p>
         <div className="grid grid-cols-3 gap-3 text-center">
           {[
             ["Attackers / Midfielders", "Caps 35% · Goals 35% · Age 30%"],
@@ -202,25 +203,25 @@ ${oppNation.name} — Attack: ${result.opp_attack}, Defence: ${result.opp_defenc
       <ErrorBox msg={error} />
 
       <button onClick={predict} disabled={loading} className="btn-volt w-full py-4 text-base flex items-center justify-center gap-2">
-        {loading ? <><span className="animate-spin">⏳</span> Scoring squads…</> : "⚽ Predict Optimal Formation"}
+        {loading ? <><Loader2 size={14} className="animate-spin inline" /> Scoring squads…</> : <><Target size={14} className="inline mr-1" />Predict Optimal Formation</>}
       </button>
 
       {result && (
         <div className="space-y-5">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <StatCard label="✅ Best Formation"   value={result.best_formation} />
-            <StatCard label="🤖 Win Probability"  value={`${fmtProb(result.probability)}%`} />
-            <StatCard label="⚔️ Our Attack"       value={result.my_attack} />
-            <StatCard label="🛡️ Our Defence"      value={result.my_defence} />
+            <StatCard label={<span className="inline-flex items-center gap-1"><CheckCircle2 size={12} /> Best Formation</span>} value={result.best_formation} />
+            <StatCard label={<span className="inline-flex items-center gap-1"><Bot size={12} /> Win Probability</span>} value={`${fmtProb(result.probability)}%`} />
+            <StatCard label={<span className="inline-flex items-center gap-1"><Swords size={12} /> Our Attack</span>} value={result.my_attack} />
+            <StatCard label={<span className="inline-flex items-center gap-1"><Shield size={12} /> Our Defence</span>} value={result.my_defence} />
           </div>
 
           <div className="card">
-            <p className="section-label mb-5">🏆 Formation Ranking</p>
+            <p className="section-label mb-5 flex items-center gap-1.5"><Trophy size={13} /> Formation Ranking</p>
             <FormationBar items={result.all_formations} />
           </div>
 
           <div className="card">
-            <p className="section-label mb-4">📊 Rating Breakdown — {result.team} vs {result.opponent}</p>
+            <p className="section-label mb-4 flex items-center gap-1.5"><BarChart2 size={13} /> Rating Breakdown — {result.team} vs {result.opponent}</p>
             <div className="grid grid-cols-2 gap-6">
               {[
                 { name: result.team,     att: result.my_attack,  def: result.my_defence,  count: result.my_squad_count,  color: "text-volt" },
@@ -246,7 +247,7 @@ ${oppNation.name} — Attack: ${result.opp_attack}, Defence: ${result.opp_defenc
           {/* Probable Lineup */}
           {!lineup && (
             <div className="card">
-              <p className="section-label mb-4">👕 Probable Lineup</p>
+              <p className="section-label mb-4 flex items-center gap-1.5"><Shirt size={13} /> Probable Lineup</p>
               <div className="flex items-center gap-3 mb-4 flex-wrap">
                 <span className="text-mt text-xs">Formation:</span>
                 {FORMATIONS.map(f => (
@@ -260,7 +261,7 @@ ${oppNation.name} — Attack: ${result.opp_attack}, Defence: ${result.opp_defenc
               <ErrorBox msg={lineupError} />
               <button onClick={getLineup} disabled={lineupLoading}
                 className="btn-outline w-full py-3 flex items-center justify-center gap-2 mt-2">
-                {lineupLoading ? <><span className="animate-spin">⏳</span> Building XI…</> : `📋 See Probable ${myNation.name} Lineup`}
+                {lineupLoading ? <><Loader2 size={14} className="animate-spin inline" /> Building XI…</> : `See Probable ${myNation.name} Lineup`}
               </button>
             </div>
           )}
@@ -269,7 +270,7 @@ ${oppNation.name} — Attack: ${result.opp_attack}, Defence: ${result.opp_defenc
             <div className="card">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="section-label">👕 Probable Lineup — {lineup.nation}</p>
+                  <p className="section-label flex items-center gap-1.5"><Shirt size={13} /> Probable Lineup — {lineup.nation}</p>
                   <p className="text-volt font-display font-bold text-xl mt-1">{lineup.formation}</p>
                 </div>
                 <button onClick={() => setLineup(null)} className="text-mt text-xs hover:text-white px-3 py-1.5 rounded-lg border border-bd">
@@ -282,12 +283,12 @@ ${oppNation.name} — Attack: ${result.opp_attack}, Defence: ${result.opp_defenc
                     <div className="flex items-center gap-2.5">
                       <span className="pos-badge">{p.pos}</span>
                       <span className="text-white text-sm font-semibold">{p.name}</span>
-                      {p.fallback && <span className="text-amber text-xs">⚠️</span>}
+                      {p.fallback && <AlertTriangle size={12} className="text-amber" />}
                     </div>
                     <div className="flex gap-3 text-mt text-xs">
                       <span>{p.club || "—"}</span>
-                      <span>🧢 {p.caps}</span>
-                      <span>⚽ {p.goals}</span>
+                      <span className="inline-flex items-center gap-1"><Award size={11} /> {p.caps}</span>
+                      <span className="inline-flex items-center gap-1"><Target size={11} /> {p.goals}</span>
                       <span>{p.age}y</span>
                     </div>
                   </div>
@@ -302,7 +303,7 @@ ${oppNation.name} — Attack: ${result.opp_attack}, Defence: ${result.opp_defenc
           {!showChat && (
             <button onClick={() => setShowChat(true)}
               className="w-full py-4 rounded-2xl border border-cyan/30 bg-cyan/5 text-cyan font-bold text-base flex items-center justify-center gap-2 hover:bg-cyan/10 hover:border-cyan transition-all">
-              💬 Chat with AI about this matchup
+              <MessageCircle size={14} className="inline mr-1" /> Chat with AI about this matchup
             </button>
           )}
 
@@ -310,7 +311,7 @@ ${oppNation.name} — Attack: ${result.opp_attack}, Defence: ${result.opp_defenc
             <div className="card border-cyan/20 bg-cyan/3">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="section-label">💬 AI Assistant Manager</p>
+                  <p className="section-label flex items-center gap-1.5"><MessageCircle size={13} /> AI Assistant Manager</p>
                   <p className="text-mt text-xs mt-0.5">{myNation.name} vs {oppNation.name} · {result.best_formation} recommended</p>
                 </div>
                 <button onClick={() => { setShowChat(false); setMessages([]); }} className="text-mt text-xs hover:text-white px-3 py-1.5 rounded-lg border border-bd">Close</button>
@@ -318,7 +319,7 @@ ${oppNation.name} — Attack: ${result.opp_attack}, Defence: ${result.opp_defenc
               <div className="space-y-3 mb-4 overflow-y-auto pr-1" style={{ maxHeight: "380px" }}>
                 {messages.length === 0 && (
                   <div className="text-center py-10">
-                    <p className="text-3xl mb-3">🧠</p>
+                    <Brain size={28} className="mx-auto mb-3 text-mt" />
                     <p className="text-mt text-sm leading-relaxed">
                       Ask anything about this matchup.<br/>
                       &ldquo;Why {result.best_formation} against {result.opponent}?&rdquo;
