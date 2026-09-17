@@ -5,6 +5,7 @@ import TeamSelect from "@/components/TeamSelect";
 import ErrorBox from "@/components/ErrorBox";
 import StatCard from "@/components/StatCard";
 import clsx from "clsx";
+import { Brain, Loader2, Download, CheckCircle2, Check, Settings, Shirt, Clock, Target } from "lucide-react";
 
 
 // Normalise 0-1 or 0-100 probability to display string
@@ -88,7 +89,7 @@ export default function SandboxPage() {
   return (
     <div className="max-w-screen-xl mx-auto px-5 py-10 space-y-6">
       <div>
-        <p className="section-label mb-2">🧠 Module 3</p>
+        <p className="section-label mb-2 flex items-center gap-1.5"><Brain size={13} /> Module 3</p>
         <h1 className="font-display font-black text-4xl text-white mb-2">Coach&apos;s Sandbox</h1>
         <p className="text-mt text-sm max-w-2xl">
           Pick your formation, load the real squad from BSD, draft your Starting XI manually,
@@ -122,7 +123,7 @@ export default function SandboxPage() {
 
       <button onClick={() => fetchSquad()} disabled={busy}
         className="btn-outline w-full py-3 flex items-center justify-center gap-2">
-        {fetching ? <><span className="animate-spin">⏳</span> Fetching squad from BSD…</> : `📥 Load ${myTeam} Squad from BSD`}
+        {fetching ? <><Loader2 size={14} className="animate-spin inline" /> Fetching squad from BSD…</> : <><Download size={14} className="inline mr-1" />{`Load ${myTeam} Squad from BSD`}</>}
       </button>
 
       {squad.length > 0 && (
@@ -132,7 +133,7 @@ export default function SandboxPage() {
               <p className="section-label">Select Your XI ({selected.length}/11)</p>
               {bsdMatchedName && (
                 <p className="text-mt text-xs mt-0.5">
-                  ✅ Verified BSD Senior Squad: <span className="text-white font-semibold">{bsdMatchedName}</span> ({squad.length} players)
+                  <CheckCircle2 size={14} className="inline mr-1" /> Verified BSD Senior Squad: <span className="text-white font-semibold">{bsdMatchedName}</span> ({squad.length} players)
                 </p>
               )}
             </div>
@@ -166,7 +167,7 @@ export default function SandboxPage() {
                           {badge}
                         </span>
                         <span className="text-sm font-semibold flex-1 truncate">{p.Name}</span>
-                        {isSelected && <span className="text-volt text-base">✓</span>}
+                        {isSelected && <Check size={16} className="text-volt" />}
                       </button>
                     );
                   })}
@@ -177,7 +178,7 @@ export default function SandboxPage() {
 
           <button onClick={analyse} disabled={busy || selected.length < 11}
             className="btn-volt w-full mt-2 py-3 flex items-center justify-center gap-2">
-            {loading ? <><span className="animate-spin">⏳</span> Analysing…</> : "⚙️ Analyse My Gameplan"}
+            {loading ? <><Loader2 size={14} className="animate-spin inline" /> Analysing…</> : <><Settings size={14} className="inline mr-1" />Analyse My Gameplan</>}
           </button>
 
           {result && (
@@ -192,7 +193,7 @@ export default function SandboxPage() {
 
       {selected.length > 0 && (
         <div className="card">
-          <p className="section-label mb-4">👕 Your Drafted XI — {formation}</p>
+          <p className="section-label mb-4 flex items-center gap-1.5"><Shirt size={13} /> Your Drafted XI — {formation}</p>
           <div className="space-y-2">
             {selected.map(name => {
               const p = squad.find(pl => pl.Name === name);
@@ -203,7 +204,7 @@ export default function SandboxPage() {
                     <span className="pos-badge">{badge}</span>
                     <span className="text-white text-sm font-semibold">{name}</span>
                   </div>
-                  {p && <span className="text-mt text-xs">⏱ {p.Min}m · ⚽ {p.G_A} G+A</span>}
+                  {p && <span className="text-mt text-xs inline-flex items-center gap-1"><Clock size={10} /> {p.Min}m · <Target size={10} /> {p.G_A} G+A</span>}
                 </div>
               );
             })}
