@@ -1,6 +1,7 @@
 import type { FormationResult } from "@/lib/api";
+import { Medal } from "lucide-react";
 
-const MEDALS = ["🥇","🥈","🥉","4️⃣","5️⃣"];
+const MEDAL_COLOR = ["text-[#FFD700]", "text-[#C0C0C0]", "text-[#CD7F32]"];
 
 export default function FormationBar({ items }: { items: FormationResult[] }) {
   const top5 = items.slice(0, 5);
@@ -9,7 +10,11 @@ export default function FormationBar({ items }: { items: FormationResult[] }) {
     <div className="space-y-3">
       {top5.map((f, i) => (
         <div key={f.formation} className="flex items-center gap-3">
-          <span className="text-lg w-7">{MEDALS[i]}</span>
+          <span className="w-7 flex items-center justify-center">
+            {i < 3
+              ? <Medal size={18} className={MEDAL_COLOR[i]} />
+              : <span className="text-mt text-sm font-bold">{i + 1}</span>}
+          </span>
           <span className="text-white font-display font-bold w-28 text-sm">{f.formation}</span>
           <div className="flex-1 bg-bg2 rounded-full h-2 overflow-hidden">
             <div className="h-full rounded-full bg-gradient-to-r from-volt to-volt2 transition-all"
