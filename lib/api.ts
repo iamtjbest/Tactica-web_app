@@ -41,7 +41,12 @@ const BSD_NAME_MAP: Record<string, string> = {
   "Getafe":              "Getafe",
   "Rayo Vallecano":      "Rayo Vallecano",
   "Osasuna":             "Osasuna",
-  "Sevilla":             "Sevilla FC",
+  // "Sevilla" is intentionally left unmapped: BSD's own naming has this
+  // backwards versus most clubs — bare "Sevilla" is their men's team,
+  // while "Sevilla FC" is BSD's name for the WOMEN'S team (confirmed via
+  // live debug data on 2026-09-19, every one of "Sevilla FC"'s fixtures
+  // is tagged League 36). Mapping it to "Sevilla FC" was silently sending
+  // every request to the wrong team.
   "Valencia":            "Valencia",
   "Málaga":              "Málaga CF",
   "Racing Santander":    "Real Racing Club",
