@@ -415,7 +415,9 @@ export const EUROPEAN_TEAMS = [
   "Sparta Prague", "Olympiakos", "Panathinaikos", "PAOK", "Sabah", "NEC Nijmegen", "Lech Poznań", "Norwich City",
 ].sort();
 
-// World Cup 2026 nations — unchanged from original
+// National teams — originally World Cup 2026 qualifiers only; expanded Sept
+// 2026 to include UEFA Nations League participants too, since that's the
+// competition actually being played during international breaks.
 export const WC_2026_NATIONS = [
   { id: 1, name: "Canada", flag: "🇨🇦", conf: "CONCACAF", bsdNames: ["Canada"] },
   { id: 2, name: "Mexico", flag: "🇲🇽", conf: "CONCACAF", bsdNames: ["Mexico", "México"] },
@@ -465,7 +467,44 @@ export const WC_2026_NATIONS = [
   { id: 46, name: "Saudi Arabia", flag: "🇸🇦", conf: "AFC", bsdNames: ["Saudi Arabia"] },
   { id: 47, name: "Uzbekistan", flag: "🇺🇿", conf: "AFC", bsdNames: ["Uzbekistan"] },
   { id: 48, name: "New Zealand", flag: "🇳🇿", conf: "OFC", bsdNames: ["New Zealand"] },
+  // UEFA Nations League additions (Sept 2026) — match backend registry IDs exactly
+  { id: 49, name: "Albania", flag: "🇦🇱", conf: "UEFA", bsdNames: ["Albania"] },
+  { id: 50, name: "Andorra", flag: "🇦🇩", conf: "UEFA", bsdNames: ["Andorra"] },
+  { id: 51, name: "Armenia", flag: "🇦🇲", conf: "UEFA", bsdNames: ["Armenia"] },
+  { id: 52, name: "Azerbaijan", flag: "🇦🇿", conf: "UEFA", bsdNames: ["Azerbaijan"] },
+  { id: 53, name: "Belarus", flag: "🇧🇾", conf: "UEFA", bsdNames: ["Belarus"] },
+  { id: 54, name: "Bulgaria", flag: "🇧🇬", conf: "UEFA", bsdNames: ["Bulgaria"] },
+  { id: 55, name: "Cyprus", flag: "🇨🇾", conf: "UEFA", bsdNames: ["Cyprus"] },
+  { id: 56, name: "Denmark", flag: "🇩🇰", conf: "UEFA", bsdNames: ["Denmark", "Danmark"] },
+  { id: 57, name: "Estonia", flag: "🇪🇪", conf: "UEFA", bsdNames: ["Estonia", "Eesti"] },
+  { id: 58, name: "Faroe Islands", flag: "🇫🇴", conf: "UEFA", bsdNames: ["Faroe Islands", "Faroes"] },
+  { id: 59, name: "Finland", flag: "🇫🇮", conf: "UEFA", bsdNames: ["Finland", "Suomi"] },
+  { id: 60, name: "Georgia", flag: "🇬🇪", conf: "UEFA", bsdNames: ["Georgia"] },
+  { id: 61, name: "Gibraltar", flag: "🇬🇮", conf: "UEFA", bsdNames: ["Gibraltar"] },
+  { id: 62, name: "Greece", flag: "🇬🇷", conf: "UEFA", bsdNames: ["Greece", "Hellas"] },
+  { id: 63, name: "Hungary", flag: "🇭🇺", conf: "UEFA", bsdNames: ["Hungary", "Magyarorszag"] },
+  { id: 64, name: "Iceland", flag: "🇮🇸", conf: "UEFA", bsdNames: ["Iceland", "Island"] },
   { id: 65, name: "Italy", flag: "🇮🇹", conf: "UEFA", bsdNames: ["Italy", "Italia"] },
+  { id: 66, name: "Israel", flag: "🇮🇱", conf: "UEFA", bsdNames: ["Israel"] },
+  { id: 67, name: "Kazakhstan", flag: "🇰🇿", conf: "UEFA", bsdNames: ["Kazakhstan"] },
+  { id: 68, name: "Kosovo", flag: "🇽🇰", conf: "UEFA", bsdNames: ["Kosovo"] },
+  { id: 69, name: "Latvia", flag: "🇱🇻", conf: "UEFA", bsdNames: ["Latvia"] },
+  { id: 70, name: "Liechtenstein", flag: "🇱🇮", conf: "UEFA", bsdNames: ["Liechtenstein"] },
+  { id: 71, name: "Lithuania", flag: "🇱🇹", conf: "UEFA", bsdNames: ["Lithuania"] },
+  { id: 72, name: "Luxembourg", flag: "🇱🇺", conf: "UEFA", bsdNames: ["Luxembourg"] },
+  { id: 73, name: "Malta", flag: "🇲🇹", conf: "UEFA", bsdNames: ["Malta"] },
+  { id: 74, name: "Moldova", flag: "🇲🇩", conf: "UEFA", bsdNames: ["Moldova"] },
+  { id: 75, name: "Montenegro", flag: "🇲🇪", conf: "UEFA", bsdNames: ["Montenegro", "Crna Gora"] },
+  { id: 76, name: "North Macedonia", flag: "🇲🇰", conf: "UEFA", bsdNames: ["North Macedonia", "Macedonia"] },
+  { id: 77, name: "Northern Ireland", flag: "🇬🇧", conf: "UEFA", bsdNames: ["Northern Ireland"] },
+  { id: 78, name: "Poland", flag: "🇵🇱", conf: "UEFA", bsdNames: ["Poland", "Polska"] },
+  { id: 79, name: "Republic of Ireland", flag: "🇮🇪", conf: "UEFA", bsdNames: ["Republic of Ireland", "Ireland"] },
+  { id: 80, name: "Romania", flag: "🇷🇴", conf: "UEFA", bsdNames: ["Romania"] },
+  { id: 81, name: "San Marino", flag: "🇸🇲", conf: "UEFA", bsdNames: ["San Marino"] },
+  { id: 82, name: "Serbia", flag: "🇷🇸", conf: "UEFA", bsdNames: ["Serbia", "Srbija"] },
+  { id: 83, name: "Slovakia", flag: "🇸🇰", conf: "UEFA", bsdNames: ["Slovakia", "Slovensko"] },
+  { id: 84, name: "Slovenia", flag: "🇸🇮", conf: "UEFA", bsdNames: ["Slovenia", "Slovenija"] },
+  { id: 85, name: "Ukraine", flag: "🇺🇦", conf: "UEFA", bsdNames: ["Ukraine", "Ukraina"] },
   { id: 86, name: "Wales", flag: "🏴󠁧󠁢󠁷󠁬󠁳󠁿", conf: "UEFA", bsdNames: ["Wales", "Cymru"] },
 ];
 
