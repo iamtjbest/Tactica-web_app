@@ -156,10 +156,10 @@ ${oppNation.name} — Attack: ${result.opp_attack}, Defence: ${result.opp_defenc
     <div className="max-w-screen-xl mx-auto px-5 py-10 space-y-6">
       <div>
         <p className="section-label mb-2 flex items-center gap-1.5"><Globe size={13} /> Module 6</p>
-        <h1 className="font-display font-black text-4xl text-white mb-2">World Cup 2026</h1>
+        <h1 className="font-display font-black text-4xl text-white mb-2">International Football</h1>
         <p className="text-mt text-sm max-w-2xl">
-          All 48 FIFA-confirmed nations. Player ratings use caps, international goals, age,
-          and club league quality — pulled live from BSD&apos;s official World Cup squads.
+          World Cup 2026 qualifiers and UEFA Nations League nations, 86 teams in total. Player ratings
+          use caps, international goals, age, and club league quality — pulled live from BSD.
         </p>
       </div>
 
