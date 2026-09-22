@@ -82,6 +82,28 @@ interface TransferSuggestion {
 }
 interface ChipAdvice {
   chip: string; score: number; reason: string; action: string; half: number;
+  suggested_squad_endpoint?: string;
+}
+interface UpcomingFixture {
+  opponent: string; venue: string; date: string; fdr: number;
+  fdr_label: string; multiplier: number;
+}
+interface SuggestedSquadPlayer {
+  id: number; name: string; team?: string; position: string;
+  price: number; ownership: number; form: number; ppg: number;
+  weighted_score: number;
+  next_fixture?: NextFixture;          // present on Free Hit players
+  upcoming_fixtures?: UpcomingFixture[]; // present on Wildcard players
+  avg_fdr_multiplier?: number;          // present on Wildcard players
+}
+interface SuggestedSquadResponse {
+  chip: string; horizon_gameweeks: number; budget: number;
+  total_cost: number; remaining_budget: number; total_score: number;
+  formation: string;
+  starting_xi: SuggestedSquadPlayer[]; bench: SuggestedSquadPlayer[];
+  suggested_captain: SuggestedSquadPlayer;
+  full_squad: SuggestedSquadPlayer[];
+  cached: boolean;
 }
 interface SquadResponse {
   formation: string;
@@ -533,6 +555,63 @@ function PlayerSlot({ label, player, onPick, onClear, allPlayers, taken }: {
   );
 }
 
+function SuggestedSquadPanel({ squad }: { squad: SuggestedSquadResponse }) {
+  const positionOrder = ["GKP", "DEF", "MID", "FWD"];
+  const grouped = positionOrder.map(pos => ({
+    pos, players: squad.starting_xi.filter(p => p.position === pos),
+  }));
+  return (
+    <div className="mt-3 pt-3 border-t border-bd space-y-3">
+      <div className="flex items-center justify-between text-xs">
+        <span className="text-mt">
+          {squad.formation} · £{squad.total_cost}m of £{squad.budget}m
+          {squad.remaining_budget > 0 && <span className="text-mt"> (£{squad.remaining_budget}m left)</span>}
+        </span>
+        <span className="text-volt font-mono font-bold">{squad.total_score} pts</span>
+      </div>
+
+      <div className="flex items-center gap-2 bg-volt/5 border border-volt/20 rounded-lg px-3 py-2">
+        <Crown size={14} className="text-volt flex-shrink-0" />
+        <span className="text-white text-xs font-bold">{squad.suggested_captain.name}</span>
+        <span className="text-mt text-[10px]">suggested captain</span>
+      </div>
+
+      <div className="space-y-2">
+        {grouped.map(({ pos, players }) => (
+          <div key={pos}>
+            <p className="text-mt text-[10px] font-bold uppercase tracking-wide mb-1">{pos}</p>
+            <div className="space-y-1">
+              {players.map(p => (
+                <div key={p.id} className="flex items-center justify-between text-xs bg-bg rounded-lg px-2.5 py-1.5">
+                  <span className="text-white truncate">{p.name}</span>
+                  <div className="flex items-center gap-2 text-mt flex-shrink-0">
+                    <span>£{p.price.toFixed(1)}m</span>
+                    <span className="text-volt font-mono">{p.weighted_score.toFixed(1)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {squad.bench.length > 0 && (
+        <div>
+          <p className="text-mt text-[10px] font-bold uppercase tracking-wide mb-1">Bench</p>
+          <div className="space-y-1">
+            {squad.bench.map(p => (
+              <div key={p.id} className="flex items-center justify-between text-xs bg-bg rounded-lg px-2.5 py-1.5 opacity-70">
+                <span className="text-white truncate">{p.name}</span>
+                <span className="text-mt">£{p.price.toFixed(1)}m</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function MySquad() {
   const [allPlayers, setAllPlayers] = useState<PlayerListItem[]>([]);
   const [loadingList, setLoadingList] = useState(true);
@@ -544,6 +623,30 @@ function MySquad() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [data, setData] = useState<SquadResponse | null>(null);
+  const [suggestedSquads, setSuggestedSquads] = useState<Record<string, SuggestedSquadResponse>>({});
+  const [loadingSquadFor, setLoadingSquadFor] = useState<string | null>(null);
+  const [squadFetchError, setSquadFetchError] = useState<Record<string, string>>({});
+
+  async function fetchSuggestedSquad(chip: string, endpoint: string) {
+    if (suggestedSquads[chip]) {
+      // already fetched — just let the render toggle handle show/hide
+      return;
+    }
+    setLoadingSquadFor(chip);
+    setSquadFetchError(prev => ({ ...prev, [chip]: "" }));
+    try {
+      const totalBudget = (data?.squad_value ?? 100) + (data?.bank ?? 0);
+      const res = await fetch(`${API_BASE}${endpoint}?budget=${totalBudget.toFixed(1)}`);
+      if (!res.ok) throw new Error(`Server returned ${res.status}`);
+      const json: SuggestedSquadResponse = await res.json();
+      setSuggestedSquads(prev => ({ ...prev, [chip]: json }));
+    } catch (e) {
+      setSquadFetchError(prev => ({ ...prev, [chip]: e instanceof Error ? e.message : "Could not build a suggested squad right now." }));
+    } finally {
+      setLoadingSquadFor(null);
+    }
+  }
+
 
   useEffect(() => {
     fetch(`${API_BASE}/api/fpl/players`)
@@ -709,6 +812,27 @@ function MySquad() {
                       </div>
                       <p className="text-mt text-xs leading-relaxed">{c.reason}</p>
                       <p className="text-white text-xs leading-relaxed font-semibold">{c.action}</p>
+
+                      {c.suggested_squad_endpoint && (
+                        <>
+                          <button
+                            onClick={() => fetchSuggestedSquad(c.chip, c.suggested_squad_endpoint!)}
+                            disabled={loadingSquadFor === c.chip}
+                            className="w-full py-2 rounded-lg text-xs font-bold border border-volt/30 text-volt bg-volt/5 hover:bg-volt/10 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5">
+                            {loadingSquadFor === c.chip
+                              ? <><RefreshCw size={12} className="animate-spin" /> Building squad…</>
+                              : suggestedSquads[c.chip]
+                                ? <>{suggestedSquads[c.chip].chip === c.chip ? "Squad ready below ↓" : "See Suggested Squad"}</>
+                                : <>See Suggested Squad</>}
+                          </button>
+                          {squadFetchError[c.chip] && (
+                            <p className="text-red text-xs">{squadFetchError[c.chip]}</p>
+                          )}
+                          {suggestedSquads[c.chip] && (
+                            <SuggestedSquadPanel squad={suggestedSquads[c.chip]} />
+                          )}
+                        </>
+                      )}
                     </div>
                   );
                 })}
