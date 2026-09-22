@@ -465,6 +465,7 @@ export const WC_2026_NATIONS = [
   { id: 46, name: "Saudi Arabia", flag: "🇸🇦", conf: "AFC", bsdNames: ["Saudi Arabia"] },
   { id: 47, name: "Uzbekistan", flag: "🇺🇿", conf: "AFC", bsdNames: ["Uzbekistan"] },
   { id: 48, name: "New Zealand", flag: "🇳🇿", conf: "OFC", bsdNames: ["New Zealand"] },
+  { id: 65, name: "Italy", flag: "🇮🇹", conf: "UEFA", bsdNames: ["Italia"] },
 ];
 
 export type WcNation = typeof WC_2026_NATIONS[number];
