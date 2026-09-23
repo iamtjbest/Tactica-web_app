@@ -46,5 +46,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.9,
     },
+    {
+      url: 'https://app.tactica.com.ng/nations',
+      lastModified: now,
+      changeFrequency: 'daily', // international break coverage changes daily right now
+      priority: 0.9,
+    },
   ]
 }
