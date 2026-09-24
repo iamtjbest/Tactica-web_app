@@ -138,10 +138,12 @@ export default function NationsPage() {
     const updated = [...messages, userMsg];
     setMessages(updated); setInput(""); setSending(true);
     try {
-      const liveCtx = `WORLD CUP 2026 ANALYSIS: ${myNation.name} vs ${oppNation.name}.
-Best formation: ${result.best_formation} (${fmtProb(result.probability)}% win probability).
+      const liveCtx = result.reliable
+        ? `INTERNATIONAL MATCH ANALYSIS: ${myNation.name} vs ${oppNation.name}.
+Best formation: ${result.best_formation} (${fmtProb(result.probability!)}% win probability).
 ${myNation.name} — Attack: ${result.my_attack}, Defence: ${result.my_defence}, Squad: ${result.my_squad_count} players.
-${oppNation.name} — Attack: ${result.opp_attack}, Defence: ${result.opp_defence}, Squad: ${result.opp_squad_count} players.`;
+${oppNation.name} — Attack: ${result.opp_attack}, Defence: ${result.opp_defence}, Squad: ${result.opp_squad_count} players.`
+        : `INTERNATIONAL MATCH ANALYSIS: ${myNation.name} vs ${oppNation.name}. No reliable win probability available — one or both squads couldn't be scored from real data.`;
       const res = await api.chat({
         my_team: myNation.name, opp_team: oppNation.name,
         message: userMsg.content, history: messages, live_context: liveCtx,
@@ -206,11 +208,24 @@ ${oppNation.name} — Attack: ${result.opp_attack}, Defence: ${result.opp_defenc
         {loading ? <><Loader2 size={14} className="animate-spin inline" /> Scoring squads…</> : <><Target size={14} className="inline mr-1" />Predict Optimal Formation</>}
       </button>
 
-      {result && (
+      {result && !result.reliable && (
+        <div className="card border-amber/30 bg-amber/5 flex items-start gap-2.5">
+          <AlertTriangle size={16} className="text-amber flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-white text-sm font-bold">Not enough real data for this matchup</p>
+            <p className="text-mt text-xs mt-1">
+              {result.warnings?.join(" ") || "One or both squads couldn't be scored from real data."}
+              {" "}No win probability is shown, a made-up number would be worse than none.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {result && result.reliable && (
         <div className="space-y-5">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <StatCard label={<span className="inline-flex items-center gap-1"><CheckCircle2 size={12} /> Best Formation</span>} value={result.best_formation} />
-            <StatCard label={<span className="inline-flex items-center gap-1"><Bot size={12} /> Win Probability</span>} value={`${fmtProb(result.probability)}%`} />
+            <StatCard label={<span className="inline-flex items-center gap-1"><CheckCircle2 size={12} /> Best Formation</span>} value={result.best_formation ?? "—"} />
+            <StatCard label={<span className="inline-flex items-center gap-1"><Bot size={12} /> Win Probability</span>} value={result.probability != null ? `${fmtProb(result.probability)}%` : "—"} />
             <StatCard label={<span className="inline-flex items-center gap-1"><Swords size={12} /> Our Attack</span>} value={result.my_attack} />
             <StatCard label={<span className="inline-flex items-center gap-1"><Shield size={12} /> Our Defence</span>} value={result.my_defence} />
           </div>
