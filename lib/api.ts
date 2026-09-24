@@ -268,9 +268,10 @@ export interface NationsPredictResponse {
   my_defence: number;
   opp_attack: number;
   opp_defence: number;
-  best_formation: string;
-  probability: number;
+  best_formation: string | null;
+  probability: number | null;
   all_formations: FormationResult[];
+  reliable: boolean;
   my_squad_count: number;
   opp_squad_count: number;
   players_scored: number;
