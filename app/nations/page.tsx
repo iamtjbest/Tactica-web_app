@@ -208,18 +208,176 @@ ${oppNation.name} — Attack: ${result.opp_attack}, Defence: ${result.opp_defenc
         {loading ? <><Loader2 size={14} className="animate-spin inline" /> Scoring squads…</> : <><Target size={14} className="inline mr-1" />Predict Optimal Formation</>}
       </button>
 
-      {result && !result.reliable && (
-        <div className="card border-amber/30 bg-amber/5 flex items-start gap-2.5">
-          <AlertTriangle size={16} className="text-amber flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="text-white text-sm font-bold">Not enough real data for this matchup</p>
-            <p className="text-mt text-xs mt-1">
-              {result.warnings?.join(" ") || "One or both squads couldn't be scored from real data."}
-              {" "}No win probability is shown, a made-up number would be worse than none.
-            </p>
+      {result && !result.reliable && (() => {
+        const myHasData = result.my_squad_count > 0 && !result.warnings?.some(w => w.toLowerCase().includes(myNation.name.toLowerCase()) && w.includes("empty"));
+        const oppHasData = result.opp_squad_count > 0 && !result.warnings?.some(w => w.toLowerCase().includes(oppNation.name.toLowerCase()) && w.includes("empty"));
+        const partialData = myHasData || oppHasData;
+        const missingTeam = !myHasData ? myNation.name : !oppHasData ? oppNation.name : null;
+        return (
+          <div className="space-y-5">
+            <div className="card border-amber/30 bg-amber/5 flex items-start gap-2.5">
+              <AlertTriangle size={16} className="text-amber flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-white text-sm font-bold">
+                  {missingTeam ? `No squad data for ${missingTeam}` : "Not enough real data for this matchup"}
+                </p>
+                <p className="text-mt text-xs mt-1">
+                  {missingTeam
+                    ? `${missingTeam} has no squad data in BSD. Win probability and formation ranking need both teams, so those are unavailable.${partialData ? ` Showing ${myHasData ? myNation.name : oppNation.name}'s data below.` : ""}`
+                    : (result.warnings?.join(" ") || "One or both squads couldn't be scored from real data.")}
+                </p>
+              </div>
+            </div>
+
+            {partialData && (
+              <>
+                {/* Rating Breakdown — show available team data, "No data" for missing team */}
+                <div className="card">
+                  <p className="section-label mb-4 flex items-center gap-1.5"><BarChart2 size={13} /> Rating Breakdown — {result.team} vs {result.opponent}</p>
+                  <div className="grid grid-cols-2 gap-6">
+                    {[
+                      { name: result.team, att: result.my_attack, def: result.my_defence, count: result.my_squad_count, hasData: myHasData, color: "text-volt" },
+                      { name: result.opponent, att: result.opp_attack, def: result.opp_defence, count: result.opp_squad_count, hasData: oppHasData, color: "text-red" },
+                    ].map(r => (
+                      <div key={r.name}>
+                        <p className="font-mono text-[10px] text-mt uppercase tracking-wider mb-3">{r.name}</p>
+                        {r.hasData ? (
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between"><span className="text-mt">Attack</span><span className={`${r.color} font-bold font-mono`}>{r.att}</span></div>
+                            <div className="flex justify-between"><span className="text-mt">Defence</span><span className={`${r.color} font-bold font-mono`}>{r.def}</span></div>
+                            <div className="flex justify-between"><span className="text-mt">Squad size</span><span className="text-white font-mono">{r.count}</span></div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 py-4 px-3 rounded-xl bg-bg border border-bd/40">
+                            <AlertTriangle size={14} className="text-amber flex-shrink-0" />
+                            <p className="text-mt text-xs">No squad data available in BSD</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  {result.bsd_resolved && (
+                    <p className="text-mt text-[11px] mt-4 pt-3 border-t border-bd/40 font-mono">
+                      BSD matched: &ldquo;{result.bsd_resolved.team ?? "—"}&rdquo; vs &ldquo;{result.bsd_resolved.opp ?? "—"}&rdquo;
+                    </p>
+                  )}
+                </div>
+
+                {/* Probable Lineup — only for the team with data (our nation) */}
+                {myHasData && !lineup && (
+                  <div className="card">
+                    <p className="section-label mb-4 flex items-center gap-1.5"><Shirt size={13} /> Probable Lineup — {myNation.name}</p>
+                    <div className="flex items-center gap-3 mb-4 flex-wrap">
+                      <span className="text-mt text-xs">Formation:</span>
+                      {FORMATIONS.map(f => (
+                        <button key={f} onClick={() => setLineupFormation(f)}
+                          className={clsx("px-3 py-1.5 rounded-lg text-xs font-mono font-bold border transition-all",
+                            lineupFormation === f ? "bg-volt/10 text-volt border-volt/40" : "text-mt border-bd hover:text-white")}>
+                          {f}
+                        </button>
+                      ))}
+                    </div>
+                    <ErrorBox msg={lineupError} />
+                    <button onClick={getLineup} disabled={lineupLoading}
+                      className="btn-outline w-full py-3 flex items-center justify-center gap-2 mt-2">
+                      {lineupLoading ? <><Loader2 size={14} className="animate-spin inline" /> Building XI…</> : `See Probable ${myNation.name} Lineup`}
+                    </button>
+                  </div>
+                )}
+
+                {myHasData && lineup && (
+                  <div className="card">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <p className="section-label flex items-center gap-1.5"><Shirt size={13} /> Probable Lineup — {lineup.nation}</p>
+                        <p className="text-volt font-display font-bold text-xl mt-1">{lineup.formation}</p>
+                      </div>
+                      <button onClick={() => setLineup(null)} className="text-mt text-xs hover:text-white px-3 py-1.5 rounded-lg border border-bd">
+                        Change formation
+                      </button>
+                    </div>
+                    <div className="space-y-2">
+                      {lineup.xi.map((p, i) => (
+                        <div key={i} className="flex items-center justify-between bg-bg border border-bd border-l-2 border-l-volt rounded-xl px-4 py-3">
+                          <div className="flex items-center gap-2.5">
+                            <span className="pos-badge">{p.pos}</span>
+                            <span className="text-white text-sm font-semibold">{p.name}</span>
+                            {p.fallback && <AlertTriangle size={12} className="text-amber" />}
+                          </div>
+                          <div className="flex gap-3 text-mt text-xs">
+                            <span>{p.club || "—"}</span>
+                            <span className="inline-flex items-center gap-1"><Award size={11} /> {p.caps}</span>
+                            <span className="inline-flex items-center gap-1"><Target size={11} /> {p.goals}</span>
+                            <span>{p.age}y</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-mt text-xs mt-3">
+                      Squad size: {lineup.squad_size} players · BSD match: {lineup.bsd_resolved ?? "—"}
+                    </p>
+                  </div>
+                )}
+
+                {/* AI Chat — still available with partial data context */}
+                {!showChat && (
+                  <button onClick={() => setShowChat(true)}
+                    className="w-full py-4 rounded-2xl border border-cyan/30 bg-cyan/5 text-cyan font-bold text-base flex items-center justify-center gap-2 hover:bg-cyan/10 hover:border-cyan transition-all">
+                    <MessageCircle size={14} className="inline mr-1" /> Chat with AI about this matchup
+                  </button>
+                )}
+
+                {showChat && (
+                  <div className="card border-cyan/20 bg-cyan/3">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <p className="section-label flex items-center gap-1.5"><MessageCircle size={13} /> AI Assistant Manager</p>
+                        <p className="text-mt text-xs mt-0.5">{myNation.name} vs {oppNation.name} · Partial data available</p>
+                      </div>
+                      <button onClick={() => { setShowChat(false); setMessages([]); }} className="text-mt text-xs hover:text-white px-3 py-1.5 rounded-lg border border-bd">Close</button>
+                    </div>
+                    <div className="space-y-3 mb-4 overflow-y-auto pr-1" style={{ maxHeight: "380px" }}>
+                      {messages.length === 0 && (
+                        <div className="text-center py-10">
+                          <Brain size={28} className="mx-auto mb-3 text-mt" />
+                          <p className="text-mt text-sm leading-relaxed">
+                            Ask anything about this matchup.<br/>
+                            Note: {missingTeam} has no squad data, so analysis is based on {myHasData ? myNation.name : oppNation.name}&apos;s ratings only.
+                          </p>
+                        </div>
+                      )}
+                      {messages.map((m, i) => (
+                        <div key={i} className={clsx("flex", m.role === "user" ? "justify-end" : "justify-start")}>
+                          <div className={clsx("max-w-[82%] rounded-2xl px-4 py-3 text-sm leading-relaxed",
+                            m.role === "user" ? "bg-volt/10 border border-volt/25 text-white" : "bg-sur2 border border-bd text-white")}>
+                            {m.role === "assistant" && <p className="text-cyan font-mono text-[10px] font-bold mb-1.5 tracking-widest uppercase">Assistant Manager</p>}
+                            <p className="whitespace-pre-wrap">{m.content}</p>
+                          </div>
+                        </div>
+                      ))}
+                      {sending && (
+                        <div className="flex justify-start">
+                          <div className="bg-sur2 border border-bd rounded-2xl px-4 py-3">
+                            <div className="flex gap-1">{[0,1,2].map(i => <span key={i} className="w-2 h-2 rounded-full bg-cyan animate-bounce" style={{ animationDelay: `${i*0.15}s` }} />)}</div>
+                          </div>
+                        </div>
+                      )}
+                      <div ref={chatBottomRef} />
+                    </div>
+                    <div className="border-t border-bd/60 pt-4 flex gap-3">
+                      <input value={input} onChange={e => setInput(e.target.value)}
+                        onKeyDown={e => e.key === "Enter" && !e.shiftKey && sendChat()}
+                        placeholder={`Ask about ${myNation.name} vs ${oppNation.name}…`} disabled={sending}
+                        className="flex-1 bg-bg border border-bd rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-cyan placeholder:text-mt2" />
+                      <button onClick={sendChat} disabled={sending || !input.trim()} className="btn-cyan-outline px-5 py-2.5 disabled:opacity-40">Send</button>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {result && result.reliable && (
         <div className="space-y-5">
