@@ -109,7 +109,6 @@ export default function NationsPage() {
     setLoading(true); setError(""); resetAll();
     try {
       const res = await api.nationsPredict({
-        team_id: myNation.id, opp_id: oppNation.id,
         team_name: myNation.name, opp_name: oppNation.name,
       });
       setResult(res);
@@ -124,7 +123,7 @@ export default function NationsPage() {
     setLineupLoading(true); setLineupError("");
     try {
       const res = await api.nationsLineup({
-        nation_id: myNation.id, nation_name: myNation.name, formation: lineupFormation,
+        nation_name: myNation.name, formation: lineupFormation,
       });
       setLineup(res);
     } catch (e: unknown) {
@@ -161,7 +160,7 @@ ${oppNation.name} — Attack: ${result.opp_attack}, Defence: ${result.opp_defenc
         <h1 className="font-display font-black text-4xl text-white mb-2">International Football</h1>
         <p className="text-mt text-sm max-w-2xl">
           World Cup 2026 qualifiers and UEFA Nations League nations, 86 teams in total. Player ratings
-          use caps, international goals, age, and club league quality — pulled live from BSD.
+          use 60% club form + 25% international track record + 15% squad quality baseline — powered by Transfermarkt data.
         </p>
       </div>
 
