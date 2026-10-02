@@ -208,8 +208,8 @@ ${oppNation.name} — Attack: ${result.opp_attack}, Defence: ${result.opp_defenc
       </button>
 
       {result && !result.reliable && (() => {
-        const myHasData = result.my_squad_count > 0 && !result.warnings?.some(w => w.toLowerCase().includes(myNation.name.toLowerCase()) && w.includes("empty"));
-        const oppHasData = result.opp_squad_count > 0 && !result.warnings?.some(w => w.toLowerCase().includes(oppNation.name.toLowerCase()) && w.includes("empty"));
+        const myHasData = (result.my_squad_count ?? 0) > 0 && !result.warnings?.some(w => w.toLowerCase().includes(myNation.name.toLowerCase()) && w.includes("empty"));
+        const oppHasData = (result.opp_squad_count ?? 0) > 0 && !result.warnings?.some(w => w.toLowerCase().includes(oppNation.name.toLowerCase()) && w.includes("empty"));
         const partialData = myHasData || oppHasData;
         const missingTeam = !myHasData ? myNation.name : !oppHasData ? oppNation.name : null;
         return (
