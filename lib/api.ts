@@ -272,9 +272,16 @@ export interface NationsPredictResponse {
   probability: number | null;
   all_formations: FormationResult[];
   reliable: boolean;
-  my_squad_count: number;
-  opp_squad_count: number;
-  players_scored: number;
+  // v4 fields (Transfermarkt-powered)
+  source?: string;
+  my_predicted_xi?: NationsLineupPlayer[];
+  opp_predicted_xi?: NationsLineupPlayer[];
+  my_player_ratings?: Record<string, number>[];
+  opp_player_ratings?: Record<string, number>[];
+  // Legacy BSD fields (still present for backwards compat)
+  my_squad_count?: number;
+  opp_squad_count?: number;
+  players_scored?: number;
   bsd_resolved?: { team: string | null; opp: string | null };
   warnings?: string[];
 }
@@ -294,9 +301,16 @@ export interface NationsLineupResponse {
   nation: string;
   formation: string;
   xi: NationsLineupPlayer[];
-  count: number;
+  count?: number;
   squad_size: number;
-  bsd_resolved: string | null;
+  // v4 fields
+  source?: string;
+  attack?: number;
+  defence?: number;
+  xi_quality?: number;
+  player_ratings?: Record<string, number>[];
+  // Legacy
+  bsd_resolved?: string | null;
 }
 
 // ── Fetch helper ──────────────────────────────────────────────────────────────
@@ -373,18 +387,17 @@ export const api = {
     }),
 
   nationsPredict: (body: {
-    team_id: number;
-    opp_id: number;
     team_name: string;
     opp_name: string;
+    formation?: string;
   }) =>
-    apiFetch<NationsPredictResponse>("/api/nations/predict", {
+    apiFetch<NationsPredictResponse>("/api/nations/v4/predict", {
       method: "POST",
       body: JSON.stringify(body),
     }),
 
-  nationsLineup: (body: { nation_id: number; nation_name: string; formation: string }) =>
-    apiFetch<NationsLineupResponse>("/api/nations/lineup", {
+  nationsLineup: (body: { nation_name: string; formation: string }) =>
+    apiFetch<NationsLineupResponse>("/api/nations/v4/lineup", {
       method: "POST",
       body: JSON.stringify(body),
     }),
