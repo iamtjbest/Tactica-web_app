@@ -520,6 +520,7 @@ export const WC_2026_NATIONS = [
   { id: 84, name: "Slovenia", flag: "🇸🇮", conf: "UEFA", bsdNames: ["Slovenia", "Slovenija"] },
   { id: 85, name: "Ukraine", flag: "🇺🇦", conf: "UEFA", bsdNames: ["Ukraine", "Ukraina"] },
   { id: 86, name: "Wales", flag: "🏴󠁧󠁢󠁷󠁬󠁳󠁿", conf: "UEFA", bsdNames: ["Wales", "Cymru"] },
+  { id: 87, name: "Benin", flag: "🇧🇯", conf: "CAF", bsdNames: ["Benin"] },
 ];
 
 export type WcNation = typeof WC_2026_NATIONS[number];
