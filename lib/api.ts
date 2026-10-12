@@ -34,7 +34,6 @@ const BSD_NAME_MAP: Record<string, string> = {
   "Barcelona":           "FC Barcelona",
   "Real Betis":          "Real Betis",
   "Real Sociedad":       "Real Sociedad",
-  "Villarreal":          "Villarreal CF",
   "Celta Vigo":          "Celta de Vigo",
   "Alaves":              "Deportivo Alavés",
   "Espanyol":            "RCD Espanyol de Barcelona",
@@ -161,6 +160,12 @@ const BSD_NAME_MAP: Record<string, string> = {
   "Shakhtar Donetsk":    "Shakhtar Donetsk",
   "Arsenal":             "Arsenal",
   "Sabah":               "Sabah FK",
+
+  // ── Eliteserien ──
+  "Viking":              "Viking FK",    // or whatever BSD returns
+
+  // ── Austrian Bundesliga ──
+  "LASK":                "LASK",         // might be "LASK Linz" in BSD
 };
 
 
@@ -427,6 +432,7 @@ export const EUROPEAN_TEAMS = [
   "Braga", "Guimaraes", "Celtic", "Rangers", "Club Brugge", "Anderlecht", "Genk", "Galatasaray",
   "Fenerbahce", "Besiktas", "Trabzonspor", "Red Bull Salzburg", "Sturm Graz", "Slavia Prague",
   "Sparta Prague", "Olympiakos", "Panathinaikos", "PAOK", "Sabah", "NEC Nijmegen", "Lech Poznań", "Norwich City",
+  "LASK", "Viking FK",
 ].sort();
 
 // National teams — originally World Cup 2026 qualifiers only; expanded Sept
