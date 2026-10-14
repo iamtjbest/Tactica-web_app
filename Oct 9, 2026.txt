@@ -1,0 +1,172 @@
+Oct 9, 2026
+Summary
+Single source of truth for TjBest's outstanding Tactica/Scout/FPL content tasks. Check this first when asked "what's next" — do not rely on conversation history for the task list.
+
+Details
+Sat 2026-10-10 09:00 WAT: short deadline reminder post ahead of the 11:00 WAT GW6 lock. Not yet posted as of Fri 2026-10-09 13:49 WAT.
+FotMob-style 4-tab bottom nav redesign for the frontend: Matches/Live tab with calendar date browsing, Leagues/standings tab, Favorites tab, News tab fed by Medium + X + blog. Paused, not actively being worked on as of Fri 2026-10-09.
+Scout backend league-id mislabeling fix: resolved, no longer tracked here.
+Wildcard chip 404 fix in fpl.py: resolved, no longer tracked here.
+FPL content sprint (Form Watch, Captain Picks, Differentials, Medium GW6 piece): all posted/completed as of Fri 2026-10-09.
+
+
+
+TjBest's FPL content plan around GW6 — post schedule, research tasks, and the pending Medium piece decision. Plan was written Thu 2026-10-08; "tonight" in it means Thu night, already past.
+
+Details
+Thu 2026-10-08 night, 19:00 WAT or later: "Form Watch" post — his best format — using live FPL API data (form, minutes, xG, xA, price changes), leading with player names. Already past as of Fri 2026-10-09 morning.
+Fri 2026-10-09 12:00 WAT: "Captain Picks" post, using Fixture Ticker difficulty over the next 3-5 gameweeks plus Tactica's own ratings for the key fixtures
+Fri 2026-10-09 15:00-17:00 WAT: "Differentials" post, plus a price-change watch section if there's a story there
+Sat 2026-10-10 09:00 WAT: short deadline reminder ahead of the 11:00 WAT GW lock
+Medium piece for Fri 2026-10-09 — decided: going with the GW6-led FPL piece (option a), not Fixture Crunch (reasoning: reuses the live Transfers-tab data already pulled, builds on Form Watch's momentum, Fixture Crunch is evergreen and can wait a week). Draft once DEF/GK Transfers data and Captain Picks data are both in, since Form Watch + Captain Picks + Medium should all come from the same FPL data pull for consistency. Full Medium deliverable: article body, SEO keywords, tags, image placements, a Figma prompt, and the X and WhatsApp captions
+Research tasks for Thu night's Form Watch (already past): Transfers tab run 4 times, once each for Forwards/Midfielders/Defenders/Goalkeepers, widest price range (Elite preset or £0-£20m), one screenshot per result; plus Differentials tab for Forwards and Midfielders, <10% ownership, max price £8m, screenshot each
+Research tasks for Fri 2026-10-09 (plan called this "tomorrow" relative to Thursday — i.e. today, for Captain Picks + the Medium fixture-run section): Captain tab, By Club, run for Man City, Liverpool, Arsenal, Chelsea, Man United, screenshot the top pick for each (Liverpool vs City is the headline fixture, matters most); Fixtures tab run for Man City, Arsenal, Liverpool, screenshot next 6 gameweeks of each
+
+
+
+Tactica Scout — the livescore + player comparison app TjBest is building alongside Tactica; stack and scope as he's described it
+
+Details
+Building it as a separate mobile app and a separate web app, each with its own frontend, plus its own separate backend (not part of the existing Tactica mobile app or main Tactica web app)
+UI modeled on FotMob, Livescore and Sofascore: a live scores list, and a match detail screen with tabs like lineup, H2H, facts, etc.
+Tactica's own win probability numbers for a match go into that match detail screen's "Facts" tab
+App also includes a player comparison tool: search a player, filter to a season, pick the player, repeat for a second player, then view comparison charts (radar)
+Uses the same Tactica visual system: dark/bunker black, volt green, blue, red, white; Playfair Display and DM Sans fonts
+Named it "Scout by Tactica" (confirmed via his own running backend's API title)
+Scout project folder on his computer is C:\Users\iamtjbest\Documents\tactica-scout (not Downloads)
+FPL Scout's Captain/Differentials/Transfers tabs rank players by a composite "Score" that Tactica itself generates, this is Tactica's own proprietary formula and ranking, not something FPL publishes: Score = ppg×2 + xG/90×3 + xA/90×2 + form×0.5 + ep_next×0.3, then weighted by fixture multiplier (FDR1 = ×1.30 down to FDR5 = ×0.70). The individual inputs (prices, ownership %, ppg, xG/90, xA/90, ep_next) come from the real FPL API, but the combined Score and fixture weighting are Tactica's own calculation on top of that data.
+
+
+
+
+Oct 13, 2026
+Summary
+TjBest's stated preferences for how Claude should work within the Tactica project
+
+Details
+When a code fix only affects one or two files, send just those files/diffs instead of re-zipping or resending the whole project folder — repeated full-folder resends eat up his usage limits. FINAL WRITE
+Asked Claude not to use that term when addressing him going forward
+When asking Claude to check something like a starting lineup close to kickoff, wants Claude to just search the web (Sky Sports specifically) and report back whatever is found as-is, without Claude applying its own extra verification/judgment on top (e.g. cross-checking against Claude's own memory of which club a player is at) — he will be the one to judge if what's found is real or not
+
+
+
+
+
+
+Oct 11, 2026
+Summary
+Gold standard format for Tactica pre-match all-rounder posts on X — depth, structure, what makes them worth clicking through from WhatsApp
+
+Details
+Pre-match all-rounder must have real substance — 3 full paragraphs per match, not 1 short paragraph
+Each match section weaves together: standings context, suspension/injury story tied to WHY the numbers matter, H2H recent history, and a tactical picture
+The hook names specific absent players or dramatic stakes to create urgency — not a generic player name roll call
+The test: if someone clicks through from WhatsApp, there must be enough depth here that they feel it was worth reading. A skeleton of numbers + one paragraph fails that test
+Standalone pre-match posts follow the same depth standard — 3 paragraphs connecting numbers to the tactical story
+Never front-load player names as a disconnected list — player details belong inside the match section where they make sense
+Standing footer tagline for Figma graphics, left-aligned italic grey: "the numbers don't lie" (replaces any earlier placeholder tagline)
+2026-10-11: TjBest renewed X Premium and discovered it now includes X Articles (long-form posts with title, a 5:2 aspect ratio header image, a story body, and the ability to embed images, posts/tweets, and link previews inline). Decision: keep posting on Medium as before, and also start publishing on X Articles alongside it (not a replacement).
+The all-rounder (covers all of that day's matches) moves to the X Article format: title, 5:2 header image, each match gets its own section in the story body with its Figma graphic embedded under it, rather than one single long post with all match cards baked into a single stacked image.
+Standalone posts (one per match) keep the existing 3-paragraph depth standard, no change there. The adjustment TjBest wants is the hook/opening line leaning harder into trending, searchable player names.
+HT and FT posts remain mandatory for every tracked match, always comparing pre-match Tactica numbers to what actually happened.
+Medium articles also get mirrored and posted as X Articles, not kept Medium-exclusive.
+WhatsApp teasers continue for all formats (all-rounder, Medium/X Article pieces) to drive traffic and numbers.
+Rollout: starts Mon 2026-10-12 with that day's Medium piece (also mirrored to X Articles), with Tue 2026-10-13 (Champions League night) as the first live test of the all-rounder-as-X-Article format.
+
+
+
+
+
+
+Oct 11, 2026
+Summary
+Grok's audit of @TacticaEngine's X performance (Oct 2026) and the engagement-optimization recommendations that don't conflict with the no-threads rule
+
+Details
+2026-10-11: TjBest had Grok run a public audit of @TacticaEngine. Account joined July 2026, ~59 followers at time of audit, Blue verified/Premium, high posting volume around match times.
+Observed pattern: most posts sit at 0-2 likes with under 250 views. Posts with images/charts consistently outperform pure text. Big-fixture posts (Liverpool-City, United, Haaland-related) get relatively more views. One outlier got ~2,100 views (12 likes, 1 repost) on a City banana/history reply; an older July FPL midfield post got ~3,600 views, the best historical performer in the sample.
+Grok's diagnosis: audience size is the biggest constraint at this follower count, long number-heavy posts reward people who already care but don't hook new people, and the account rarely replies to or engages with larger accounts, which limits discovery.
+CONFLICT FLAGGED: Grok's core recommendation is to shorten the main post to 4-7 lines and move the deep analysis into a thread or reply. This directly contradicts the project's standing rule that all @TacticaEngine X posts must be a single long post, never threads, because threads kill impressions.
+2026-10-11: TjBest decided to trial the thread format for one week starting Week 10 (kicks off Mon 2026-10-12), to see how it actually performs against the single-long-post standard. This is a time-boxed experiment, not a reversal of the no-threads rule, results should be reviewed at the end of Week 10 before deciding whether to keep threads, revert to single long posts, or run both.
+Thread length rule for the trial: default to around 3 posts (hook+visual, context/numbers, conclusion/CTA), but going longer than 3 is fine when the topic genuinely warrants it (a full GW round-up, a detailed model-vs-reality breakdown on a big match, a proper FPL differential deep-dive), as long as every post in the thread adds clear value rather than padding. Past 5-6 posts, continuation rate drops sharply, especially with a small audience, so threads should stay at or under that ceiling.
+IMPORTANT CONTEXT: an earlier Week 8 journal entry (recorded before this trial) already tested threads and found an 80% reach drop versus single long posts, concluding at the time that all X posts should be single long posts going forward. TjBest is aware of this and chose to re-run the thread trial anyway, reasoning that conditions have changed since then (account has grown from ~45 to ~60 followers, and he's now planning to reply/engage with other accounts more actively this time, which wasn't part of the earlier test). This is a deliberate second attempt, not an oversight of the prior finding.
+Part of this week's trial also includes TjBest personally replying/engaging more with other FPL and football accounts to drive visibility, per Grok's discovery recommendation.
+Concrete proof case (2026-10-11): @TacticaEngine replied with genuine football trivia (explaining the Man City banana-waving tradition, dating back to the 1987-88 season and striker Imre Varadi) to a viral quote-tweet thread that had barely 1,000 views and 4 replies when TjBest jumped in. That original thread went on to 451K views. The reply itself hit 42.2K views and 177 likes, vastly outperforming the account's normal 0-250 view posts, with zero self-promotion or Tactica branding in the reply itself. Followers grew from 58 to 62 off the back of it. New content lane identified: quick, genuine-knowledge replies to trending/viral football moments (not necessarily tied to a match Tactica is tracking), jumped on early while a thread is still small, as a discovery mechanism distinct from the regular pre-match/post-match cycle.
+Recommendations compatible with the single-long-post rule, worth testing within that format: lead the post with a strong, concrete hook line instead of opening on the match header (e.g. "Liverpool's attack rating drops to 62 without Isak, Gakpo and Ekitike" before the ratings block); always pair ratings with a visual; lean harder into "model vs reality" (post-match) content since it's the account's most differentiated angle; for FPL, favor actionable, filtered formats (differentials with ownership/price filters, captain picks with one safe + one differential option) over long squad dumps; post FPL content as smaller focused posts rather than one long round-up.
+Timing guidance from the audit (not yet independently verified): 1-3 hours before big matches and within 30-60 minutes of full-time are generally strong windows for football content; current afternoon/evening WAT posting around kickoffs is directionally reasonable.
+Weekly content mix Grok suggested: 3-4 strong pre-match posts (biggest fixtures only), 3-4 post-match/model-vs-reality posts, 2-3 focused FPL posts, 1-2 lighter/opinion posts (polls, build-in-public). Not yet adopted as a standing rule, just logged as a reference point.
+
+
+
+
+What Tactica Is
+
+Tactica is an AI-powered football tactical intelligence platform. It is the first product of Cantera Football, a parent company building African football infrastructure. The founder is TjBest, a Computer Engineering student (500L/final year at ABU Zaria, Nigeria), web developer, designer, and app developer.
+
+Cantera Football Ecosystem
+
+Three pillars:
+
+Tactica (live product): AI tactical intelligence with ATK/DEF ratings, win probabilities, FPL Scout, Opponent Analysis, Coach's Sandbox, Live Simulator, AI Chat Cantera Academy (planned): Residential football academy in Nigeria with European club partnerships Tactica Scout (in development): Player intelligence app with live scores and player comparison (radar/line charts) Tactica Web Stack Frontend: Next.js 14 on Vercel at app.tactica.com.ng Backend: FastAPI on Render at tactica-backend-hdbd.onrender.com AI: Google Gemini powers AI Tactical Chat Data: FPL API for FPL Scout, BSD Sports Data API v2 for club data, Transfermarkt (via ScraperAPI) for Nations module Repos: iamtjbest/Tactica-web_app.git, iamtjbest/Tactica-backend.git, iamtjbest/tactica-web.git Domains: tacticaengine.com (primary, purchased for X link safety), app.tactica.com.ng (engine), tactica.com.ng not yet purchased cron-job.org pings the Render backend to prevent cold-start spin-down BSD Sports Data API v2 Base URL: https://sports.bzzoiro.com/api/v2 Auth: Authorization: Token d791bceaaf0e34f57824466d2912e45bf8107e3e Key endpoints: /players/, /players/{id}/career/, /players/{id}/stats/, /players/{id}/transfers/, /players/{id}/national-team/, /events/live/ IMPORTANT: Cloud proxy blocks sports.bzzoiro.com (403 CONNECT rejected). API calls must go through the user's own Next.js API routes on Vercel, not directly from Claude's environment. Nations Module Rebuilt with v4 endpoints using Transfermarkt data (not BSD) ScraperAPI (free tier, env var SCRAPERAPI_KEY on Render) proxies TM requests Rating formula: 60% club form + 25% international track record + 15% squad quality floor Backend Key Files (last fixed Sept 4, 2026) form.py: sigmoid rating formula, friendly filter League 79, KNOWN_RATINGS blend, cache key form_v7 fpl.py: FDR recalibrated, season-aware scoring, KNOWN_RATINGS, cache bumped predict.py: H2H weight 10%, minimum 3 matches threshold, KNOWN_RATINGS fallback api.ts: comprehensive BSD_NAME_MAP for UCL clubs Bugs fixed: SEASON_START, Liverpool FC alias, /form fetches BSD live first with cache as fallback, bsd_find_team requires at least one real fixture Tactica Scout (In Development) Domain: scout.tactica.com.ng Stack: Standalone Next.js 14 with API routes on Vercel (not the split FastAPI/Next.js stack, to avoid Render cold-start issues) Repo: iamtjbest/tactica-scout v1 features: Player comparison (radar charts) + live scores Uses same Tactica visual system (dark 
+#0D1317, Playfair/DM Sans, volt/cyan) Radar chart axes proposed (NOT YET CONFIRMED by user): Shooting, Creativity, Passing, Defending, Dribbling, Physical/Duels — aggregated from per-match stats BSD player endpoint fields confirmed: position, specific_position, nationality, market_value_eur, availability, rating, potential, injury_risk, attributes (attacking/technical/tactical/defending/creativity), strengths, weaknesses Sub-resources: /players/{id}/career/ (season totals), /players/{id}/stats/ (per-match, filterable), /players/{id}/transfers/, /players/{id}/national-team/ Live scores: /events/live/ (30s Redis TTL, filterable by league/team) No trophies endpoint exists — swapped trophy comparison for transfer-history timeline Next step before writing radar chart code: hit /players/{id}/stats/ on a known player (e.g. Salah) to confirm real field names Growth & Distribution @iamtjbest: 1,077 followers @TacticaEngine: ~45 followers (shadowban lifted ~Sept 2, 2026), X Premium for long posts Medium: ~8 followers Best-performing content: FPL Form Watch (929 impressions all-time high), live match HT posts (100-200+ views) Proven traffic driver: WhatsApp sharing, not Medium organic or X alone Planned: blog at blog.tactica.com.ng (end of 2026), YouTube channel (end of 2026/Jan 2027), WhatsApp broadcast channel
+
+
+
+
+These are non-negotiable. Apply them every single turn.
+
+Relationship & Communication
+Always interact as coworkers or co-founders, never as an AI agent given tasks.
+When searching and verifying, present findings and recommendations ("what I saw and what I think we should do") rather than acting silently.
+Discuss and agree on approach before executing. Never jump into clicking, coding, or navigating without talking through the plan first. Especially applies to multi-step work and browser automation.
+Never compact, compress, or summarize earlier messages or context mid-conversation. Keep everything as-is at full length.
+Factual Accuracy
+Always web-search to verify before stating anything, even casual suggestions. This applies to any factual claim (which club a player plays for, a manager's name, a stat). Never rely on assumed or remembered knowledge.
+When searching for football match scores/news, verify the result is actually from the current date and current season (2026-27), not a stale or cross-season match with the same team names. Prefer results explicitly showing "Full Time"/"match ends" for the correct date. Re-search with more specific dated queries (including the year, naming specific sites like FotMob, Sky Sports, Sofascore) rather than presenting an ambiguous or old result as current. This has caused repeated wrong-score mistakes.
+Content Style
+Never use em dashes in generated posts/content.
+Write so it does not read as obviously AI-generated. Natural, human-sounding prose.
+Front-load searchable player names (De Bruyne, Haaland, Saka, etc.) in the first line of every X post for keyword discovery.
+All X posts for @TacticaEngine must be one single long post (has Premium, no 280-char limit). Never threads. Threads kill impressions.
+Images must always come from Figma (user's own branded graphics) or be generated. Never stock photos or real match photos.
+Post Formats
+Pre-match post: Flag emojis + team names + time/competition/group header. Tactica win probability line with ATK/DEF ratings. 2-3 paragraphs connecting the numbers to the tactical story. Footer link.
+HT post: Flag emojis + score + competition line. Goalscorers with minutes. 2-3 paragraphs connecting Tactica pre-match numbers to what is actually happening on the pitch. Footer link.
+FT post: Same structure as HT but connecting pre-match numbers to the full result. Deep analysis, not play-by-play. Footer link.
+All-rounder (X): Roundup of all matches from THAT SESSION ONLY (not other days). Each match gets flags, Tactica ratings line (ATK/DEF/win%), and a 2-3 sentence zoomed-out analysis that says something DIFFERENT from the individual FT post. The all-rounder provides the wider picture (group implications, patterns across games, depth/quality observations). If people are being directed from WhatsApp to read this, there must be something here worth reading that they cannot get from the individual posts. Footer: app.tactica.com.ng/nations
+All-rounder (WhatsApp): Short teaser. Each match gets 1-2 lines max with the key takeaway. Ends with "Full breakdown on X: [link]". WhatsApp drives traffic to X, it is not the analysis itself.
+Figma prompts: Must always include the full Tactica visual system specs (colors, fonts, sizes, card styling). Never generic or vague layout descriptions.
+Tactica Visual System (for Figma prompts)
+Dark background: 
+#0D1317
+Heading font: Playfair Display ExtraBold
+Body font: DM Sans Bold/Regular
+Accent volt green: 
+#CCFF00
+Accent cyan: 
+#00E5FF
+Muted grey text: 
+#8A9BA8
+Card fill: 
+#151E25
+Card border: 
+#1E2A33 (1px)
+Red (negative/red cards): 
+#EF4444 or 
+#FF4444
+Card corners: 12px rounded
+Card gaps: 16px
+Bottom CTA strip: full width 
+#00E5FF with 
+#0D1317 text centered
+Footer: 'TACTICA / CANTERA' right-aligned 
+#8A9BA8, tagline left-aligned 
+#8A9BA8 italic
+Content Strategy
+@TacticaEngine is brand/analysis voice (never first-person "I", always brand voice). @iamtjbest is personal/builder voice and only boosts/quote-tweets @TacticaEngine.
+Pre-match posts have the lowest ROI (~55 avg impressions). HT posts for underdog narratives significantly outperform.
+The Sunday Journal is an internal review exercise, NOT a public-facing post.
+WhatsApp is the proven top traffic driver. Medium organic and X alone are weak distribution channels.
+Medium article deliverable format includes: full article body, SEO keywords, tags, image suggestions with placement, Figma prompt for header image, X caption, and WhatsApp caption — all in one output.
+X audience is mostly international, not Nigeria-timezone. Peak impression times: Fri-Sun 2-6pm WAT (UK afternoon / US East morning), Wed 8am, Wed-Thu 12pm.
+Content is being diversified beyond the pre-match/HT/FT match-tracking cycle to include power-ranking posts, model-vs-reality check-ins, standalone hot-take posts, and polls.
