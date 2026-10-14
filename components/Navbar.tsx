@@ -3,21 +3,24 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { useState } from "react";
-import { Zap, BarChart2, Brain, Clock, MessageCircle, Target, Globe } from "lucide-react";
+import { Zap, BarChart2, Brain, Clock, MessageCircle, Target, Globe, User as UserIcon, LogOut } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
+import { openSignUpModal } from "@/lib/track-module-action";
 
 const NAV = [
-  { href: "/tactics",   label: "Auto-Tactics",      icon: Zap },
-  { href: "/opponent",  label: "Opponent Analysis",  icon: BarChart2 },
-  { href: "/sandbox",   label: "Coach's Sandbox",    icon: Brain },
-  { href: "/simulator", label: "Live Simulator",     icon: Clock },
-  { href: "/chat",      label: "AI Chat",            icon: MessageCircle },
-  { href: "/fpl",      label: "FPL Scout",           icon: Target },
-  { href: "/nations",  label: "Nations",             icon: Globe },
+  { href: "/tactics", label: "Auto-Tactics", icon: Zap },
+  { href: "/opponent", label: "Opponent Analysis", icon: BarChart2 },
+  { href: "/sandbox", label: "Coach's Sandbox", icon: Brain },
+  { href: "/simulator", label: "Live Simulator", icon: Clock },
+  { href: "/chat", label: "AI Chat", icon: MessageCircle },
+  { href: "/fpl", label: "FPL Scout", icon: Target },
+  { href: "/nations", label: "Nations", icon: Globe },
 ];
 
 export default function Navbar() {
   const path = usePathname();
   const [open, setOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   return (
     <>
@@ -48,6 +51,32 @@ export default function Navbar() {
             ))}
           </div>
 
+          {/* Desktop auth control */}
+          <div className="hidden lg:flex items-center gap-2 ml-3">
+            {user ? (
+              <div className="flex items-center gap-2 pl-3 border-l border-bd">
+                <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-sur2 border border-bd text-xs text-mt max-w-[160px]">
+                  <UserIcon size={13} className="text-volt flex-shrink-0" />
+                  <span className="truncate">{user.email}</span>
+                </div>
+                <button
+                  onClick={() => signOut()}
+                  title="Sign out"
+                  className="p-2 rounded-xl text-mt hover:text-white hover:bg-sur2 transition-colors"
+                >
+                  <LogOut size={15} />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => openSignUpModal()}
+                className="ml-1 px-4 py-2 rounded-xl text-[13px] font-bold bg-volt text-bg hover:bg-volt2 transition-colors"
+              >
+                Sign In
+              </button>
+            )}
+          </div>
+
           {/* Mobile hamburger */}
           <button onClick={() => setOpen(!open)}
             className="lg:hidden flex flex-col gap-1.5 p-2">
@@ -70,6 +99,30 @@ export default function Navbar() {
               <Icon size={22} /><span>{label}</span>
             </Link>
           ))}
+
+          <div className="mt-4 pt-6 border-t border-bd w-64 flex flex-col items-center gap-3">
+            {user ? (
+              <>
+                <div className="flex items-center gap-2 text-sm text-mt">
+                  <UserIcon size={15} className="text-volt" />
+                  <span className="truncate max-w-[200px]">{user.email}</span>
+                </div>
+                <button
+                  onClick={() => { signOut(); setOpen(false); }}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-mt border border-bd hover:text-white transition-colors"
+                >
+                  <LogOut size={14} /> Sign out
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => { openSignUpModal(); setOpen(false); }}
+                className="px-6 py-3 rounded-xl text-sm font-bold bg-volt text-bg hover:bg-volt2 transition-colors"
+              >
+                Sign In / Sign Up
+              </button>
+            )}
+          </div>
         </div>
       )}
     </>

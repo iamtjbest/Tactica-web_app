@@ -16,7 +16,7 @@
 import { useState, useEffect, FormEvent } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
-import { onModuleAction } from "@/lib/track-module-action";
+import { onModuleAction, onOpenSignUpModal } from "@/lib/track-module-action";
 
 const MODULE_ROUTES = ["/tactics", "/opponent", "/sandbox", "/simulator", "/chat", "/fpl"];
 const DWELL_MS = 3 * 60 * 1000; // 3 minutes
@@ -52,6 +52,22 @@ export default function SignUpModal() {
   useEffect(() => {
     if (user || alreadyHandled()) return;
     return onModuleAction(() => setIsOpen(true));
+  }, [user]);
+
+  // Trigger C: the "Sign in / Sign up" button in the navbar. This one
+  // ignores the "already handled" flag — a person deliberately clicking
+  // it wants the modal regardless of whether they dismissed the nudge
+  // before, and opens straight into sign-in mode since they already know
+  // what they want (no need for the "you've been running the numbers"
+  // sales copy).
+  useEffect(() => {
+    if (user) return;
+    return onOpenSignUpModal(() => {
+      setMode("signin");
+      setSuccess(false);
+      setError("");
+      setIsOpen(true);
+    });
   }, [user]);
 
   const handleClose = () => {

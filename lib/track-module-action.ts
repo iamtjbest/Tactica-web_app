@@ -1,4 +1,4 @@
-// lib/track-module-action.ts — module "run" signal (web)
+// lib/track-module-action.ts — module "run" signal + manual sign-up open (web)
 //
 // Each module page (Auto-Tactics, Opponent Analysis, Sandbox, Simulator,
 // Chat, FPL Scout) calls trackModuleAction("<module>") once right after its
@@ -8,10 +8,15 @@
 // timer — the idea being: prompt right after the person has just seen the
 // tool do something useful, not at an arbitrary time.
 //
+// openSignUpModal()/onOpenSignUpModal() is the same pattern for the "Sign
+// up" button in the navbar — a person clicking that button should always
+// open the modal, even if they already dismissed it once in this browser.
+//
 // This is a plain window CustomEvent rather than a shared library/context,
 // so it works from any page with a two-line addition and no new provider.
 
 const EVENT_NAME = "tactica:module-action";
+const OPEN_EVENT_NAME = "tactica:open-signup-modal";
 
 export function trackModuleAction(moduleName: string) {
   if (typeof window === "undefined") return;
@@ -23,10 +28,22 @@ export function trackModuleAction(moduleName: string) {
 export function onModuleAction(
   callback: (moduleName: string) => void
 ): () => void {
-  if (typeof window === "undefined") return () => {};
+  if (typeof window === "undefined") return () => { };
   const handler = (e: Event) => {
     callback((e as CustomEvent).detail?.module);
   };
   window.addEventListener(EVENT_NAME, handler);
   return () => window.removeEventListener(EVENT_NAME, handler);
+}
+
+export function openSignUpModal() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent(OPEN_EVENT_NAME));
+}
+
+export function onOpenSignUpModal(callback: () => void): () => void {
+  if (typeof window === "undefined") return () => { };
+  const handler = () => callback();
+  window.addEventListener(OPEN_EVENT_NAME, handler);
+  return () => window.removeEventListener(OPEN_EVENT_NAME, handler);
 }
