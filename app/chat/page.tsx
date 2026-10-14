@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { api, type ChatMessage, type LiveResponse, type SquadPlayer } from "@/lib/api";
+import { trackModuleAction } from "@/lib/track-module-action";
 import TeamSelect from "@/components/TeamSelect";
 import LiveBadge from "@/components/LiveBadge";
 import ErrorBox from "@/components/ErrorBox";
@@ -10,17 +11,17 @@ import { Radio, RefreshCw, MessageCircle, Brain } from "lucide-react";
 
 function ChatPageInner() {
   const searchParams = useSearchParams();
-  const initialMyTeam  = searchParams.get("my_team")  || "Arsenal";
-  const initialOppTeam = searchParams.get("opp_team") || "Chelsea";
-  const [myTeam,  setMyTeam]  = useState(initialMyTeam);
+  const initialMyTeam = searchParams.get("my_team") || "Barcelona";
+  const initialOppTeam = searchParams.get("opp_team") || "Real Madrid";
+  const [myTeam, setMyTeam] = useState(initialMyTeam);
   const [oppTeam, setOppTeam] = useState(initialOppTeam);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [input,   setInput]   = useState("");
+  const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [syncing, setSyncing] = useState(false);
-  const [live,    setLive]    = useState<LiveResponse | null>(null);
-  const [squad,   setSquad]   = useState<SquadPlayer[]>([]);
-  const [error,   setError]   = useState("");
+  const [live, setLive] = useState<LiveResponse | null>(null);
+  const [squad, setSquad] = useState<SquadPlayer[]>([]);
+  const [error, setError] = useState("");
   const [lastSync, setLastSync] = useState(0);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -99,6 +100,7 @@ function ChatPageInner() {
       });
 
       setMessages([...updated, { role: "assistant", content: res.reply }]);
+      trackModuleAction("chat");
     } catch (e: unknown) {
       setMessages([...updated, {
         role: "assistant",
@@ -122,8 +124,8 @@ function ChatPageInner() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <TeamSelect label="Your Team" value={myTeam}  onChange={changeMyTeam}  id="chat-my"  disabled={busy} />
-        <TeamSelect label="Opponent"  value={oppTeam} onChange={changeOppTeam} id="chat-opp" disabled={busy} />
+        <TeamSelect label="Your Team" value={myTeam} onChange={changeMyTeam} id="chat-my" disabled={busy} />
+        <TeamSelect label="Opponent" value={oppTeam} onChange={changeOppTeam} id="chat-opp" disabled={busy} />
       </div>
 
       <div className="card space-y-3">
@@ -159,8 +161,8 @@ function ChatPageInner() {
               <div className="text-center">
                 <MessageCircle size={36} className="mx-auto mb-3 text-mt" />
                 <p className="text-mt text-sm">
-                  Ask anything — &ldquo;How do we beat {oppTeam}?&rdquo;<br/>
-                  &ldquo;What changes at minute 70 losing 1-0?&rdquo;<br/>
+                  Ask anything — &ldquo;How do we beat {oppTeam}?&rdquo;<br />
+                  &ldquo;What changes at minute 70 losing 1-0?&rdquo;<br />
                   &ldquo;Which players should start today?&rdquo;
                 </p>
               </div>
@@ -187,8 +189,8 @@ function ChatPageInner() {
             <div className="flex justify-start">
               <div className="bg-sur2 border border-bd rounded-2xl px-4 py-3">
                 <div className="flex gap-1">
-                  {[0,1,2].map(i => (
-                    <span key={i} className="w-2 h-2 rounded-full bg-volt animate-bounce" style={{ animationDelay: `${i*0.15}s` }} />
+                  {[0, 1, 2].map(i => (
+                    <span key={i} className="w-2 h-2 rounded-full bg-volt animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
                   ))}
                 </div>
               </div>

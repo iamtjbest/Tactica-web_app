@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { api, type SquadPlayer, type PredictResponse } from "@/lib/api";
+import { trackModuleAction } from "@/lib/track-module-action";
 import TeamSelect from "@/components/TeamSelect";
 import ErrorBox from "@/components/ErrorBox";
 import StatCard from "@/components/StatCard";
@@ -12,9 +13,9 @@ import { Brain, Loader2, Download, CheckCircle2, Check, Settings, Shirt, Clock, 
 const fmtProb = (v: number) => (v <= 1 ? (v * 100).toFixed(1) : v.toFixed(1));
 
 const FORMATIONS = [
-  "3-4-3","3-5-2","3-4-1-2","3-2-4-1","3-4-2-1","3-3-1-3",
-  "4-2-3-1","4-3-3","4-4-2","4-4-2 Diamond","4-1-4-1","4-3-2-1","4-2-2-2",
-  "5-3-2","5-4-1","5-2-2-1","5-2-3",
+  "3-4-3", "3-5-2", "3-4-1-2", "3-2-4-1", "3-4-2-1", "3-3-1-3",
+  "4-2-3-1", "4-3-3", "4-4-2", "4-4-2 Diamond", "4-1-4-1", "4-3-2-1", "4-2-2-2",
+  "5-3-2", "5-4-1", "5-2-2-1", "5-2-3",
 ];
 
 const POS_COLOR: Record<string, string> = {
@@ -25,15 +26,15 @@ const POS_COLOR: Record<string, string> = {
 };
 
 export default function SandboxPage() {
-  const [myTeam,    setMyTeam]    = useState("Arsenal");
-  const [oppTeam,   setOppTeam]   = useState("Chelsea");
+  const [myTeam, setMyTeam] = useState("Arsenal");
+  const [oppTeam, setOppTeam] = useState("Chelsea");
   const [formation, setFormation] = useState("4-3-3");
-  const [squad,     setSquad]     = useState<SquadPlayer[]>([]);
-  const [selected,  setSelected]  = useState<string[]>([]);
-  const [loading,   setLoading]   = useState(false);
-  const [fetching,  setFetching]  = useState(false);
-  const [result,    setResult]    = useState<PredictResponse | null>(null);
-  const [error,     setError]     = useState("");
+  const [squad, setSquad] = useState<SquadPlayer[]>([]);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(false);
+  const [result, setResult] = useState<PredictResponse | null>(null);
+  const [error, setError] = useState("");
   const [bsdMatchedName, setBsdMatchedName] = useState("");
 
   const busy = fetching || loading; // lock team selection during any in-flight request
@@ -68,16 +69,17 @@ export default function SandboxPage() {
         api.form(oppTeam).catch(() => null),
       ]);
       const pred = await api.predict({
-        my_team:  myTeam,
+        my_team: myTeam,
         opp_team: oppTeam,
-        my_att:   mf?.attack,
-        my_def:   mf?.defence,
-        opp_att:  of_?.attack,
-        opp_def:  of_?.defence,
+        my_att: mf?.attack,
+        my_def: mf?.defence,
+        opp_att: of_?.attack,
+        opp_def: of_?.defence,
         familiarity_formation: formation,
-        opp_habit_formation:   of_?.best_formation ?? undefined,
+        opp_habit_formation: of_?.best_formation ?? undefined,
       });
       setResult(pred);
+      trackModuleAction("sandbox");
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "API error");
     } finally { setLoading(false); }
@@ -98,8 +100,8 @@ export default function SandboxPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <TeamSelect label="Your Team" value={myTeam}  onChange={v => { setMyTeam(v); fetchSquad(v); }} id="sb-my"  disabled={busy} />
-        <TeamSelect label="Opponent"  value={oppTeam} onChange={setOppTeam} id="sb-opp" disabled={busy} />
+        <TeamSelect label="Your Team" value={myTeam} onChange={v => { setMyTeam(v); fetchSquad(v); }} id="sb-my" disabled={busy} />
+        <TeamSelect label="Opponent" value={oppTeam} onChange={setOppTeam} id="sb-opp" disabled={busy} />
       </div>
 
       <div>
@@ -144,7 +146,7 @@ export default function SandboxPage() {
             )}
           </div>
 
-          {(["GK","DF","MF","FW"] as const).map(pos => {
+          {(["GK", "DF", "MF", "FW"] as const).map(pos => {
             const group = byPos[pos];
             if (!group.length) return null;
             return (
@@ -153,7 +155,7 @@ export default function SandboxPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                   {group.map(p => {
                     const isSelected = selected.includes(p.Name);
-                    const badge = p.SpecPos && !["G","D","M","F"].includes(p.SpecPos) ? p.SpecPos : p.Pos;
+                    const badge = p.SpecPos && !["G", "D", "M", "F"].includes(p.SpecPos) ? p.SpecPos : p.Pos;
                     return (
                       <button key={p.Name} onClick={() => toggle(p.Name)} disabled={busy}
                         className={clsx(
@@ -183,9 +185,9 @@ export default function SandboxPage() {
 
           {result && (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-5">
-              <StatCard label="Your Formation"     value={formation} />
+              <StatCard label="Your Formation" value={formation} />
               <StatCard label="AI Win Probability" value={`${fmtProb(result.probability)}%`} />
-              <StatCard label="vs Opponent"        value={oppTeam}   />
+              <StatCard label="vs Opponent" value={oppTeam} />
             </div>
           )}
         </div>
@@ -197,7 +199,7 @@ export default function SandboxPage() {
           <div className="space-y-2">
             {selected.map(name => {
               const p = squad.find(pl => pl.Name === name);
-              const badge = p?.SpecPos && !["G","D","M","F"].includes(p.SpecPos) ? p.SpecPos : (p?.Pos ?? "?");
+              const badge = p?.SpecPos && !["G", "D", "M", "F"].includes(p.SpecPos) ? p.SpecPos : (p?.Pos ?? "?");
               return (
                 <div key={name} className="flex items-center justify-between bg-bg border border-bd rounded-xl px-4 py-3">
                   <div className="flex items-center gap-2.5">

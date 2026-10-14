@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { api, type FormResponse, type PredictResponse, type LineupResponse } from "@/lib/api";
+import { trackModuleAction } from "@/lib/track-module-action";
 import TeamSelect from "@/components/TeamSelect";
 import FormTable from "@/components/FormTable";
 import FormationBar from "@/components/FormationBar";
@@ -14,14 +15,14 @@ import { Zap, Search, CheckCircle2, Bot, Ruler, Trophy, Shirt, AlertTriangle, Me
 const fmtProb = (v: number) => (v <= 1 ? (v * 100).toFixed(1) : v.toFixed(1));
 
 export default function TacticsPage() {
-  const [myTeam,  setMyTeam]  = useState("Arsenal");
-  const [oppTeam, setOppTeam] = useState("Chelsea");
+  const [myTeam, setMyTeam] = useState("Manchester United");
+  const [oppTeam, setOppTeam] = useState("Liverpool");
   const [loading, setLoading] = useState(false);
-  const [error,   setError]   = useState("");
-  const [myForm,  setMyForm]  = useState<FormResponse | null>(null);
+  const [error, setError] = useState("");
+  const [myForm, setMyForm] = useState<FormResponse | null>(null);
   const [oppForm, setOppForm] = useState<FormResponse | null>(null);
   const [predict, setPredict] = useState<PredictResponse | null>(null);
-  const [lineup,  setLineup]  = useState<LineupResponse | null>(null);
+  const [lineup, setLineup] = useState<LineupResponse | null>(null);
 
   async function run() {
     if (myTeam === oppTeam) { setError("A team cannot face itself!"); return; }
@@ -38,9 +39,10 @@ export default function TacticsPage() {
         opp_att: of_.attack,
         opp_def: of_.defence,
         familiarity_formation: mf.best_formation ?? undefined,
-        opp_habit_formation:   of_.best_formation ?? undefined,
+        opp_habit_formation: of_.best_formation ?? undefined,
       });
       setPredict(pred);
+      trackModuleAction("tactics");
 
       try {
         setLineup(await api.lineup(myTeam, pred.best_formation));
@@ -67,8 +69,8 @@ export default function TacticsPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <TeamSelect label="Your Team" value={myTeam}  onChange={setMyTeam}  id="my-team"  disabled={loading} />
-        <TeamSelect label="Opponent"  value={oppTeam} onChange={setOppTeam} id="opp-team" disabled={loading} />
+        <TeamSelect label="Your Team" value={myTeam} onChange={setMyTeam} id="my-team" disabled={loading} />
+        <TeamSelect label="Opponent" value={oppTeam} onChange={setOppTeam} id="opp-team" disabled={loading} />
       </div>
 
       <ErrorBox msg={error} />

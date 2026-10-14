@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { api, type PredictResponse } from "@/lib/api";
+import { trackModuleAction } from "@/lib/track-module-action";
 import TeamSelect from "@/components/TeamSelect";
 import FormationBar from "@/components/FormationBar";
 import ErrorBox from "@/components/ErrorBox";
@@ -15,20 +16,20 @@ import {
 const fmtProb = (v: number) => (v <= 1 ? (v * 100).toFixed(1) : v.toFixed(1));
 
 const FORMATIONS = [
-  "4-3-3","4-2-3-1","4-4-2","4-4-2 Diamond","4-1-4-1",
-  "3-4-3","3-5-2","3-4-2-1","5-3-2","5-4-1","5-2-3",
+  "4-3-3", "4-2-3-1", "4-4-2", "4-4-2 Diamond", "4-1-4-1",
+  "3-4-3", "3-5-2", "3-4-2-1", "5-3-2", "5-4-1", "5-2-3",
 ];
 
 export default function SimulatorPage() {
-  const [myTeam,   setMyTeam]   = useState("Arsenal");
-  const [oppTeam,  setOppTeam]  = useState("Chelsea");
-  const [formation,setFormation]= useState("4-3-3");
-  const [minute,   setMinute]   = useState(45);
-  const [myGoals,  setMyGoals]  = useState(0);
+  const [myTeam, setMyTeam] = useState("Arsenal");
+  const [oppTeam, setOppTeam] = useState("Chelsea");
+  const [formation, setFormation] = useState("4-3-3");
+  const [minute, setMinute] = useState(45);
+  const [myGoals, setMyGoals] = useState(0);
   const [oppGoals, setOppGoals] = useState(0);
-  const [loading,  setLoading]  = useState(false);
-  const [error,    setError]    = useState("");
-  const [result,   setResult]   = useState<(PredictResponse & { advice: { icon: LucideIcon; text: string }[] }) | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [result, setResult] = useState<(PredictResponse & { advice: { icon: LucideIcon; text: string }[] }) | null>(null);
 
   async function simulate() {
     if (myTeam === oppTeam) { setError("A team cannot face itself!"); return; }
@@ -40,14 +41,14 @@ export default function SimulatorPage() {
         api.form(oppTeam).catch(() => null),
       ]);
       const pred = await api.predict({
-        my_team:  myTeam,
+        my_team: myTeam,
         opp_team: oppTeam,
-        my_att:   mf?.attack,
-        my_def:   mf?.defence,
-        opp_att:  of_?.attack,
-        opp_def:  of_?.defence,
+        my_att: mf?.attack,
+        my_def: mf?.defence,
+        opp_att: of_?.attack,
+        opp_def: of_?.defence,
         familiarity_formation: formation,
-        opp_habit_formation:   of_?.best_formation ?? undefined,
+        opp_habit_formation: of_?.best_formation ?? undefined,
       });
 
       const advice: { icon: LucideIcon; text: string }[] = [];
@@ -82,6 +83,7 @@ export default function SimulatorPage() {
         advice.push({ icon: Lightbulb, text: `Your ${formation} is very defensive — with ${timeLeft} minutes left and score ${myGoals}–${oppGoals}, consider pushing one of the wide defenders into midfield to create more overloads going forward.` });
 
       setResult({ ...pred, advice });
+      trackModuleAction("simulator");
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "API error");
     } finally { setLoading(false); }
@@ -103,8 +105,8 @@ export default function SimulatorPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <TeamSelect label="Your Team" value={myTeam}  onChange={setMyTeam}  id="sim-my"  disabled={loading} />
-        <TeamSelect label="Opponent"  value={oppTeam} onChange={setOppTeam} id="sim-opp" disabled={loading} />
+        <TeamSelect label="Your Team" value={myTeam} onChange={setMyTeam} id="sim-my" disabled={loading} />
+        <TeamSelect label="Opponent" value={oppTeam} onChange={setOppTeam} id="sim-opp" disabled={loading} />
       </div>
 
       <div className="card space-y-5">

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import TeamSelect from "@/components/TeamSelect";
 import ErrorBox from "@/components/ErrorBox";
+import { trackModuleAction } from "@/lib/track-module-action";
 import {
   Target, Shield, Hand, RefreshCw, Check, Twitter, Star, AlertTriangle,
   XCircle, Zap, Calendar, Archive, BarChart2, Building2, User, Settings,
@@ -291,8 +292,8 @@ function PriceRange({ min, max, onMin, onMax }: {
         {presets.map(p => (
           <button key={p.label} onClick={() => { onMin(p.min); onMax(p.max); }}
             className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${min === p.min && max === p.max
-                ? "bg-volt/10 border-volt/40 text-volt"
-                : "border-bd text-mt hover:border-volt/20 hover:text-white"
+              ? "bg-volt/10 border-volt/40 text-volt"
+              : "border-bd text-mt hover:border-volt/20 hover:text-white"
               }`}>
             {p.label} (£{p.min}–£{p.max}m)
           </button>
@@ -345,7 +346,10 @@ function FixtureTicker() {
 
   const fetch_ = async () => {
     setLoading(true); setError(""); setData(null);
-    try { setData(await apiFetch(`${API_BASE}/api/fpl/fixtures?team=${encodeURIComponent(team)}&gws=38`)); }
+    try {
+      setData(await apiFetch(`${API_BASE}/api/fpl/fixtures?team=${encodeURIComponent(team)}&gws=38`));
+      trackModuleAction("fpl");
+    }
     catch (e: unknown) { setError(e instanceof Error ? e.message : String(e)); }
     finally { setLoading(false); }
   };
@@ -432,7 +436,10 @@ function CaptainPick() {
 
   const fetch_ = async () => {
     setLoading(true); setError(""); setData(null);
-    try { setData(await apiFetch(`${API_BASE}/api/fpl/captain?team=${encodeURIComponent(team)}&top=5`)); }
+    try {
+      setData(await apiFetch(`${API_BASE}/api/fpl/captain?team=${encodeURIComponent(team)}&top=5`));
+      trackModuleAction("fpl");
+    }
     catch (e: unknown) { setError(e instanceof Error ? e.message : String(e)); }
     finally { setLoading(false); }
   };
@@ -677,6 +684,7 @@ function MySquad() {
       setData(await apiFetch(
         `${API_BASE}/api/fpl/squad?player_ids=${ids.join(",")}&bank=${bank}`
       ));
+      trackModuleAction("fpl");
     } catch (e: unknown) { setError(e instanceof Error ? e.message : String(e)); }
     finally { setLoading(false); }
   };
@@ -862,6 +870,7 @@ function TransferRecommender() {
       setData(await apiFetch(
         `${API_BASE}/api/fpl/transfers?position=${position}&min_price=${minPrice}&max_price=${maxPrice}&limit=10`
       ));
+      trackModuleAction("fpl");
     } catch (e: unknown) { setError(e instanceof Error ? e.message : String(e)); }
     finally { setLoading(false); }
   };
@@ -879,8 +888,8 @@ function TransferRecommender() {
             {POSITIONS.map(p => (
               <button key={p.id} onClick={() => setPosition(p.id)}
                 className={`flex-1 py-2.5 rounded-xl border text-sm font-bold transition-all ${position === p.id
-                    ? "bg-volt/10 border-volt/40 text-volt"
-                    : "border-bd text-mt hover:border-volt/20 hover:text-white"
+                  ? "bg-volt/10 border-volt/40 text-volt"
+                  : "border-bd text-mt hover:border-volt/20 hover:text-white"
                   }`}>
                 <span className="flex items-center justify-center gap-1.5">
                   <p.icon size={14} />
@@ -949,6 +958,7 @@ function DifferentialFinder() {
       setData(await apiFetch(
         `${API_BASE}/api/fpl/differentials?position=${position}&max_ownership=${maxOwnership}&max_price=${maxPrice}&limit=8`
       ));
+      trackModuleAction("fpl");
     } catch (e: unknown) { setError(e instanceof Error ? e.message : String(e)); }
     finally { setLoading(false); }
   };
@@ -967,8 +977,8 @@ function DifferentialFinder() {
             {POSITIONS.map(p => (
               <button key={p.id} onClick={() => setPosition(p.id)}
                 className={`flex-1 py-2.5 rounded-xl border text-sm font-bold transition-all ${position === p.id
-                    ? "bg-volt/10 border-volt/40 text-volt"
-                    : "border-bd text-mt hover:border-volt/20 hover:text-white"
+                  ? "bg-volt/10 border-volt/40 text-volt"
+                  : "border-bd text-mt hover:border-volt/20 hover:text-white"
                   }`}>
                 <span className="flex items-center justify-center gap-1.5">
                   <p.icon size={14} />
@@ -986,8 +996,8 @@ function DifferentialFinder() {
             {[5, 10, 15, 20, 25].map(v => (
               <button key={v} onClick={() => setMaxOwnership(v)}
                 className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${maxOwnership === v
-                    ? "bg-volt/10 border-volt/40 text-volt"
-                    : "border-bd text-mt hover:border-volt/20 hover:text-white"
+                  ? "bg-volt/10 border-volt/40 text-volt"
+                  : "border-bd text-mt hover:border-volt/20 hover:text-white"
                   }`}>
                 &lt;{v}%
               </button>
@@ -1008,8 +1018,8 @@ function DifferentialFinder() {
             {[5.5, 6.5, 7.5, 8.5, 10.0].map(v => (
               <button key={v} onClick={() => setMaxPrice(v)}
                 className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${maxPrice === v
-                    ? "bg-volt/10 border-volt/40 text-volt"
-                    : "border-bd text-mt hover:border-volt/20 hover:text-white"
+                  ? "bg-volt/10 border-volt/40 text-volt"
+                  : "border-bd text-mt hover:border-volt/20 hover:text-white"
                   }`}>
                 £{v}m
               </button>
@@ -1108,8 +1118,8 @@ export default function FplPage() {
         {TABS.map(t => (
           <button key={t.id} onClick={() => setTab(t.id)}
             className={`flex-1 py-3 px-2 rounded-xl border text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${tab === t.id
-                ? "bg-volt/10 border-volt/40 text-volt"
-                : "border-bd text-mt hover:border-volt/20 hover:text-white"
+              ? "bg-volt/10 border-volt/40 text-volt"
+              : "border-bd text-mt hover:border-volt/20 hover:text-white"
               }`}>
             <t.icon size={14} />
             {t.label}

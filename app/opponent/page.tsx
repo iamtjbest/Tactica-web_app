@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { api, type FormResponse } from "@/lib/api";
+import { trackModuleAction } from "@/lib/track-module-action";
 import TeamSelect from "@/components/TeamSelect";
 import FormTable from "@/components/FormTable";
 import ErrorBox from "@/components/ErrorBox";
@@ -10,11 +11,11 @@ import {
 } from "lucide-react";
 
 export default function OpponentPage() {
-  const [myTeam,  setMyTeam]  = useState("Arsenal");
+  const [myTeam, setMyTeam] = useState("Manchester City");
   const [oppTeam, setOppTeam] = useState("Borussia Dortmund");
   const [loading, setLoading] = useState(false);
-  const [error,   setError]   = useState("");
-  const [myForm,  setMyForm]  = useState<FormResponse | null>(null);
+  const [error, setError] = useState("");
+  const [myForm, setMyForm] = useState<FormResponse | null>(null);
   const [oppForm, setOppForm] = useState<FormResponse | null>(null);
 
   async function run() {
@@ -23,6 +24,7 @@ export default function OpponentPage() {
     try {
       const [mf, of_] = await Promise.all([api.form(myTeam), api.form(oppTeam)]);
       setMyForm(mf); setOppForm(of_);
+      trackModuleAction("opponent");
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "API error");
     } finally { setLoading(false); }
@@ -33,16 +35,16 @@ export default function OpponentPage() {
     const mA = myForm.attack, mD = myForm.defence;
     const oA = oppForm.attack, oD = oppForm.defence;
 
-    const myRecent  = myForm.matches.slice(0, 5);
+    const myRecent = myForm.matches.slice(0, 5);
     const oppRecent = oppForm.matches.slice(0, 5);
-    const myW       = myRecent.filter(m => m.result === "W").length;
-    const oppW      = oppRecent.filter(m => m.result === "W").length;
-    const oppL      = oppRecent.filter(m => m.result === "L").length;
-    const totalOpp  = oppRecent.length || 1;
-    const totalMy   = myRecent.length || 1;
+    const myW = myRecent.filter(m => m.result === "W").length;
+    const oppW = oppRecent.filter(m => m.result === "W").length;
+    const oppL = oppRecent.filter(m => m.result === "L").length;
+    const totalOpp = oppRecent.length || 1;
+    const totalMy = myRecent.length || 1;
     const oppConceded = oppRecent.reduce((s, m) => s + m.conceded, 0) / totalOpp;
-    const oppScored   = oppRecent.reduce((s, m) => s + m.scored, 0) / totalOpp;
-    const myScored    = myRecent.reduce((s, m) => s + m.scored, 0) / totalMy;
+    const oppScored = oppRecent.reduce((s, m) => s + m.scored, 0) / totalOpp;
+    const myScored = myRecent.reduce((s, m) => s + m.scored, 0) / totalMy;
 
     // Tactical scouting breakdown based on real BSD metrics
     if (mA > oD + 8) {
@@ -92,8 +94,8 @@ export default function OpponentPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <TeamSelect label="Your Team" value={myTeam}  onChange={v => { setMyTeam(v);  setMyForm(null);  }} id="opp-my"  disabled={loading} />
-        <TeamSelect label="Opponent"  value={oppTeam} onChange={v => { setOppTeam(v); setOppForm(null); }} id="opp-opp" disabled={loading} />
+        <TeamSelect label="Your Team" value={myTeam} onChange={v => { setMyTeam(v); setMyForm(null); }} id="opp-my" disabled={loading} />
+        <TeamSelect label="Opponent" value={oppTeam} onChange={v => { setOppTeam(v); setOppForm(null); }} id="opp-opp" disabled={loading} />
       </div>
 
       <ErrorBox msg={error} />

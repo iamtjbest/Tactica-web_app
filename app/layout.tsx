@@ -1,83 +1,43 @@
-import Link from "next/link";
-import { Zap, BarChart2, Brain, Clock, MessageCircle, Target, Globe } from "lucide-react";
+import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import Navbar from "@/components/Navbar";
+import SignUpModal from "@/components/SignUpModal";
+import { AuthProvider } from "@/lib/auth-context";
+import "./globals.css";
 
-const MODULES = [
-  {
-    href: "/tactics",
-    icon: Zap,
-    title: "Auto-Tactics",
-    desc: "Fetches last 5 real matches from BSD API, computes live attack/defence ratings, and recommends the optimal formation + Starting XI.",
-    pill: "Module 1",
+export const metadata: Metadata = {
+  title: "Tactica — AI Football Tactical Engine",
+  description:
+    "ML-powered formation prediction, BSD live match data, Gemini AI tactical chat, " +
+    "and FPL Scout. Built by Linea Football.",
+  openGraph: {
+    title: "Tactica — AI Football Tactical Engine",
+    description: "Formation predictions, opponent analysis, FPL Scout and AI chat.",
+    url: "https://app.tactica.com.ng",
+    siteName: "Tactica",
+    type: "website",
   },
-  {
-    href: "/opponent",
-    icon: BarChart2,
-    title: "Opponent Analysis",
-    desc: "Head-to-head rating comparison, recent form, and an AI scout report with plain-language tactical guidance for the specific matchup.",
-    pill: "Module 2",
+  twitter: {
+    card: "summary_large_image",
+    site: "@TacticaEngine",
+    title: "Tactica — AI Football Tactical Engine",
+    description: "Formation predictions, opponent analysis, FPL Scout and AI chat.",
   },
-  {
-    href: "/sandbox",
-    icon: Brain,
-    title: "Coach's Sandbox",
-    desc: "Pick your formation, manually draft your Starting XI from the real squad, and get an AI win-probability estimate for your game plan.",
-    pill: "Module 3",
-  },
-  {
-    href: "/simulator",
-    icon: Clock,
-    title: "Live Simulator",
-    desc: "Set the match minute and current scoreline. The AI returns real-time tactical advice — hold shape, push forward, or protect the lead.",
-    pill: "Module 4",
-  },
-  {
-    href: "/chat",
-    icon: MessageCircle,
-    title: "AI Tactical Chat",
-    desc: "Sync a live score from any competition worldwide, then ask the AI assistant manager anything. It knows your squad and the live context.",
-    pill: "Module 5",
-  },
-  {
-    href: "/fpl",
-    icon: Target,
-    title: "FPL Scout",
-    desc: "Fixture difficulty ratings, captain picks, and transfer recommendations powered by real BSD match data. Built for FPL preseason.",
-    pill: "Module 6",
-  },
-  {
-    href: "/nations",
-    icon: Globe,
-    title: "International Break",
-    desc: "Predict national team matchups with the same attack/defence engine — squad ratings, formation recommendations, and win probability for any fixture.",
-    pill: "Module 7",
-  },
-];
+};
 
-export default function Home() {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="hex-bg min-h-[calc(100vh-70px)]">
-      {/* Hero */}
-      <div className="max-w-screen-xl mx-auto px-5 pt-24 pb-16 text-center">
-        <p className="section-label mb-5">Football Intelligence Engine</p>
-        <h1
-          className="font-display font-black text-white mb-6 leading-tight"
-          style={{ fontSize: "clamp(42px, 8vw, 80px)", textShadow: "0 0 60px rgba(204,255,0,0.18)" }}>
-          The AI brain behind<br/>
-          <span className="text-volt italic">every great formation.</span>
-        </h1>
-        <p className="text-mt text-lg max-w-xl mx-auto mb-10 leading-relaxed">
-          ML-powered formation prediction · BSD live match data · Gemini AI tactical chat<br/>
-          130+ clubs · FPL Scout · 100% free
-        </p>
-        <Link href="/tactics" className="btn-volt inline-flex items-center gap-2 text-base px-8 py-4">
-          Start Analysing
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </Link>
-      </div>
-
-      {/* Module grid */}
-      <div className="max-w-screen-xl mx-auto px-5 pb-24">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {MODULES.map(({ href, icon: Icon, title, desc, pill }) => (
-            <Link key={href} href={href}
-              className="card hover:border-volt/40 hover:bg-sur2 transition-all duration-200 group block">
+    <html lang="en">
+      <body>
+        <AuthProvider>
+          <Navbar />
+          <main>{children}</main>
+          <SignUpModal />
+          <Analytics />
+          <SpeedInsights />
+        </AuthProvider>
+      </body>
+    </html>
+  );
+}
