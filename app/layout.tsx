@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Navbar from "@/components/Navbar";
-import EmailCapture from "@/components/EmailCapture";
+import SignUpModal from "@/components/SignUpModal";
+import { AuthProvider } from "@/lib/auth-context";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -29,20 +30,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body> {/* <-- Here is the opening body tag */}
-        {/* Navbar — all 6 modules always visible */}
-        <Navbar />
+        <AuthProvider>
+          {/* Navbar — all 6 modules always visible */}
+          <Navbar />
 
-        {/* Page content */}
-        <main>{children}</main>
+          {/* Page content */}
+          <main>{children}</main>
 
-        {/* Email capture — Now active */}
-        <EmailCapture />
+          {/* Sign-up nudge — replaces the old EmailCapture waitlist modal */}
+          <SignUpModal />
 
-        {/* Vercel Analytics — pageviews, countries, referrers */}
-        <Analytics />
+          {/* Vercel Analytics — pageviews, countries, referrers */}
+          <Analytics />
 
-        {/* Vercel Speed Insights — Core Web Vitals per page */}
-        <SpeedInsights />
+          {/* Vercel Speed Insights — Core Web Vitals per page */}
+          <SpeedInsights />
+        </AuthProvider>
       </body>
     </html>
   );
