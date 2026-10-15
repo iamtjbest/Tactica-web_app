@@ -160,6 +160,7 @@ const BSD_NAME_MAP: Record<string, string> = {
   "Shakhtar Donetsk":    "Shakhtar Donetsk",
   "Arsenal":             "Arsenal",
   "Sabah":               "Sabah FK",
+  "Torreense":           "Torreense",
 
   // ── Eliteserien ──
   "Viking":              "Viking FK",    // or whatever BSD returns
@@ -432,7 +433,7 @@ export const EUROPEAN_TEAMS = [
   "Braga", "Guimaraes", "Celtic", "Rangers", "Club Brugge", "Anderlecht", "Genk", "Galatasaray",
   "Fenerbahce", "Besiktas", "Trabzonspor", "Red Bull Salzburg", "Sturm Graz", "Slavia Prague",
   "Sparta Prague", "Olympiakos", "Panathinaikos", "PAOK", "Sabah", "NEC Nijmegen", "Lech Poznań", "Norwich City",
-  "LASK", "Viking FK",
+  "LASK", "Viking FK", "Torreense",
 ].sort();
 
 // National teams — originally World Cup 2026 qualifiers only; expanded Sept
