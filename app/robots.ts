@@ -10,6 +10,6 @@ export default function robots(): MetadataRoute.Robots {
       // any newly-gated paths here (e.g. '/dashboard/').
       disallow: ['/api/'],
     },
-    sitemap: 'https://app.tactica.com.ng/sitemap.xml',
+    sitemap: 'https://app.tacticaengine.com/sitemap.xml',
   }
 }
