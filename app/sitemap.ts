@@ -5,49 +5,49 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     {
-      url: 'https://app.tactica.com.ng',
+      url: 'https://app.tacticaengine.com',
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 1,
     },
     {
-      url: 'https://app.tactica.com.ng/chat',
+      url: 'https://app.tacticaengine.com/chat',
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
-      url: 'https://app.tactica.com.ng/fpl',
+      url: 'https://app.tacticaengine.com/fpl',
       lastModified: now,
       changeFrequency: 'daily', // FPL data changes constantly during the season
       priority: 0.9,
     },
     {
-      url: 'https://app.tactica.com.ng/simulator',
+      url: 'https://app.tacticaengine.com/simulator',
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
-      url: 'https://app.tactica.com.ng/tactics',
+      url: 'https://app.tacticaengine.com/tactics',
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
-      url: 'https://app.tactica.com.ng/opponent',
+      url: 'https://app.tacticaengine.com/opponent',
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
-      url: 'https://app.tactica.com.ng/sandbox',
+      url: 'https://app.tacticaengine.com/sandbox',
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
-      url: 'https://app.tactica.com.ng/nations',
+      url: 'https://app.tacticaengine.com/nations',
       lastModified: now,
       changeFrequency: 'daily', // international break coverage changes daily right now
       priority: 0.9,
