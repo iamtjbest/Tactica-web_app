@@ -7,7 +7,7 @@ import {
   Target, Shield, Hand, RefreshCw, Check, Twitter, Star, AlertTriangle,
   XCircle, Zap, Calendar, Archive, BarChart2, Building2, User, Settings,
   X, Crown, Award, ArrowRight, ArrowLeftRight, Lightbulb, TrendingDown, Flame,
-  Sparkles, Users2, type LucideIcon,
+  Sparkles, Users2, Hash, TrendingUp, Minus, Ban, type LucideIcon,
 } from "lucide-react";
 
 const CHIP_ICONS: Record<string, LucideIcon> = {
@@ -84,6 +84,32 @@ interface TransferSuggestion {
 interface ChipAdvice {
   chip: string; score: number; reason: string; action: string; half: number;
   suggested_squad_endpoint?: string;
+  available?: boolean;
+  played?: { gameweek: number; half: number }[];
+}
+interface ChipState {
+  key: string; chip: string; available: boolean; half: number;
+  played: { gameweek: number; half: number }[];
+  expires_gw: number | null; gws_left: number | null;
+}
+interface ManagerProfile {
+  gameweeks_played: number;
+  overall_points: number | null; overall_rank: number | null;
+  last_gw_points: number | null;
+  rank_trend: "climbing" | "sliding" | "steady" | null;
+  transfers_made: number; transfers_per_gw: number; total_hits_cost: number;
+  points_on_bench: number; bench_points_per_gw: number;
+  best_gameweek: { gameweek: number; points: number };
+  worst_gameweek: { gameweek: number; points: number };
+  aggression: "high" | "low" | "balanced";
+}
+interface ManagerBlock {
+  entry_id: number; team_name: string | null; manager_name: string | null;
+  squad_gameweek: number; squad_is_stale: boolean;
+  active_chip: string | null;
+  chips_played: { name: string; event: number }[];
+  chips_state: Record<string, ChipState>;
+  profile: ManagerProfile;
 }
 interface UpcomingFixture {
   opponent: string; venue: string; date: string; fdr: number;
@@ -114,6 +140,7 @@ interface SquadResponse {
   transfer_suggestions: TransferSuggestion[];
   share_text: string; cached: boolean;
   current_gameweek: number; chip_advice: ChipAdvice[];
+  manager?: ManagerBlock | null;
 }
 
 // ── FDR colour maps ────────────────────────────────────────────────────────────
@@ -619,6 +646,105 @@ function SuggestedSquadPanel({ squad }: { squad: SuggestedSquadResponse }) {
   );
 }
 
+function ManagerPanel({ m }: { m: ManagerBlock }) {
+  const p = m.profile || ({} as ManagerProfile);
+  const chips = Object.values(m.chips_state || {});
+  const left = chips.filter(c => c.available);
+  const trendIcon = p.rank_trend === "climbing" ? TrendingUp
+    : p.rank_trend === "sliding" ? TrendingDown : Minus;
+  const TrendIcon = trendIcon;
+  const trendColour = p.rank_trend === "climbing" ? "text-grn"
+    : p.rank_trend === "sliding" ? "text-red" : "text-mt";
+  const fmt = (n: number | null | undefined) =>
+    n == null ? "—" : n.toLocaleString();
+
+  return (
+    <div className="card border-cyan/30 bg-cyan/5 space-y-4">
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <p className="font-display font-bold text-lg text-white">
+            {m.team_name || `Team ${m.entry_id}`}
+          </p>
+          <p className="text-mt text-xs">
+            {m.manager_name ? `${m.manager_name} · ` : ""}ID {m.entry_id}
+          </p>
+        </div>
+        <div className="text-right">
+          <p className="text-[10px] text-mt uppercase tracking-wider">Overall rank</p>
+          <p className="font-black text-white text-lg inline-flex items-center gap-1.5">
+            <TrendIcon size={15} className={trendColour} />
+            {fmt(p.overall_rank)}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 text-xs rounded-lg border border-bd bg-sur2 px-3 py-2">
+        <Archive size={13} className="text-mt flex-shrink-0" />
+        <span className="text-mt">
+          Showing your squad as locked for{" "}
+          <span className="text-white font-bold">GW{m.squad_gameweek}</span>.
+          {m.squad_is_stale
+            ? " Any transfers you have made for the upcoming gameweek are not visible until that deadline passes."
+            : " This is your current squad."}
+        </span>
+      </div>
+
+      <div>
+        <p className="section-label mb-2">Chips remaining this half</p>
+        {left.length === 0 ? (
+          <p className="text-mt text-xs">None left until the second half of the season.</p>
+        ) : (
+          <div className="flex gap-2 flex-wrap">
+            {chips.map(c => (
+              <span key={c.key}
+                className={`text-[11px] font-bold rounded-lg px-2.5 py-1.5 border inline-flex items-center gap-1.5 ${c.available
+                  ? "border-volt/40 bg-volt/10 text-volt"
+                  : "border-bd bg-sur2 text-mt line-through"
+                  }`}>
+                {c.available ? <Check size={11} /> : <Ban size={11} />}
+                {c.chip}
+                {!c.available && c.played.length > 0 && (
+                  <span className="no-underline opacity-70">GW{c.played[c.played.length - 1].gameweek}</span>
+                )}
+              </span>
+            ))}
+          </div>
+        )}
+        {left.length > 0 && chips[0]?.gws_left != null && chips[0].gws_left <= 6 && chips[0].expires_gw && (
+          <p className="text-amber text-[11px] mt-2 inline-flex items-center gap-1">
+            <AlertTriangle size={11} />
+            {chips[0].gws_left} gameweek(s) before these expire at GW{chips[0].expires_gw}.
+          </p>
+        )}
+      </div>
+
+      <div className="grid grid-cols-4 gap-2">
+        {[
+          { label: "GW pts", val: p.last_gw_points == null ? "—" : String(p.last_gw_points) },
+          { label: "Transfers/GW", val: p.transfers_per_gw == null ? "—" : p.transfers_per_gw.toFixed(1) },
+          { label: "Lost to hits", val: p.total_hits_cost == null ? "—" : String(p.total_hits_cost) },
+          { label: "On bench", val: p.points_on_bench == null ? "—" : String(p.points_on_bench) },
+        ].map(({ label, val }) => (
+          <div key={label} className="text-center py-2 rounded-lg border border-bd bg-sur2">
+            <p className="text-sm font-black text-white">{val}</p>
+            <p className="text-[10px] text-mt uppercase tracking-wider mt-0.5">{label}</p>
+          </div>
+        ))}
+      </div>
+
+      {p.gameweeks_played > 0 && (
+        <p className="text-mt text-xs leading-relaxed border-t border-bd/40 pt-3">
+          Over {p.gameweeks_played} gameweeks you have made {p.transfers_made} transfers
+          {p.total_hits_cost > 0 ? ` and paid ${p.total_hits_cost} points in hits` : " without taking a hit"}.
+          {p.points_on_bench > 0 && ` ${p.points_on_bench} points have been left on your bench, averaging ${p.bench_points_per_gw} a week.`}
+          {p.rank_trend === "climbing" && " Your rank is climbing, so protecting what is working matters more than chasing."}
+          {p.rank_trend === "sliding" && " Your rank is sliding, which is usually the moment differentials start being worth the risk."}
+        </p>
+      )}
+    </div>
+  );
+}
+
 function MySquad() {
   const [allPlayers, setAllPlayers] = useState<PlayerListItem[]>([]);
   const [loadingList, setLoadingList] = useState(true);
@@ -627,6 +753,8 @@ function MySquad() {
     MID: [null, null, null, null, null], FWD: [null, null, null],
   });
   const [bank, setBank] = useState(0.0);
+  const [inputMode, setInputMode] = useState<"id" | "manual">("id");
+  const [entryId, setEntryId] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [data, setData] = useState<SquadResponse | null>(null);
@@ -676,66 +804,133 @@ function MySquad() {
     });
   };
 
-  const fetch_ = async () => {
-    const ids = Object.values(squad).flat().filter((p): p is PlayerListItem => !!p).map(p => p.id);
-    if (ids.length !== 15) { setError("Fill all 15 squad slots first."); return; }
+  const runFetch = async (url: string) => {
     setLoading(true); setError(""); setData(null);
+    setSuggestedSquads({}); setSquadFetchError({});
     try {
-      setData(await apiFetch(
-        `${API_BASE}/api/fpl/squad?player_ids=${ids.join(",")}&bank=${bank}`
-      ));
+      setData(await apiFetch(url));
       trackModuleAction("fpl");
     } catch (e: unknown) { setError(e instanceof Error ? e.message : String(e)); }
     finally { setLoading(false); }
+  };
+
+  const fetchById = async () => {
+    const id = entryId.trim();
+    if (!/^\d+$/.test(id)) { setError("Enter your FPL team ID, numbers only."); return; }
+    await runFetch(`${API_BASE}/api/fpl/squad?entry_id=${id}`);
+  };
+
+  const fetch_ = async () => {
+    const ids = Object.values(squad).flat().filter((p): p is PlayerListItem => !!p).map(p => p.id);
+    if (ids.length !== 15) { setError("Fill all 15 squad slots first."); return; }
+    await runFetch(`${API_BASE}/api/fpl/squad?player_ids=${ids.join(",")}&bank=${bank}`);
   };
 
   const posLabels: Record<string, string> = { GKP: "Goalkeepers", DEF: "Defenders", MID: "Midfielders", FWD: "Forwards" };
 
   return (
     <div className="space-y-5">
-      <p className="text-mt text-sm">
-        Enter your real 15-man squad. Tactica builds your best starting XI, picks a captain,
-        and flags transfers worth making — based on form, fixtures, and your bank.
-      </p>
-
-      <div className="card space-y-4">
-        {loadingList ? (
-          <p className="text-mt text-sm">Loading player list…</p>
-        ) : (
-          Object.entries(squad).map(([pos, slots]) => (
-            <div key={pos}>
-              <p className="section-label mb-2">{posLabels[pos]} ({slots.filter(Boolean).length}/{slots.length})</p>
-              <div className="grid grid-cols-1 gap-2">
-                {slots.map((p, i) => (
-                  <PlayerSlot key={i} label={pos} player={p} allPlayers={allPlayers} taken={taken}
-                    onPick={(picked) => setSlot(pos, i, picked)}
-                    onClear={() => setSlot(pos, i, null)} />
-                ))}
-              </div>
-            </div>
-          ))
-        )}
-
-        <div>
-          <p className="section-label mb-1">Bank (£m remaining)</p>
-          <input type="number" min={0} max={50} step={0.1} value={bank}
-            onChange={e => setBank(parseFloat(e.target.value) || 0)}
-            className="w-full bg-bg border border-bd rounded-xl px-4 py-2.5
-                       text-white font-bold text-sm focus:border-volt/50 focus:outline-none" />
-        </div>
-
-        <button onClick={fetch_} disabled={loading || filledCount !== 15}
-          className="btn-volt w-full py-3 text-sm disabled:opacity-50 flex items-center justify-center gap-2">
-          {loading
-            ? <><Target size={14} className="animate-spin" /> Analysing squad…</>
-            : <><Target size={14} /> Analyse My Squad ({filledCount}/15)</>}
-        </button>
+      <div className="flex gap-2 p-1 bg-sur2 border border-bd rounded-xl">
+        {([["id", "Use my team ID", Hash], ["manual", "Enter manually", Users2]] as const).map(([id, label, Icon]) => (
+          <button key={id} onClick={() => { setInputMode(id); setError(""); }}
+            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${inputMode === id ? "bg-volt/15 text-volt" : "text-mt hover:text-white"
+              }`}>
+            <Icon size={14} />
+            {label}
+          </button>
+        ))}
       </div>
+
+      {inputMode === "id" ? (
+        <>
+          <p className="text-mt text-sm">
+            Your team ID pulls your last locked squad, your bank, and the chips you have
+            already played. Tactica works from there: who to start, who to captain, who to
+            transfer, and which chip is worth playing next.
+          </p>
+
+          <div className="card space-y-4">
+            <div>
+              <p className="section-label mb-1">FPL Team ID</p>
+              <input
+                inputMode="numeric"
+                value={entryId}
+                onChange={e => setEntryId(e.target.value.replace(/[^0-9]/g, ""))}
+                onKeyDown={e => { if (e.key === "Enter") fetchById(); }}
+                placeholder="e.g. 1234567"
+                className="w-full bg-bg border border-bd rounded-xl px-4 py-2.5
+                           text-white font-bold text-sm tracking-wide
+                           placeholder:text-mt/50 placeholder:font-normal
+                           focus:border-volt/50 focus:outline-none" />
+            </div>
+
+            <div className="flex items-start gap-2 text-xs text-mt bg-sur2 rounded-xl px-4 py-3 border border-bd">
+              <Lightbulb size={14} className="flex-shrink-0 mt-0.5" />
+              <span>
+                On the FPL site, open the <span className="text-white font-bold">Points</span> tab.
+                Your ID is the number after <span className="font-mono text-volt">/entry/</span> in
+                the address bar, as in <span className="font-mono text-volt">/entry/1234567/event/6</span>.
+                It is not the same as a league ID.
+              </span>
+            </div>
+
+            <button onClick={fetchById} disabled={loading || !entryId.trim()}
+              className="btn-volt w-full py-3 text-sm disabled:opacity-50 flex items-center justify-center gap-2">
+              {loading
+                ? <><Target size={14} className="animate-spin" /> Pulling your squad…</>
+                : <><Target size={14} /> Analyse My Squad</>}
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <p className="text-mt text-sm">
+            Enter your real 15-man squad. Tactica builds your best starting XI, picks a captain,
+            and flags transfers worth making, based on form, fixtures, and your bank.
+          </p>
+
+          <div className="card space-y-4">
+            {loadingList ? (
+              <p className="text-mt text-sm">Loading player list…</p>
+            ) : (
+              Object.entries(squad).map(([pos, slots]) => (
+                <div key={pos}>
+                  <p className="section-label mb-2">{posLabels[pos]} ({slots.filter(Boolean).length}/{slots.length})</p>
+                  <div className="grid grid-cols-1 gap-2">
+                    {slots.map((p, i) => (
+                      <PlayerSlot key={i} label={pos} player={p} allPlayers={allPlayers} taken={taken}
+                        onPick={(picked) => setSlot(pos, i, picked)}
+                        onClear={() => setSlot(pos, i, null)} />
+                    ))}
+                  </div>
+                </div>
+              ))
+            )}
+
+            <div>
+              <p className="section-label mb-1">Bank (£m remaining)</p>
+              <input type="number" min={0} max={50} step={0.1} value={bank}
+                onChange={e => setBank(parseFloat(e.target.value) || 0)}
+                className="w-full bg-bg border border-bd rounded-xl px-4 py-2.5
+                           text-white font-bold text-sm focus:border-volt/50 focus:outline-none" />
+            </div>
+
+            <button onClick={fetch_} disabled={loading || filledCount !== 15}
+              className="btn-volt w-full py-3 text-sm disabled:opacity-50 flex items-center justify-center gap-2">
+              {loading
+                ? <><Target size={14} className="animate-spin" /> Analysing squad…</>
+                : <><Target size={14} /> Analyse My Squad ({filledCount}/15)</>}
+            </button>
+          </div>
+        </>
+      )}
 
       <ErrorBox msg={error} />
 
       {data && (
         <div className="space-y-4">
+          {data.manager && <ManagerPanel m={data.manager} />}
+
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div>
               <p className="font-display font-bold text-lg text-white">Formation {data.formation}</p>
@@ -801,27 +996,36 @@ function MySquad() {
               <div className="space-y-3">
                 {data.chip_advice.map((c, i) => {
                   const Icon = CHIP_ICONS[c.chip] ?? Sparkles;
-                  const isTop = i === 0;
+                  const used = c.available === false;
+                  const isTop = i === 0 && !used;
                   return (
-                    <div key={c.chip} className={`card space-y-2 ${isTop ? "border-volt/40 bg-volt/5" : ""}`}>
+                    <div key={c.chip} className={`card space-y-2 ${isTop ? "border-volt/40 bg-volt/5" : ""} ${used ? "opacity-55" : ""}`}>
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2 text-sm font-bold text-white">
                           <Icon size={16} className={isTop ? "text-volt" : "text-mt"} />
                           {c.chip}
                           {isTop && <span className="text-[10px] text-volt border border-volt/30 rounded px-1.5 py-0.5">TOP PICK</span>}
+                          {used && <span className="text-[10px] text-mt border border-bd rounded px-1.5 py-0.5 inline-flex items-center gap-1"><Ban size={10} /> USED</span>}
                           <span className="text-[10px] text-mt border border-bd rounded px-1.5 py-0.5">Half {c.half}</span>
                         </div>
                         <div className="flex items-center gap-1.5 flex-shrink-0">
-                          <div className="w-16 h-1.5 bg-bg2 rounded-full overflow-hidden">
-                            <div className={`h-full rounded-full ${isTop ? "bg-volt" : "bg-mt2"}`} style={{ width: `${c.score * 10}%` }} />
-                          </div>
-                          <span className="text-xs font-mono text-mt">{c.score}/10</span>
+                          {used ? (
+                            <span className="text-xs font-mono text-mt">not available</span>
+                          ) : (
+                            <>
+                              <div className="w-16 h-1.5 bg-bg2 rounded-full overflow-hidden">
+                                <div className={`h-full rounded-full ${isTop ? "bg-volt" : "bg-mt2"}`}
+                                  style={{ width: `${Math.max(0, Math.min(10, c.score)) * 10}%` }} />
+                              </div>
+                              <span className="text-xs font-mono text-mt">{c.score}/10</span>
+                            </>
+                          )}
                         </div>
                       </div>
                       <p className="text-mt text-xs leading-relaxed">{c.reason}</p>
                       <p className="text-white text-xs leading-relaxed font-semibold">{c.action}</p>
 
-                      {c.suggested_squad_endpoint && (
+                      {c.suggested_squad_endpoint && !used && (
                         <>
                           <button
                             onClick={() => fetchSuggestedSquad(c.chip, c.suggested_squad_endpoint!)}
