@@ -1,6 +1,8 @@
 // lib/api.ts — Tactica Engine API client
 // Connects to the FastAPI backend deployed on Render.
 
+import { authHeaders } from "./auth-headers";
+
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL || "https://tactica-backend-hdbd.onrender.com";
 
@@ -160,7 +162,6 @@ const BSD_NAME_MAP: Record<string, string> = {
   "Shakhtar Donetsk":    "Shakhtar Donetsk",
   "Arsenal":             "Arsenal",
   "Sabah":               "Sabah FK",
-  "Torreense":           "Torreense",
 
   // ── Eliteserien ──
   "Viking":              "Viking FK",    // or whatever BSD returns
@@ -322,9 +323,16 @@ export interface NationsLineupResponse {
 // ── Fetch helper ──────────────────────────────────────────────────────────────
 
 async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
+  // Headers are merged last so a caller's own headers win, and so passing
+  // options no longer silently drops Content-Type the way spreading
+  // ...options over a headers key used to.
   const res = await fetch(`${API_BASE}${path}`, {
-    headers: { "Content-Type": "application/json" },
     ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(await authHeaders()),
+      ...(options?.headers as Record<string, string> | undefined),
+    },
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: res.statusText }));
@@ -433,7 +441,7 @@ export const EUROPEAN_TEAMS = [
   "Braga", "Guimaraes", "Celtic", "Rangers", "Club Brugge", "Anderlecht", "Genk", "Galatasaray",
   "Fenerbahce", "Besiktas", "Trabzonspor", "Red Bull Salzburg", "Sturm Graz", "Slavia Prague",
   "Sparta Prague", "Olympiakos", "Panathinaikos", "PAOK", "Sabah", "NEC Nijmegen", "Lech Poznań", "Norwich City",
-  "LASK", "Viking FK", "Torreense",
+  "LASK", "Viking FK",
 ].sort();
 
 // National teams — originally World Cup 2026 qualifiers only; expanded Sept
